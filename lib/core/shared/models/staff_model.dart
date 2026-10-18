@@ -4,11 +4,13 @@ class StaffModel {
   final String workerName;
   final String workerId;
   final String bakeryId;
+  final String branchId;
 
   StaffModel({
     required this.workerName,
     required this.workerId,
     required this.bakeryId,
+    required this.branchId,
   });
 
   factory StaffModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,7 @@ class StaffModel {
       workerName: json[StaffsTableColumns.workerName] as String? ?? '',
       workerId: json[StaffsTableColumns.workerId] as String? ?? '',
       bakeryId: json[StaffsTableColumns.bakeryId] as String? ?? '',
+      branchId: json[StaffsTableColumns.branchId] as String? ?? '',
     );
   }
 
@@ -24,6 +27,7 @@ class StaffModel {
       StaffsTableColumns.workerName: workerName,
       StaffsTableColumns.workerId: workerId,
       StaffsTableColumns.bakeryId: bakeryId,
+      StaffsTableColumns.branchId: branchId,
     };
   }
 
@@ -31,11 +35,13 @@ class StaffModel {
     String? workerName,
     String? workerId,
     String? bakeryId,
+    String? branchId,
   }) {
     return StaffModel(
       workerName: workerName ?? this.workerName,
       workerId: workerId ?? this.workerId,
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
     );
   }
 
@@ -45,7 +51,8 @@ class StaffModel {
     return other is StaffModel &&
         other.workerName == workerName &&
         other.workerId == workerId &&
-        other.bakeryId == bakeryId;
+        other.bakeryId == bakeryId &&
+        other.branchId == branchId;
   }
 
   @override
@@ -53,5 +60,6 @@ class StaffModel {
     workerName,
     workerId,
     bakeryId,
+    branchId,
   );
 }

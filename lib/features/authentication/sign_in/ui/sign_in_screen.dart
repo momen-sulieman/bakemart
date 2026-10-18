@@ -48,7 +48,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ClipPath(
                                 clipper: MyClipper(),
                                 child: Container(
-                                  height: screenHeight * 0.5,
+                                  height: screenHeight * 0.45,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
@@ -126,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              SizedBox(height: 10),
                               CustomTextButton(
                                 title: "",
                                 onTap: () {
@@ -136,7 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 },
                                 subTitle: "Forgot password",
                               ),
-                              SizedBox(height: 5),
+                              SizedBox(height: 10),
                               CustomTextButton(
                                 title: "Don't have an account yet?  ",
                                 onTap: () {
@@ -146,7 +146,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 },
                                 subTitle: "Sign up",
                               ),
-                              Spacer(),
+                              SizedBox(height: 50,),
                               BlocConsumer<SignInCubit, SignInState>(
                                 listener: (context, state) {
                                   if (state is SignInSuccess) {

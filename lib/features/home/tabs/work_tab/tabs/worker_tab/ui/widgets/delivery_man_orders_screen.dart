@@ -965,6 +965,10 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                                                 workerCubit
                                                                     .bakery!
                                                                     .bakeryId,
+                                                            branchId:
+                                                                workerCubit
+                                                                    .bakery!
+                                                                    .branchId,
                                                           );
                                                   if (handOver) {
                                                     controller.success();
@@ -1094,6 +1098,8 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                           orders: ordersSnapshot,
                                           bakeryId:
                                               workerCubit.bakery!.bakeryId,
+                                          branchId:
+                                              workerCubit.bakery!.branchId,
                                         );
                                         await workerCubit.updateProducts(
                                           workerCubit.bakery!.bakeryId,

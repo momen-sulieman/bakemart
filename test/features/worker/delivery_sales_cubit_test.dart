@@ -178,16 +178,16 @@ void main() {
           when(
                 () => repo.updateOrderInDatabase(
               order: any(named: 'order'),
-              bakeryId: any(named: 'bakeryId'),
+              bakeryId: any(named: 'bakeryId'), branchId: '',
             ),
           ).thenAnswer((_) async => SuccessResponse<bool>(true));
           final order = buildOrder(orderId: 'o1');
 
-          final result = await cubit.handOneOrder(order: order, bakeryId: 'b1');
+          final result = await cubit.handOneOrder(order: order, bakeryId: 'b1', branchId: '');
 
           expect(result, true);
           verify(
-                () => repo.updateOrderInDatabase(order: order, bakeryId: 'b1'),
+                () => repo.updateOrderInDatabase(order: order, bakeryId: 'b1', branchId: ''),
           ).called(1);
         });
 
@@ -205,15 +205,15 @@ void main() {
       await cubit.scanOrders(deliveryManId: 'd1', bakeryId: 'b1');
 
       when(
-            () => repo.updateOrderInDatabase(order: orderOne, bakeryId: 'b1'),
+            () => repo.updateOrderInDatabase(order: orderOne, bakeryId: 'b1', branchId: ''),
       ).thenAnswer((_) async => SuccessResponse<bool>(true));
       when(
-            () => repo.updateOrderInDatabase(order: orderTwo, bakeryId: 'b1'),
+            () => repo.updateOrderInDatabase(order: orderTwo, bakeryId: 'b1', branchId: ''),
       ).thenAnswer((_) async => FailureResponse<bool>('failed'));
 
       final allSucceeded = await cubit.handAllOrders(
         orders: [orderOne, orderTwo],
-        bakeryId: 'b1',
+        bakeryId: 'b1', branchId: '',
       );
 
       expect(allSucceeded, false);

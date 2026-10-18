@@ -3,6 +3,7 @@ import '../../utils/enums/finance_table_columns.dart';
 
 class FinanceModel {
   final String bakeryId;
+  final String branchId;
   final DateTime? date;
   final double cleaningExpenses;
   final List<WasteModel> wastes;
@@ -11,6 +12,7 @@ class FinanceModel {
 
   FinanceModel({
     required this.bakeryId,
+    required this.branchId,
     this.date,
     required this.cleaningExpenses,
     required this.wastes,
@@ -33,6 +35,7 @@ class FinanceModel {
 
     return FinanceModel(
       bakeryId: json[FinanceTableColumns.bakeryId] as String? ?? "",
+      branchId: json[FinanceTableColumns.branchId] as String? ?? "",
       date: json[FinanceTableColumns.date] != null
           ? DateTime.parse(json[FinanceTableColumns.date] as String).toLocal()
           : null,
@@ -53,6 +56,7 @@ class FinanceModel {
   Map<String, dynamic> toJson() {
     return {
       FinanceTableColumns.bakeryId: bakeryId,
+      FinanceTableColumns.branchId: branchId,
       if (date != null)
         FinanceTableColumns.date: date!.toIso8601String().split('T').first,
       FinanceTableColumns.cleaningExpenses: cleaningExpenses,
@@ -65,6 +69,7 @@ class FinanceModel {
 
   FinanceModel copyWith({
     String? bakeryId,
+    String? branchId,
     DateTime? date,
     double? cleaningExpenses,
     List<WasteModel>? wastes,
@@ -73,6 +78,7 @@ class FinanceModel {
   }) {
     return FinanceModel(
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
       date: date ?? this.date,
       cleaningExpenses: cleaningExpenses ?? this.cleaningExpenses,
       wastes: wastes ?? this.wastes,
@@ -86,6 +92,7 @@ class FinanceModel {
     if (identical(this, other)) return true;
     return other is FinanceModel &&
         other.bakeryId == bakeryId &&
+        other.branchId == branchId &&
         other.date == date &&
         other.cleaningExpenses == cleaningExpenses &&
         other.payrollExpenses == payrollExpenses &&
@@ -95,6 +102,7 @@ class FinanceModel {
   @override
   int get hashCode => Object.hash(
     bakeryId,
+    branchId,
     date,
     cleaningExpenses,
     payrollExpenses,

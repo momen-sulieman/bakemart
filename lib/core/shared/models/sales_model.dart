@@ -2,6 +2,7 @@ import '../../utils/enums/sales_table_columns.dart';
 
 class SalesModel {
   final String bakeryId;
+  final String branchId;
   final String productId;
   final String productName;
   final double productPrice;
@@ -11,6 +12,7 @@ class SalesModel {
 
   SalesModel({
     required this.bakeryId,
+    required this.branchId,
     required this.productId,
     required this.productName,
     required this.productPrice,
@@ -22,6 +24,7 @@ class SalesModel {
   factory SalesModel.fromJson(Map<String, dynamic> json) {
     return SalesModel(
       bakeryId: json[SalesTableColumns.bakeryId] as String? ?? '',
+      branchId: json[SalesTableColumns.branchId] as String? ?? '',
       productId: json[SalesTableColumns.productId] as String? ?? '',
       productName: json[SalesTableColumns.productName] as String? ?? '',
       date: json[SalesTableColumns.date] != null
@@ -36,6 +39,7 @@ class SalesModel {
   Map<String, dynamic> toJson() {
     return {
       SalesTableColumns.bakeryId: bakeryId,
+      SalesTableColumns.branchId: branchId,
       SalesTableColumns.productId: productId,
       SalesTableColumns.productName: productName,
       SalesTableColumns.date: date?.toIso8601String().split('T').first,
@@ -47,6 +51,7 @@ class SalesModel {
 
   SalesModel copyWith({
     String? bakeryId,
+    String? branchId,
     String? productId,
     String? productName,
     DateTime? date,
@@ -56,6 +61,7 @@ class SalesModel {
   }) {
     return SalesModel(
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
       productId: productId ?? this.productId,
       productName: productName ?? this.productName,
       date: date ?? this.date,

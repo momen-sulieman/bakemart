@@ -40,8 +40,8 @@ void main() {
   setUpAll(() async {
     registerFallbackValue(bakery);
     registerFallbackValue(<ProductModel>[]);
-    registerFallbackValue(PayrollModel(bakeryId: '', payrollMethod: true));
-    registerFallbackValue(StorageModel(bakeryId: ''));
+    registerFallbackValue(PayrollModel(bakeryId: '', payrollMethod: true, branchId: ''));
+    registerFallbackValue(StorageModel(bakeryId: '', branchId: ''));
     registerFallbackValue(File('fallback.jpg'));
     await setupTestEnvironment();
   });
@@ -244,7 +244,7 @@ void main() {
           cubit.setCertificateImage(File('cert.jpg'));
           expect(cubit.formValidity, true);
 
-          cubit.onNameChanged('');
+          cubit.onNameSet('');
           expect(cubit.nameValidity, false);
           expect(cubit.formValidity, false);
         });
@@ -370,8 +370,8 @@ void main() {
       return cubit.createBakery(
         bakeryData: fakeBakery('', 30, 31),
         products: [fakeProduct(id: 'p1')],
-        payroll: PayrollModel(bakeryId: '', payrollMethod: true),
-        storage: StorageModel(bakeryId: ''),
+        payroll: PayrollModel(bakeryId: '', payrollMethod: true, branchId: ''),
+        storage: StorageModel(bakeryId: '', branchId: ''),
       );
     }
 

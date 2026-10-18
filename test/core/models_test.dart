@@ -125,6 +125,9 @@ void main() {
         bakeryLat: 1.5,
         bakeryLng: 2.5,
         supervisorId: const ['s1'],
+        branchId: '',
+        branchName: '',
+        branchNumber: 1,
       );
 
       final parsed = BakeryModel.fromJson(bakery.toJson());
@@ -201,17 +204,18 @@ void main() {
     });
 
     test('fat sums oil, ghee and butter per unit in the batch', () {
-      final product = fakeProduct(
-        overrides: {ProductsTableColumns.quantityPerBatch: 10},
-      ).copyWith(
-        productRecipe: RecipeModel(
-          bakeryId: 'b1',
-          flourType: 'white',
-          oil: 100,
-          ghee: 50,
-          butter: 50,
-        ),
-      );
+      final product =
+          fakeProduct(
+            overrides: {ProductsTableColumns.quantityPerBatch: 10},
+          ).copyWith(
+            productRecipe: RecipeModel(
+              bakeryId: 'b1',
+              flourType: 'white',
+              oil: 100,
+              ghee: 50,
+              butter: 50,
+            ),
+          );
 
       expect(product.fat, 20.0);
     });
@@ -303,7 +307,10 @@ void main() {
 
       expect(order.copyWith(), order);
       expect(order.copyWith().hashCode, order.hashCode);
-      expect(order.copyWith(orderStatus: OrderStatuses.delivered), isNot(order));
+      expect(
+        order.copyWith(orderStatus: OrderStatuses.delivered),
+        isNot(order),
+      );
     });
   });
 

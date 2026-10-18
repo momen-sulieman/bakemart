@@ -18,6 +18,7 @@ class StorageCubit extends Cubit<StorageState> {
   bool inputValidity = false;
   StorageModel storage = StorageModel(
     bakeryId: "",
+    branchId: "",
     fineWheat: 0,
     wholeWheat: 0,
     corn: 0,

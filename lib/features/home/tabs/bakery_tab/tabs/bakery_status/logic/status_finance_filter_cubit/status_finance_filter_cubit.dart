@@ -26,6 +26,7 @@ class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState> {
   bool isExpanded = true;
   FinanceModel filteredFinanceRecord = FinanceModel(
     bakeryId: "",
+    branchId: "",
     cleaningExpenses: 0,
     wastes: [],
   );

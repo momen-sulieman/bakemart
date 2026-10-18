@@ -32,7 +32,8 @@ class WorkerRepo {
   final SupabaseClient _supabase;
 
   WorkerRepo({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
+
   Future<ResponseResult<UserModel>> getUserData() async {
     try {
       final String? id = _supabase.auth.currentUser?.id;
@@ -217,6 +218,7 @@ class WorkerRepo {
                     workerName: "${user.firstName} ${user.secondName}",
                     workerId: user.id!,
                     bakeryId: bakeryId,
+                    branchId: "",
                   ).toJson(),
                 );
             return SuccessResponse(true);
@@ -548,6 +550,7 @@ class WorkerRepo {
 
   Future<ResponseResult<bool>> postPayrollExpenses({
     required String bakeryId,
+    required String branchId,
     required double payrollExpenses,
     required DateTime date,
   }) async {
@@ -570,6 +573,7 @@ class WorkerRepo {
       } else {
         final freshFinance = FinanceModel(
           bakeryId: bakeryId,
+          branchId: branchId,
           date: date,
           cleaningExpenses: 0.0,
           wastes: [],
@@ -623,6 +627,7 @@ class WorkerRepo {
           final SalesModel newSalesRecord = SalesModel(
             productName: product.productName,
             bakeryId: product.bakeryId,
+            branchId: product.branchId,
             productId: product.productId!,
             productPrice: product.productPrice,
             date: today,
@@ -662,6 +667,7 @@ class WorkerRepo {
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
             bakeryId: product.bakeryId,
+            branchId: product.branchId,
             date: today,
             cleaningExpenses: 0.0,
             wastes: [],
@@ -739,6 +745,7 @@ class WorkerRepo {
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
             bakeryId: product.bakeryId,
+            branchId: product.branchId,
             date: today,
             cleaningExpenses: 0.0,
             wastes: [
@@ -825,6 +832,7 @@ class WorkerRepo {
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
             bakeryId: product.bakeryId,
+            branchId: product.branchId,
             date: today,
             cleaningExpenses: 0.0,
             wastes: [
@@ -906,6 +914,7 @@ class WorkerRepo {
         final SalesModel newSalesRecord = SalesModel(
           productName: product.productName,
           bakeryId: product.bakeryId,
+          branchId: product.branchId,
           productId: product.productId!,
           productPrice: product.productPrice,
           date: DateTime.now(),
@@ -987,6 +996,7 @@ class WorkerRepo {
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
             bakeryId: product.bakeryId,
+            branchId: product.branchId,
             date: DateTime.now(),
             cleaningExpenses: 0.0,
             wastes: [
@@ -1175,6 +1185,7 @@ class WorkerRepo {
   Future<ResponseResult<bool>> updateOrderInDatabase({
     required OrderModel order,
     required String bakeryId,
+    required String branchId,
   }) async {
     try {
       final int bakeryIndex = order.bakeries.indexWhere(
@@ -1257,6 +1268,7 @@ class WorkerRepo {
           final SalesModel newSalesRecord = SalesModel(
             productName: product.productName,
             bakeryId: bakeryId,
+            branchId: product.branchId,
             productId: product.productId!,
             productPrice: product.productPrice,
             date: today,
@@ -1291,6 +1303,7 @@ class WorkerRepo {
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
             bakeryId: bakeryId,
+            branchId: branchId,
             date: today,
             cleaningExpenses: 0.0,
             wastes: [],

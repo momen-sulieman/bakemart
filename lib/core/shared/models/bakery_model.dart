@@ -9,6 +9,9 @@ class BakeryModel {
   final double bakeryLng;
   final List<String> supervisorId;
   final bool verified;
+  final String branchId;
+  final String branchName;
+  final int branchNumber;
 
   BakeryModel({
     required this.bakeryId,
@@ -17,6 +20,9 @@ class BakeryModel {
     required this.bakeryLng,
     required this.supervisorId,
     this.verified = false,
+    required this.branchId,
+    required this.branchName,
+    required this.branchNumber,
   });
 
   factory BakeryModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +43,9 @@ class BakeryModel {
       bakeryLng: (json[BakeriesTableColumns.bakeryLng] as num?)?.toDouble() ?? 0.0,
       supervisorId: parsedSupervisorIds,
       verified: json[BakeriesTableColumns.verified] as bool? ?? false,
+      branchId: json['branchId'] as String? ?? '',
+      branchName: json['branchName'] as String? ?? '',
+      branchNumber: (json['branchNumber'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -48,6 +57,9 @@ class BakeryModel {
       BakeriesTableColumns.bakeryLng: bakeryLng,
       BakeriesTableColumns.supervisorId: supervisorId,
       BakeriesTableColumns.verified: verified,
+      'branchId': branchId,
+      'branchName': branchName,
+      'branchNumber': branchNumber,
     };
   }
 
@@ -58,6 +70,9 @@ class BakeryModel {
     double? bakeryLng,
     List<String>? supervisorId,
     bool? verified,
+    String? branchId,
+    String? branchName,
+    int? branchNumber,
   }) {
     return BakeryModel(
       bakeryId: bakeryId ?? this.bakeryId,
@@ -66,6 +81,9 @@ class BakeryModel {
       bakeryLng: bakeryLng ?? this.bakeryLng,
       supervisorId: supervisorId ?? this.supervisorId,
       verified: verified ?? this.verified,
+      branchId: branchId ?? this.branchId,
+      branchName: branchName ?? this.branchName,
+      branchNumber: branchNumber ?? this.branchNumber,
     );
   }
 
@@ -78,6 +96,9 @@ class BakeryModel {
         other.bakeryLat == bakeryLat &&
         other.bakeryLng == bakeryLng &&
         other.verified == verified &&
+        other.branchId == branchId &&
+        other.branchName == branchName &&
+        other.branchNumber == branchNumber &&
         const ListEquality<String>().equals(other.supervisorId, supervisorId);
   }
 
@@ -88,6 +109,9 @@ class BakeryModel {
     bakeryLat,
     bakeryLng,
     verified,
+    branchId,
+    branchName,
+    branchNumber,
     const ListEquality<String>().hash(supervisorId),
   );
 }

@@ -2,6 +2,7 @@ class StoragesTableColumns {
   StoragesTableColumns._();
 
   static const String bakeryId = 'bakery_id';
+  static const String branchId = 'branch_id';
 
   // Flours & Grains
   static const String fineWheat = 'fine_wheat';

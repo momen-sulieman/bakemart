@@ -63,14 +63,14 @@ void main() {
         .thenAnswer((_) => const Stream<LocationState>.empty());
 
     final bakery = fakeBakery('owner-1', 30, 31);
-    final storage = StorageModel(bakeryId: 'owner-1', sugar: 5000, salt: 2000);
+    final storage = StorageModel(bakeryId: 'owner-1', sugar: 5000, salt: 2000, branchId: '');
     when(() => bakeryRepo.fetchBakery())
         .thenAnswer((_) async => SuccessResponse<BakeryModel?>(bakery));
     when(() => bakeryRepo.fetchStorage())
         .thenAnswer((_) async => SuccessResponse<StorageModel?>(storage));
     when(() => bakeryRepo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
-        PayrollModel(bakeryId: 'owner-1', payrollMethod: true),
+        PayrollModel(bakeryId: 'owner-1', payrollMethod: true, branchId: ''),
       ),
     );
     when(() => bakeryRepo.fetchProducts())

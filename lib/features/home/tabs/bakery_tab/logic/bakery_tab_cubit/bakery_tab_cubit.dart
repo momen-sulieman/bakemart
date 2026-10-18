@@ -26,14 +26,14 @@ import '../../data/bakery_tab_repo.dart';
 part 'bakery_tab_state.dart';
 
 typedef StorageFieldDescriptor = (
-String label,
-TextEditingController controller,
-String unit,
+  String label,
+  TextEditingController controller,
+  String unit,
 );
 typedef PayrollFieldDescriptor = (
-String label,
-TextEditingController controller,
-bool isRequired,
+  String label,
+  TextEditingController controller,
+  bool isRequired,
 );
 
 class BakeryTabCubit extends Cubit<BakeryTabState> {
@@ -43,16 +43,16 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   final SupabaseImageCubit Function(String bucket) _imageCubitFactory;
 
   BakeryTabCubit(
-      this._repo,
-      this._locationCubit, {
-        String? Function()? currentUserId,
-        SupabaseImageCubit Function(String bucket)? imageCubitFactory,
-      }) : _currentUserId =
-      currentUserId ??
-          (() => Supabase.instance.client.auth.currentUser?.id),
-        _imageCubitFactory =
-            imageCubitFactory ?? ((bucket) => SupabaseImageCubit(bucket, null)),
-        super(BakeryTabLoading()) {
+    this._repo,
+    this._locationCubit, {
+    String? Function()? currentUserId,
+    SupabaseImageCubit Function(String bucket)? imageCubitFactory,
+  }) : _currentUserId =
+           currentUserId ??
+           (() => Supabase.instance.client.auth.currentUser?.id),
+       _imageCubitFactory =
+           imageCubitFactory ?? ((bucket) => SupabaseImageCubit(bucket, null)),
+       super(BakeryTabLoading()) {
     storageFields = [
       (StorageItems.fineWheat, TextEditingController(), "gram"),
       (StorageItems.wholeWheat, TextEditingController(), "gram"),
@@ -91,11 +91,7 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
       (StorageItems.blackMolasses, TextEditingController(), "gram"),
       (StorageItems.whiteCheese, TextEditingController(), "gram"),
       (StorageItems.roumyCheese, TextEditingController(), "gram"),
-      (
-      StorageItems.istanbouliCheese,
-      TextEditingController(),
-      "gram",
-      ),
+      (StorageItems.istanbouliCheese, TextEditingController(), "gram"),
       (StorageItems.mozzarella, TextEditingController(), "gram"),
       (StorageItems.olives, TextEditingController(), "gram"),
       (StorageItems.peanut, TextEditingController(), "gram"),
@@ -140,17 +136,21 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   List<FinanceModel> finance = [];
   List<ShiftModel> shifts = [];
   List<StaffModel> staff = [];
-  StorageModel storage = StorageModel(bakeryId: "");
+  StorageModel storage = StorageModel(bakeryId: "", branchId: "");
   BakeryModel bakery = BakeryModel(
     bakeryName: "",
     bakeryLat: 0,
     bakeryLng: 0,
     supervisorId: [],
     bakeryId: "",
+    branchId: "",
+    branchName: "",
+    branchNumber: 1,
   );
-  PayrollModel payroll = PayrollModel(bakeryId: "", payrollMethod: true);
+  PayrollModel payroll = PayrollModel(bakeryId: "", payrollMethod: true, branchId: "");
 
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController branchNameController = TextEditingController();
   late final List<StorageFieldDescriptor> storageFields;
   late final List<PayrollFieldDescriptor> payrollFields;
   bool selectedPayrollMethod = true;
@@ -159,6 +159,7 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   bool payrollValidity = false;
   bool storageValidity = false;
   bool nameValidity = false;
+  bool branchNameValidity = false;
   bool formValidity = false;
   bool isLocationEditing = false;
   double bakeryLat = 0;
@@ -220,12 +221,16 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
 
   void setValidity({
     bool? nameValidityState,
+    bool? branchNameValidityState,
     bool? payrollValidityState,
     bool? newProductFormValidityState,
     bool? storageValidityState,
   }) {
     if (nameValidityState != null) {
       nameValidity = nameValidityState;
+    }
+    if (branchNameValidityState != null) {
+      branchNameValidity = branchNameValidityState;
     }
     if (newProductFormValidityState != null) {
       newProductFormValidity = newProductFormValidityState;
@@ -238,15 +243,19 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
     }
     formValidity =
         nameValidity &&
-            editableProducts.isNotEmpty &&
-            payrollValidity &&
-            storageValidity &&
-            pendingCertificateImage != null;
+        branchNameValidity &&
+        editableProducts.isNotEmpty &&
+        payrollValidity &&
+        storageValidity &&
+        pendingCertificateImage != null;
     emit(HasNoBakery());
   }
 
-  void onNameChanged(String text) {
+  void onNameSet(String text) {
     setValidity(nameValidityState: text.isNotEmpty);
+  }
+  void onBranchNameSet(String text) {
+    setValidity(branchNameValidityState: text.isNotEmpty);
   }
 
   bool checkStorageValidity() {
@@ -268,7 +277,7 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
 
   void validatePayrollInputs() {
     final supervisorField = payrollFields.firstWhere(
-          (field) => field.$1 == PayrollsTableColumns.supervisor,
+      (field) => field.$1 == PayrollsTableColumns.supervisor,
     );
     final supervisorValue = double.tryParse(
       supervisorField.$2.text.toEnglishDigits(),
@@ -278,9 +287,9 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
     final isAtLeastOneOtherValid = payrollFields
         .where((field) => field.$1 != PayrollsTableColumns.supervisor)
         .any((field) {
-      final value = double.tryParse(field.$2.text.toEnglishDigits());
-      return value != null && value > 0;
-    });
+          final value = double.tryParse(field.$2.text.toEnglishDigits());
+          return value != null && value > 0;
+        });
 
     setValidity(
       payrollValidityState: isSupervisorValid && isAtLeastOneOtherValid,

@@ -30,7 +30,7 @@ void main() {
     registerFallbackValue(fakeShift());
     registerFallbackValue(fakeProduct());
     registerFallbackValue(<ProductModel>[]);
-    registerFallbackValue(StorageModel(bakeryId: 'fallback'));
+    registerFallbackValue(StorageModel(bakeryId: 'fallback', branchId: ''));
     registerFallbackValue(fakePayroll());
     registerFallbackValue(DateTime(2026, 1, 1));
     await setupTestEnvironment();
@@ -157,7 +157,7 @@ void main() {
           when(
                 () => repo.updateOrderInDatabase(
               order: any(named: 'order'),
-              bakeryId: any(named: 'bakeryId'),
+              bakeryId: any(named: 'bakeryId'), branchId: '',
             ),
           ).thenAnswer((invocation) async {
             final order = invocation.namedArguments[#order] as OrderModel;
@@ -170,7 +170,7 @@ void main() {
 
           final allSucceeded = await cubit.handAllOrders(
             orders: [orderWith('o1'), orderWith('o2')],
-            bakeryId: 'b1',
+            bakeryId: 'b1', branchId: '',
           );
 
           expect(allSucceeded, false);
@@ -344,7 +344,7 @@ void main() {
             batchCounter: 2,
             manufacturingWasteCounter: 0,
             product: fakeProduct(),
-            currentStorage: StorageModel(bakeryId: 'b1'),
+            currentStorage: StorageModel(bakeryId: 'b1', branchId: ''),
           );
 
           expect(cubit.state, isA<ProductionInitial>());
@@ -369,7 +369,7 @@ void main() {
             batchCounter: 2,
             manufacturingWasteCounter: 0,
             product: fakeProduct(),
-            currentStorage: StorageModel(bakeryId: 'b1'),
+            currentStorage: StorageModel(bakeryId: 'b1', branchId: ''),
           );
 
           verify(() => workerCubit.updateProducts(any())).called(1);
@@ -403,7 +403,7 @@ void main() {
                 () => repo.postPayrollExpenses(
               bakeryId: any(named: 'bakeryId'),
               payrollExpenses: any(named: 'payrollExpenses'),
-              date: any(named: 'date'),
+              date: any(named: 'date'), branchId: '',
             ),
           ).thenAnswer((_) async => SuccessResponse<bool>(true));
           final cubit = ProductionCubit(repo, workerCubit);
@@ -413,7 +413,7 @@ void main() {
             batchCounter: 2,
             manufacturingWasteCounter: 0,
             product: fakeProduct(),
-            currentStorage: StorageModel(bakeryId: 'b1'),
+            currentStorage: StorageModel(bakeryId: 'b1', branchId: ''),
           );
 
           verify(() => repo.upsertShiftsTable(shiftTable: any(named: 'shiftTable'))).called(1);
@@ -421,7 +421,7 @@ void main() {
                 () => repo.postPayrollExpenses(
               bakeryId: any(named: 'bakeryId'),
               payrollExpenses: 20,
-              date: any(named: 'date'),
+              date: any(named: 'date'), branchId: '',
             ),
           ).called(1);
           verify(() => workerCubit.updateFinance(any())).called(1);
@@ -448,7 +448,7 @@ void main() {
             () => repo.postPayrollExpenses(
           bakeryId: any(named: 'bakeryId'),
           payrollExpenses: any(named: 'payrollExpenses'),
-          date: any(named: 'date'),
+          date: any(named: 'date'), branchId: '',
         ),
       ).thenAnswer((_) async => SuccessResponse<bool>(true));
       final cubit = ShiftsCubit(repo, workerCubit);
@@ -467,7 +467,7 @@ void main() {
             () => repo.postPayrollExpenses(
           bakeryId: 'b1',
           payrollExpenses: 30,
-          date: any(named: 'date'),
+          date: any(named: 'date'), branchId: '',
         ),
       ).called(1);
     });
@@ -489,7 +489,7 @@ void main() {
             () => repo.postPayrollExpenses(
           bakeryId: any(named: 'bakeryId'),
           payrollExpenses: any(named: 'payrollExpenses'),
-          date: any(named: 'date'),
+          date: any(named: 'date'), branchId: '',
         ),
       );
     });

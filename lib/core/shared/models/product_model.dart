@@ -4,6 +4,7 @@ import '../../utils/enums/products_table_columns.dart';
 class ProductModel {
   final String? productId;
   final String bakeryId;
+  final String branchId;
   final String productName;
   final int productWeight;
   final double productPrice;
@@ -21,6 +22,7 @@ class ProductModel {
   ProductModel({
     this.productId,
     required this.bakeryId,
+    required this.branchId,
     required this.productName,
     required this.productWeight,
     required this.productPrice,
@@ -104,6 +106,7 @@ class ProductModel {
     return ProductModel(
       productId: json[ProductsTableColumns.productId] as String?,
       bakeryId: json[ProductsTableColumns.bakeryId] as String? ?? "",
+      branchId: json[ProductsTableColumns.branchId] as String? ?? "",
       productName:
       json[ProductsTableColumns.productName] as String? ??
           "Unknown Product",
@@ -137,6 +140,7 @@ class ProductModel {
       if (productId != null && productId!.isNotEmpty)
         ProductsTableColumns.productId: productId,
       ProductsTableColumns.bakeryId: bakeryId,
+      ProductsTableColumns.branchId: branchId,
       ProductsTableColumns.productName: productName,
       ProductsTableColumns.productWeight: productWeight,
       ProductsTableColumns.productPrice: productPrice,
@@ -156,6 +160,7 @@ class ProductModel {
   ProductModel copyWith({
     String? productId,
     String? bakeryId,
+    String? branchId,
     String? productName,
     int? productWeight,
     double? productPrice,
@@ -173,6 +178,7 @@ class ProductModel {
     return ProductModel(
       productId: productId ?? this.productId,
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
       productName: productName ?? this.productName,
       productWeight: productWeight ?? this.productWeight,
       productPrice: productPrice ?? this.productPrice,
@@ -195,6 +201,7 @@ class ProductModel {
     return other is ProductModel &&
         other.productId == productId &&
         other.bakeryId == bakeryId &&
+        other.branchId == branchId &&
         other.productName == productName &&
         other.productWeight == productWeight &&
         other.productPrice == productPrice &&
@@ -214,6 +221,7 @@ class ProductModel {
   int get hashCode => Object.hashAll([
     productId,
     bakeryId,
+    branchId,
     productName,
     productWeight,
     productPrice,

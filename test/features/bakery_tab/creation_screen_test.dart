@@ -38,8 +38,8 @@ void main() {
     await setupTestEnvironment();
     registerFallbackValue(File('fallback.png'));
     registerFallbackValue(fakeBakery('', 0, 0));
-    registerFallbackValue(PayrollModel(bakeryId: '', payrollMethod: true));
-    registerFallbackValue(StorageModel(bakeryId: ''));
+    registerFallbackValue(PayrollModel(bakeryId: '', payrollMethod: true, branchId: ''));
+    registerFallbackValue(StorageModel(bakeryId: '', branchId: ''));
     registerFallbackValue(<ProductModel>[]);
   });
 

@@ -94,7 +94,7 @@ class TestWorkerRepo extends WorkerRepo {
 
   @override
   Future<ResponseResult<StorageModel?>> fetchStorage(String id) async {
-    return SuccessResponse<StorageModel?>(StorageModel(bakeryId: id));
+    return SuccessResponse<StorageModel?>(StorageModel(bakeryId: id, branchId: ''));
   }
 }
 
@@ -200,7 +200,7 @@ void main() {
             fakeStaff(workerId: 'w1', workerName: 'Mo', bakeryId: 'b1');
         repo.bakeryRow = bakery;
         repo.payrollRow =
-            PayrollModel(bakeryId: 'b1', payrollMethod: false, chef: 50);
+            PayrollModel(bakeryId: 'b1', payrollMethod: false, chef: 50, branchId: '');
         repo.productsRow = [product];
         repo.staffListRow = [
           fakeStaff(workerId: 'w2', workerName: 'Alice', bakeryId: 'b1'),
@@ -213,7 +213,7 @@ void main() {
             wage: 150,
             role: const ['chef'],
             numberOfBatches: const [3],
-            date: today,
+            date: today, branchId: '',
           ),
         ];
         repo.financeRow = [
@@ -221,7 +221,7 @@ void main() {
             bakeryId: 'b1',
             date: today,
             cleaningExpenses: 10,
-            wastes: const [],
+            wastes: const [], branchId: '',
           ),
         ];
         await tester.runAsync(() async {

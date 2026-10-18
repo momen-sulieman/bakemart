@@ -2,6 +2,7 @@ import '../../utils/enums/payrolls_table_columns.dart';
 
 class PayrollModel {
   final String bakeryId;
+  final String branchId;
   final bool payrollMethod;
   final double? ajan;
   final double? faran;
@@ -13,6 +14,7 @@ class PayrollModel {
 
   PayrollModel({
     required this.bakeryId,
+    required this.branchId,
     required this.payrollMethod,
     this.ajan,
     this.faran,
@@ -25,8 +27,9 @@ class PayrollModel {
 
   factory PayrollModel.fromJson(Map<String, dynamic> json) {
     return PayrollModel(
-      bakeryId: json[PayrollsTableColumns.bakeryId] as String,
-      payrollMethod: json[PayrollsTableColumns.payrollMethod] as bool,
+      bakeryId: json[PayrollsTableColumns.bakeryId] as String? ?? '',
+      branchId: json[PayrollsTableColumns.branchId] as String? ?? '',
+      payrollMethod: json[PayrollsTableColumns.payrollMethod] as bool? ?? false,
       ajan: (json[PayrollsTableColumns.ajan] as num?)?.toDouble(),
       faran: (json[PayrollsTableColumns.faran] as num?)?.toDouble(),
       tawlaji: (json[PayrollsTableColumns.tawlaji] as num?)?.toDouble(),
@@ -40,6 +43,7 @@ class PayrollModel {
   Map<String, dynamic> toJson() {
     return {
       PayrollsTableColumns.bakeryId: bakeryId,
+      PayrollsTableColumns.branchId: branchId,
       PayrollsTableColumns.payrollMethod: payrollMethod,
       PayrollsTableColumns.ajan: ajan,
       PayrollsTableColumns.faran: faran,
@@ -53,6 +57,7 @@ class PayrollModel {
 
   PayrollModel copyWith({
     String? bakeryId,
+    String? branchId,
     bool? payrollMethod,
     double? ajan,
     double? faran,
@@ -64,6 +69,7 @@ class PayrollModel {
   }) {
     return PayrollModel(
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
       payrollMethod: payrollMethod ?? this.payrollMethod,
       ajan: ajan ?? this.ajan,
       faran: faran ?? this.faran,
@@ -80,6 +86,7 @@ class PayrollModel {
     if (identical(this, other)) return true;
     return other is PayrollModel &&
         other.bakeryId == bakeryId &&
+        other.branchId == branchId &&
         other.payrollMethod == payrollMethod &&
         other.ajan == ajan &&
         other.faran == faran &&
@@ -93,6 +100,7 @@ class PayrollModel {
   @override
   int get hashCode => Object.hash(
     bakeryId,
+    branchId,
     payrollMethod,
     ajan,
     faran,

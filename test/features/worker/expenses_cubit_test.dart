@@ -38,7 +38,7 @@ void main() {
         bakeryId: 'b1',
         date: DateTime.now(),
         cleaningExpenses: 0,
-        wastes: const [],
+        wastes: const [], branchId: '',
       ),
     );
     registerFallbackValue(waste);
@@ -95,13 +95,13 @@ void main() {
             bakeryId: 'b1',
             date: DateTime.now(),
             cleaningExpenses: 0,
-            wastes: [waste],
+            wastes: [waste], branchId: '',
           );
           final baseline = FinanceModel(
             bakeryId: 'b1',
             date: DateTime.now(),
             cleaningExpenses: 0,
-            wastes: const [],
+            wastes: const [], branchId: '',
           );
 
           await cubit.save(
@@ -137,7 +137,7 @@ void main() {
             bakeryId: 'b1',
             date: pastDate,
             cleaningExpenses: 0,
-            wastes: [waste],
+            wastes: [waste], branchId: '',
           );
 
           await cubit.save(
@@ -170,7 +170,7 @@ void main() {
         bakeryId: 'b1',
         date: DateTime.now(),
         cleaningExpenses: 0,
-        wastes: const [],
+        wastes: const [], branchId: '',
       );
       final states = <ExpensesState>[];
       cubit.stream.listen(states.add);
@@ -203,7 +203,7 @@ void main() {
         bakeryId: 'b1',
         date: DateTime.now(),
         cleaningExpenses: 0,
-        wastes: [waste],
+        wastes: [waste], branchId: '',
       );
 
       await cubit.deleteMealFromDatabase(
@@ -228,7 +228,7 @@ void main() {
         bakeryId: 'b1',
         date: DateTime.now(),
         cleaningExpenses: 0,
-        wastes: [waste],
+        wastes: [waste], branchId: '',
       );
       final states = <ExpensesState>[];
       cubit.stream.listen(states.add);

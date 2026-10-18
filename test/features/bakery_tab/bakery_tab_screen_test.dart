@@ -46,11 +46,11 @@ void main() {
     when(() => locationCubit.stream)
         .thenAnswer((_) => const Stream<LocationState>.empty());
     when(() => repo.fetchStorage()).thenAnswer(
-          (_) async => SuccessResponse<StorageModel?>(StorageModel(bakeryId: '')),
+          (_) async => SuccessResponse<StorageModel?>(StorageModel(bakeryId: '', branchId: '')),
     );
     when(() => repo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
-        PayrollModel(bakeryId: '', payrollMethod: true),
+        PayrollModel(bakeryId: '', payrollMethod: true, branchId: ''),
       ),
     );
     when(() => repo.fetchProducts())

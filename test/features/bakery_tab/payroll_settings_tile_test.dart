@@ -65,7 +65,7 @@ void main() {
         .thenAnswer((_) async => SuccessResponse<BakeryModel?>(bakery));
     when(() => bakeryRepo.fetchStorage()).thenAnswer(
           (_) async =>
-          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1')),
+          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1', branchId: '')),
     );
     when(() => bakeryRepo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
@@ -73,7 +73,7 @@ void main() {
           bakeryId: 'owner-1',
           payrollMethod: true,
           supervisor: 100,
-          chef: 80,
+          chef: 80, branchId: '',
         ),
       ),
     );

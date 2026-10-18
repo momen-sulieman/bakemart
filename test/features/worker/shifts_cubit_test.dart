@@ -52,6 +52,7 @@ class TestWorkerRepo extends WorkerRepo {
   @override
   Future<ResponseResult<bool>> postPayrollExpenses({
     required String bakeryId,
+    required String branchId,
     required double payrollExpenses,
     required DateTime date,
   }) async {
@@ -82,7 +83,7 @@ void main() {
     workerName: 'Alice',
     wage: 150,
     role: const ['chef'],
-    numberOfBatches: const [3],
+    numberOfBatches: const [3], branchId: '',
   );
 
   setUpAll(() async {

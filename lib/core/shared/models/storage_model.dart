@@ -2,6 +2,7 @@ import '../../utils/enums/storages_table_columns.dart';
 
 class StorageModel {
   final String bakeryId;
+  final String branchId;
   final int? fineWheat;
   final int? wholeWheat;
   final int? corn;
@@ -49,6 +50,7 @@ class StorageModel {
 
   StorageModel({
     required this.bakeryId,
+    required this.branchId,
     this.fineWheat,
     this.wholeWheat,
     this.corn,
@@ -97,6 +99,7 @@ class StorageModel {
 
   StorageModel copyWith({
     String? bakeryId,
+    String? branchId,
     int? fineWheat,
     int? wholeWheat,
     int? corn,
@@ -144,6 +147,7 @@ class StorageModel {
   }) {
     return StorageModel(
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
       fineWheat: fineWheat ?? this.fineWheat,
       wholeWheat: wholeWheat ?? this.wholeWheat,
       corn: corn ?? this.corn,
@@ -194,6 +198,7 @@ class StorageModel {
   Map<String, dynamic> toJson() {
     return {
       StoragesTableColumns.bakeryId: bakeryId,
+      StoragesTableColumns.branchId: branchId,
       StoragesTableColumns.fineWheat: fineWheat,
       StoragesTableColumns.wholeWheat: wholeWheat,
       StoragesTableColumns.corn: corn,
@@ -244,6 +249,7 @@ class StorageModel {
   factory StorageModel.fromJson(Map<String, dynamic> json) {
     return StorageModel(
       bakeryId: json[StoragesTableColumns.bakeryId] as String? ?? "",
+      branchId: json[StoragesTableColumns.branchId] as String? ?? "",
       fineWheat: (json[StoragesTableColumns.fineWheat] as num?)?.toInt(),
       wholeWheat: (json[StoragesTableColumns.wholeWheat] as num?)?.toInt(),
       corn: (json[StoragesTableColumns.corn] as num?)?.toInt(),

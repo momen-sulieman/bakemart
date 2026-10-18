@@ -484,6 +484,7 @@ class SalesStatusTile extends StatelessWidget {
                                         prod.productId == record.productId,
                                     orElse: () => ProductModel(
                                       bakeryId: record.bakeryId,
+                                      branchId: record.branchId,
                                       productName: "Unknown Product",
                                       productWeight: 0,
                                       productPrice: record.productPrice,

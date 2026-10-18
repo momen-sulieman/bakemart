@@ -29,11 +29,13 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
 
   FinanceModel currentFilteredExpenses = FinanceModel(
     bakeryId: "",
+    branchId: "",
     cleaningExpenses: 0,
     wastes: [],
   );
   FinanceModel editableCurrentFilteredExpenses = FinanceModel(
     bakeryId: "",
+    branchId: "",
     cleaningExpenses: 0,
     wastes: [],
   );
@@ -81,6 +83,7 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
     } else {
       currentFilteredExpenses = FinanceModel(
         bakeryId: currentFilteredExpenses.bakeryId,
+        branchId: currentFilteredExpenses.branchId,
         cleaningExpenses: 0,
         wastes: [],
         date: this.selectedDate,

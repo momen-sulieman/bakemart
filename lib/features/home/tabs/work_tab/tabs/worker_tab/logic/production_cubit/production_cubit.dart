@@ -111,6 +111,7 @@ class ProductionCubit extends Cubit<ProductionState> {
       final DateTime date=DateTime.now();
       final payrollExpensesPostingResult = await _repo.postPayrollExpenses(
         bakeryId: product.bakeryId,
+        branchId: product.branchId,
         payrollExpenses: payrollExpenses,
         date: date
       );

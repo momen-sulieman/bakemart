@@ -100,6 +100,7 @@ class WorkSheetTile extends StatelessWidget {
       workerName: "",
       workerId: "",
       bakeryId: "",
+      branchId: "",
     );
     List<StaffModel> workersToAdd = [];
     double wageRate = 0;
@@ -266,11 +267,11 @@ class WorkSheetTile extends StatelessWidget {
                                   fontSize: 16,
                                   color: context.isDark
                                       ? ThemingColors.white.withAlpha(
-                                    (0.3 * 255).toInt(),
-                                  )
+                                          (0.3 * 255).toInt(),
+                                        )
                                       : ThemingColors.black.withAlpha(
-                                    (0.3 * 255).toInt(),
-                                  ),
+                                          (0.3 * 255).toInt(),
+                                        ),
                                 ),
                               ),
                             ),
@@ -1038,9 +1039,15 @@ class WorkSheetTile extends StatelessWidget {
                                                                                         width: 120,
                                                                                         height: 100,
                                                                                         child: Container(
-                                                                                          margin:context.locale.languageCode=="ar"? .only(right: 5): .only(
-                                                                                            left: 5,
-                                                                                          ),
+                                                                                          margin:
+                                                                                              context.locale.languageCode ==
+                                                                                                  "ar"
+                                                                                              ? .only(
+                                                                                                  right: 5,
+                                                                                                )
+                                                                                              : .only(
+                                                                                                  left: 5,
+                                                                                                ),
                                                                                           alignment: .center,
                                                                                           decoration: BoxDecoration(
                                                                                             borderRadius: BorderRadius.circular(
@@ -2028,18 +2035,20 @@ class WorkSheetTile extends StatelessWidget {
                                               child: Row(
                                                 children: [
                                                   Text(
-                                                    shift.wage.toStringAsFixed(2),
+                                                    shift.wage.toStringAsFixed(
+                                                      2,
+                                                    ),
                                                     style: TextStyle(
                                                       fontSize: 13,
                                                       color: cubit.editMode
                                                           ? Colors.lightGreen
-                                                          .withAlpha(
-                                                        ((changed
-                                                            ? 1
-                                                            : 0.5) *
-                                                            255)
-                                                            .toInt(),
-                                                      )
+                                                                .withAlpha(
+                                                                  ((changed
+                                                                              ? 1
+                                                                              : 0.5) *
+                                                                          255)
+                                                                      .toInt(),
+                                                                )
                                                           : Colors.lightGreen,
                                                     ),
                                                   ),
@@ -2048,24 +2057,20 @@ class WorkSheetTile extends StatelessWidget {
                                                     style: TextStyle(
                                                       color: cubit.editMode
                                                           ? context.isDark
-                                                          ? ThemingColors
-                                                          .white
-                                                          .withAlpha(
-                                                        ((changed
-                                                            ? 1
-                                                            : 0.5) *
-                                                            255)
-                                                            .toInt(),
-                                                      )
-                                                          : ThemingColors
-                                                          .black
-                                                          .withAlpha(
-                                                        ((changed
-                                                            ? 1
-                                                            : 0.5) *
-                                                            255)
-                                                            .toInt(),
-                                                      )
+                                                                ? ThemingColors.white.withAlpha(
+                                                                    ((changed
+                                                                                ? 1
+                                                                                : 0.5) *
+                                                                            255)
+                                                                        .toInt(),
+                                                                  )
+                                                                : ThemingColors.black.withAlpha(
+                                                                    ((changed
+                                                                                ? 1
+                                                                                : 0.5) *
+                                                                            255)
+                                                                        .toInt(),
+                                                                  )
                                                           : null,
                                                     ),
                                                   ),
@@ -3059,6 +3064,7 @@ class WorkSheetTile extends StatelessWidget {
                                                                       workerName:
                                                                           workerToAdd
                                                                               .workerName,
+                                                                      branchId:workerToAdd.branchId,
                                                                       wage:
                                                                           wage,
                                                                       role: [
@@ -3208,6 +3214,7 @@ class WorkSheetTile extends StatelessWidget {
                                                                             workerToAdd.workerId,
                                                                         workerName:
                                                                             workerToAdd.workerName,
+                                                                        branchId:workerToAdd.branchId,
                                                                         wage:
                                                                             wageRate *
                                                                             numberOfBatches,

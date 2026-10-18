@@ -120,6 +120,7 @@ class AddProductCubit extends Cubit<AddProductState> {
 
     final product = ProductModel(
       bakeryId: bakeryId,
+      branchId: "",
       productName: "",
       productWeight: 0,
       productPrice: 0,

@@ -26,7 +26,7 @@ void main() {
     bakeryId: 'b1',
     payrollMethod: false,
     chef: 50,
-    supervisor: 100,
+    supervisor: 100, branchId: '',
   );
 
   ShiftModel shiftFor(
@@ -45,7 +45,7 @@ void main() {
       role: role,
       numberOfBatches: numberOfBatches,
       date: date,
-      rate: rate,
+      rate: rate, branchId: '',
     );
   }
 
@@ -147,7 +147,7 @@ void main() {
       wage: 0,
       role: const ['chef'],
       numberOfBatches: const [],
-      rate: 0.5,
+      rate: 0.5, branchId: '',
     );
 
     cubit.addWorker(newWorker: newShift);

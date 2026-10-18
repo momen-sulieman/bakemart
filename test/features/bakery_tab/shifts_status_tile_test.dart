@@ -53,14 +53,14 @@ void main() {
         .thenAnswer((_) async => SuccessResponse<BakeryModel?>(bakery));
     when(() => bakeryRepo.fetchStorage()).thenAnswer(
           (_) async =>
-          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1')),
+          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1', branchId: '')),
     );
     when(() => bakeryRepo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
         PayrollModel(
           bakeryId: 'owner-1',
           payrollMethod: payrollMethod,
-          chef: 50,
+          chef: 50, branchId: '',
         ),
       ),
     );
@@ -136,7 +136,7 @@ void main() {
       role: const ['chef'],
       numberOfBatches: batches,
       date: DateTime.now(),
-      rate: rate,
+      rate: rate, branchId: '',
     );
   }
 
@@ -171,7 +171,7 @@ void main() {
         wage: 150,
         role: const ['chef'],
         numberOfBatches: const [3],
-        date: DateTime.now().subtract(const Duration(days: 1)),
+        date: DateTime.now().subtract(const Duration(days: 1)), branchId: '',
       ),
     ]);
     await pumpTile(tester);

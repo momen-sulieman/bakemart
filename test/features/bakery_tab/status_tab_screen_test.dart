@@ -57,11 +57,11 @@ void main() {
         .thenAnswer((_) async => SuccessResponse<BakeryModel?>(bakery));
     when(() => bakeryRepo.fetchStorage()).thenAnswer(
           (_) async =>
-          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1')),
+          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1', branchId: '')),
     );
     when(() => bakeryRepo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
-        PayrollModel(bakeryId: 'owner-1', payrollMethod: true),
+        PayrollModel(bakeryId: 'owner-1', payrollMethod: true, branchId: ''),
       ),
     );
     when(() => bakeryRepo.fetchProducts())
@@ -75,7 +75,7 @@ void main() {
           productPrice: 3.5,
           date: today,
           produced: 40,
-          sold: 25,
+          sold: 25, branchId: '',
         ),
       ]),
     );
@@ -87,7 +87,7 @@ void main() {
           cleaningExpenses: 10,
           payrollExpenses: 5,
           profit: 100,
-          wastes: const [],
+          wastes: const [], branchId: '',
         ),
       ]),
     );

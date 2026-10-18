@@ -127,7 +127,7 @@ class SettingsRepo {
       StaffModel newWorker = StaffModel(
         workerName: "",
         workerId: "",
-        bakeryId: "",
+        bakeryId: "", branchId: '',
       );
       if (workerId != null) {
         final worker = await getUserData(workerId);

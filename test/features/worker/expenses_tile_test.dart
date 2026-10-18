@@ -116,7 +116,7 @@ void main() {
         bakeryId: 'b1',
         date: today,
         cleaningExpenses: 10,
-        wastes: [wasteA],
+        wastes: [wasteA], branchId: '',
       ),
     ];
     repo.financeAfter = workerCubit.finance!;

@@ -57,10 +57,12 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
   Future<bool> handOneOrder({
     required OrderModel order,
     required String bakeryId,
+    required String branchId,
   }) async {
     final result = await _repo.updateOrderInDatabase(
       order: order,
       bakeryId: bakeryId,
+      branchId: branchId,
     );
     return result is SuccessResponse<bool>;
   }
@@ -68,13 +70,18 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
   Future<bool> handAllOrders({
     required List<OrderModel> orders,
     required String bakeryId,
+    required String branchId,
   }) async {
     emit(ProcessingAll());
     bool allSucceeded = true;
     final List<OrderModel> remaining = List.from(editableOrders);
 
     for (final order in orders) {
-      final success = await handOneOrder(order: order, bakeryId: bakeryId);
+      final success = await handOneOrder(
+        order: order,
+        bakeryId: bakeryId,
+        branchId: branchId,
+      );
       if (success) {
         remaining.removeWhere((o) => o.orderId == order.orderId);
       } else {
@@ -90,9 +97,9 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
 
   double getOrdersSubtotal(OrderModel order) {
     final subtotal = order.orderedProducts.asMap().entries.fold<double>(0.0, (
-        sum,
-        entry,
-        ) {
+      sum,
+      entry,
+    ) {
       final i = entry.key;
       final p = entry.value;
       final qty = i < order.orderedQuantities.length
@@ -106,15 +113,15 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
   double getOrdersTotal(List<OrderModel> orders) {
     return orders.fold<double>(
       0.0,
-          (sum, order) => sum + getOrdersSubtotal(order),
+      (sum, order) => sum + getOrdersSubtotal(order),
     );
   }
 
   OrderModel recalculateOrder(OrderModel order) {
     final subtotal = order.orderedProducts.asMap().entries.fold<double>(0.0, (
-        sum,
-        entry,
-        ) {
+      sum,
+      entry,
+    ) {
       final i = entry.key;
       final p = entry.value;
       final qty = i < order.orderedQuantities.length
@@ -131,7 +138,6 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
     required OrderModel order,
     required int productIndex,
   }) {
-
     final index = editableOrders.indexWhere((o) => o.orderId == order.orderId);
 
     if (index != -1) {
@@ -160,7 +166,6 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
     required OrderModel order,
     required int productIndex,
   }) {
-
     final index = editableOrders.indexWhere((o) => o.orderId == order.orderId);
 
     if (index != -1) {
@@ -190,7 +195,7 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
   void resetOrder(String orderId) {
     final scannedOrder = scannedOrders.firstWhere((o) => o.orderId == orderId);
     final int editableIndex = editableOrders.indexWhere(
-          (o) => o.orderId == orderId,
+      (o) => o.orderId == orderId,
     );
     if (editableIndex != -1) {
       final List<OrderModel> updatedEditableList = List.from(editableOrders);
@@ -214,7 +219,7 @@ class DeliverySalesCubit extends Cubit<DeliverySalesState> {
   }) {
     if (editableOrders.isEmpty) return;
     final int orderIndex = editableOrders.indexWhere(
-          (o) => o.orderId == orderId,
+      (o) => o.orderId == orderId,
     );
     if (orderIndex != -1) {
       final currentOrder = editableOrders[orderIndex];

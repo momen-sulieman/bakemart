@@ -2,6 +2,7 @@ class ProductsTableColumns {
   ProductsTableColumns._();
 
   static const String bakeryId = 'bakery_id';
+  static const String branchId = 'branch_id';
   static const String productId = 'product_id';
   static const String productName = 'product_name';
   static const String productPrice = 'product_price';

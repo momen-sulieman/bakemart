@@ -53,11 +53,11 @@ void main() {
         .thenAnswer((_) async => SuccessResponse<BakeryModel?>(bakery));
     when(() => bakeryRepo.fetchStorage()).thenAnswer(
           (_) async =>
-          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1')),
+          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1', branchId: '')),
     );
     when(() => bakeryRepo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
-        PayrollModel(bakeryId: 'owner-1', payrollMethod: true),
+        PayrollModel(bakeryId: 'owner-1', payrollMethod: true, branchId: ''),
       ),
     );
     when(() => bakeryRepo.fetchProducts())
@@ -140,7 +140,7 @@ void main() {
                 productPrice: 3.5,
                 date: today,
               ),
-            ],
+            ], branchId: '',
           ),
         ]);
         await pumpTile(tester);
@@ -170,7 +170,7 @@ void main() {
                 productPrice: 3.5,
                 date: DateTime.now().subtract(const Duration(days: 2)),
               ),
-            ],
+            ], branchId: '',
           ),
         ]);
         await pumpTile(tester);

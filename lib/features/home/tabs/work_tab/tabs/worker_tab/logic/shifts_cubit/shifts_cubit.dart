@@ -17,12 +17,14 @@ class ShiftsCubit extends Cubit<ShiftsState> {
   Future<void> save({required List<ShiftModel> shiftTable, required DateTime date}) async {
     emit(ShiftsLoading(action: ShiftsAction.save));
     final bakeryId = _workerCubit.bakery!.bakeryId;
+    final branchId = _workerCubit.bakery!.branchId;
     final result = await _repo.upsertShiftsTable(shiftTable: shiftTable);
     if (result is SuccessResponse<bool>) {
       await _workerCubit.updateShifts(bakeryId);
       final double payrollExpenses = shiftTable.fold(0.0, (sum, shift) => sum + shift.wage);
       final payrollExpensesPostingResult = await _repo.postPayrollExpenses(
         bakeryId: bakeryId,
+        branchId: branchId,
         payrollExpenses: payrollExpenses,
         date: date,
       );

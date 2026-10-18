@@ -188,8 +188,8 @@ void main() {
       return repo.createBakery(
         bakeryData: fakeBakery('', 30, 31),
         products: products ?? [fakeProduct(id: ''), fakeProduct(id: 'p2')],
-        payroll: PayrollModel(bakeryId: '', payrollMethod: true),
-        storage: StorageModel(bakeryId: ''),
+        payroll: PayrollModel(bakeryId: '', payrollMethod: true, branchId: ''),
+        storage: StorageModel(bakeryId: '', branchId: ''),
       );
     }
 

@@ -20,7 +20,7 @@ void main() {
 
   group('deductRecipeFromStorage', () {
     test('deducts flour based on batches times the base deduction', () {
-      final storage = StorageModel(bakeryId: 'b1', fineWheat: 200000);
+      final storage = StorageModel(bakeryId: 'b1', fineWheat: 200000, branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -32,7 +32,7 @@ void main() {
     });
 
     test('clamps flour deduction at zero instead of going negative', () {
-      final storage = StorageModel(bakeryId: 'b1', fineWheat: 10000);
+      final storage = StorageModel(bakeryId: 'b1', fineWheat: 10000, branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -44,7 +44,7 @@ void main() {
     });
 
     test('treats null flour storage as zero after deduction', () {
-      final storage = StorageModel(bakeryId: 'b1');
+      final storage = StorageModel(bakeryId: 'b1', branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -59,7 +59,7 @@ void main() {
       final storage = StorageModel(
         bakeryId: 'b1',
         fineWheat: 200000,
-        wholeWheat: 200000,
+        wholeWheat: 200000, branchId: '',
       );
 
       final updated = StorageHelper.deductRecipeFromStorage(
@@ -73,7 +73,7 @@ void main() {
     });
 
     test('falls back to fine wheat for an unknown flour type', () {
-      final storage = StorageModel(bakeryId: 'b1', fineWheat: 200000);
+      final storage = StorageModel(bakeryId: 'b1', fineWheat: 200000, branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -85,7 +85,7 @@ void main() {
     });
 
     test('multiplies non-flour ingredients by the batch count', () {
-      final storage = StorageModel(bakeryId: 'b1', oil: 1000);
+      final storage = StorageModel(bakeryId: 'b1', oil: 1000, branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -97,7 +97,7 @@ void main() {
     });
 
     test('skips ingredients the recipe does not use', () {
-      final storage = StorageModel(bakeryId: 'b1', yeast: 500);
+      final storage = StorageModel(bakeryId: 'b1', yeast: 500, branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -109,7 +109,7 @@ void main() {
     });
 
     test('clamps a non-flour ingredient at zero', () {
-      final storage = StorageModel(bakeryId: 'b1', yeast: 5);
+      final storage = StorageModel(bakeryId: 'b1', yeast: 5, branchId: '');
 
       final updated = StorageHelper.deductRecipeFromStorage(
         currentStorage: storage,
@@ -123,7 +123,7 @@ void main() {
 
   group('getItemValue / updateItemValue', () {
     test('getItemValue reads the right field and defaults to 0', () {
-      final storage = StorageModel(bakeryId: 'b1', sugar: 50);
+      final storage = StorageModel(bakeryId: 'b1', sugar: 50, branchId: '');
 
       expect(StorageHelper.getItemValue(storage, StorageItems.sugar), 50);
       expect(StorageHelper.getItemValue(storage, StorageItems.salt), 0);
@@ -131,7 +131,7 @@ void main() {
     });
 
     test('updateItemValue adds to the existing amount', () {
-      final storage = StorageModel(bakeryId: 'b1', sugar: 50);
+      final storage = StorageModel(bakeryId: 'b1', sugar: 50, branchId: '');
 
       final updated = StorageHelper.updateItemValue(
         storage,
@@ -143,7 +143,7 @@ void main() {
     });
 
     test('updateItemValue on an unknown item returns storage unchanged', () {
-      final storage = StorageModel(bakeryId: 'b1');
+      final storage = StorageModel(bakeryId: 'b1', branchId: '');
 
       final updated = StorageHelper.updateItemValue(storage, 'unknown', 20);
 

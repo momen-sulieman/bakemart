@@ -90,9 +90,9 @@ void main() {
   late SettingsCubit settingsCubit;
   late SettingsUpdateCubit settingsUpdateCubit;
 
-  final alice = StaffModel(workerId: 'w1', workerName: 'Alice', bakeryId: 'b');
-  final bob = StaffModel(workerId: 'w2', workerName: 'Bob', bakeryId: 'b');
-  final carol = StaffModel(workerId: 'w3', workerName: 'Carol', bakeryId: 'b');
+  final alice = StaffModel(workerId: 'w1', workerName: 'Alice', bakeryId: 'b', branchId: '');
+  final bob = StaffModel(workerId: 'w2', workerName: 'Bob', bakeryId: 'b', branchId: '');
+  final carol = StaffModel(workerId: 'w3', workerName: 'Carol', bakeryId: 'b', branchId: '');
 
   setUpAll(() async {
     await setupTestEnvironment();
@@ -111,11 +111,11 @@ void main() {
         .thenAnswer((_) async => SuccessResponse<BakeryModel?>(bakery));
     when(() => bakeryRepo.fetchStorage()).thenAnswer(
           (_) async =>
-          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1')),
+          SuccessResponse<StorageModel?>(StorageModel(bakeryId: 'owner-1', branchId: '')),
     );
     when(() => bakeryRepo.fetchPayroll()).thenAnswer(
           (_) async => SuccessResponse<PayrollModel?>(
-        PayrollModel(bakeryId: 'owner-1', payrollMethod: true),
+        PayrollModel(bakeryId: 'owner-1', payrollMethod: true, branchId: ''),
       ),
     );
     when(() => bakeryRepo.fetchProducts()).thenAnswer(

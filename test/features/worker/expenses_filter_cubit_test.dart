@@ -31,7 +31,7 @@ void main() {
       bakeryId: 'b1',
       date: date,
       cleaningExpenses: 10,
-      wastes: wastes,
+      wastes: wastes, branchId: '',
     );
   }
 

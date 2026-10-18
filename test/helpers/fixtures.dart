@@ -11,7 +11,6 @@ import 'package:bakemart/core/shared/models/staff_model.dart';
 import 'package:bakemart/core/shared/models/storage_model.dart';
 import 'package:bakemart/core/shared/models/waste_model.dart';
 
-
 Position fakePosition(double lat, double lng) {
   return Position(
     longitude: lng,
@@ -34,6 +33,9 @@ BakeryModel fakeBakery(String id, double lat, double lng) {
     bakeryLat: lat,
     bakeryLng: lng,
     supervisorId: const [],
+    branchId: '',
+    branchName: '',
+    branchNumber: 1,
   );
 }
 
@@ -70,6 +72,7 @@ OrderModel fakeOrder({
     orderStatus: OrderStatuses.pending,
   );
 }
+
 PayrollModel fakePayroll({
   String bakeryId = 'b1',
   bool payrollMethod = true,
@@ -90,12 +93,12 @@ PayrollModel fakePayroll({
     chef: chef,
     coChef: coChef,
     bagger: bagger,
-    supervisor: supervisor,
+    supervisor: supervisor, branchId: '',
   );
 }
 
 StorageModel fakeStorage({String bakeryId = 'b1'}) {
-  return StorageModel(bakeryId: bakeryId);
+  return StorageModel(bakeryId: bakeryId, branchId: '');
 }
 
 StaffModel fakeStaff({
@@ -106,7 +109,7 @@ StaffModel fakeStaff({
   return StaffModel(
     workerName: workerName,
     workerId: workerId,
-    bakeryId: bakeryId,
+    bakeryId: bakeryId, branchId: '',
   );
 }
 
@@ -128,7 +131,7 @@ ShiftModel fakeShift({
     role: role,
     numberOfBatches: numberOfBatches,
     date: date,
-    rate: rate,
+    rate: rate, branchId: '',
   );
 }
 
@@ -166,6 +169,6 @@ FinanceModel fakeFinance({
     cleaningExpenses: cleaningExpenses,
     wastes: wastes,
     payrollExpenses: payrollExpenses,
-    profit: profit,
+    profit: profit, branchId: '',
   );
 }

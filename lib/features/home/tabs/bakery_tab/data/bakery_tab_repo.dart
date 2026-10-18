@@ -25,7 +25,7 @@ class BakeryTabRepo {
   final Uuid _uuid = const Uuid();
 
   BakeryTabRepo({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   Future<ResponseResult<BakeryModel?>> fetchBakery() async {
     try {
@@ -185,27 +185,32 @@ class BakeryTabRepo {
   }) async {
     try {
       final bakeryId = _supabase.auth.currentUser?.id;
+      final branchId=_uuid.v4();
       if (bakeryId == null || bakeryId.isEmpty) {
         return FailureResponse("Failed to assign Bakery ID.");
       }
 
-      final updatedBakery = bakeryData.copyWith(bakeryId: bakeryId);
+      final updatedBakery = bakeryData.copyWith(
+        bakeryId: bakeryId,
+        branchId: branchId,
+      );
       final updatedProducts = products.map((product) {
         final generatedProductId =
-        (product.productId != null && product.productId!.isNotEmpty)
+            (product.productId != null && product.productId!.isNotEmpty)
             ? product.productId!
             : _uuid.v4();
         return product.copyWith(
           productId: generatedProductId,
           bakeryId: bakeryId,
+          branchId:branchId,
           productRecipe: product.productRecipe.copyWith(
             productId: generatedProductId,
             bakeryId: bakeryId,
           ),
         );
       }).toList();
-      final updatedPayroll = payroll.copyWith(bakeryId: bakeryId);
-      final updatedStorage = storage.copyWith(bakeryId: bakeryId);
+      final updatedPayroll = payroll.copyWith(bakeryId: bakeryId,branchId:branchId);
+      final updatedStorage = storage.copyWith(bakeryId: bakeryId,branchId:branchId);
 
       await _supabase.rpc(
         'create_bakery',
@@ -233,10 +238,10 @@ class BakeryTabRepo {
       final filteredSales = allSales
           .where(
             (record) =>
-        record.date?.year == selectedDate.year &&
-            record.date?.month == selectedDate.month &&
-            record.date?.day == selectedDate.day,
-      )
+                record.date?.year == selectedDate.year &&
+                record.date?.month == selectedDate.month &&
+                record.date?.day == selectedDate.day,
+          )
           .toList();
       return SuccessResponse(filteredSales);
     } catch (error) {
@@ -250,8 +255,8 @@ class BakeryTabRepo {
   }) {
     try {
       final filteredExpenses = allFinanceRecords.firstWhere(
-            (row) =>
-        row.date?.year == selectedDate.year &&
+        (row) =>
+            row.date?.year == selectedDate.year &&
             row.date?.month == selectedDate.month &&
             row.date?.day == selectedDate.day,
       );
@@ -271,10 +276,10 @@ class BakeryTabRepo {
       final filteredShifts = allShifts
           .where(
             (shift) =>
-        shift.date?.year == selectedDate.year &&
-            shift.date?.month == selectedDate.month &&
-            shift.date?.day == selectedDate.day,
-      )
+                shift.date?.year == selectedDate.year &&
+                shift.date?.month == selectedDate.month &&
+                shift.date?.day == selectedDate.day,
+          )
           .toList();
       return SuccessResponse(filteredShifts);
     } catch (error) {

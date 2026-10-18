@@ -70,6 +70,7 @@ class TestWorkerRepo extends WorkerRepo {
   @override
   Future<ResponseResult<bool>> postPayrollExpenses({
     required String bakeryId,
+    required String branchId,
     required double payrollExpenses,
     required DateTime date,
   }) async {
@@ -133,7 +134,7 @@ void main() {
           workerName: 'Alice',
           wage: 0,
           role: const ['chef'],
-          numberOfBatches: const [2],
+          numberOfBatches: const [2], branchId: '',
         ),
       );
       cubit.setInputValidity(true);
@@ -151,7 +152,7 @@ void main() {
               workerName: 'Alice',
               wage: 0,
               role: const ['chef'],
-              numberOfBatches: const [2],
+              numberOfBatches: const [2], branchId: '',
             ),
           );
 
@@ -165,7 +166,7 @@ void main() {
               workerName: 'Bob',
               wage: 0,
               role: const ['chef'],
-              numberOfBatches: const [1],
+              numberOfBatches: const [1], branchId: '',
             ),
           );
           cubit.emptyWorkersSheet();
@@ -218,7 +219,7 @@ void main() {
       workerCubit.payroll = PayrollModel(
         bakeryId: 'b1',
         payrollMethod: false,
-        chef: 50,
+        chef: 50, branchId: '',
       );
       workerCubit.shifts = [];
       cubit = ProductionCubit(testRepo, workerCubit);
@@ -229,7 +230,7 @@ void main() {
           workerName: 'Alice',
           wage: 0,
           role: const ['chef'],
-          numberOfBatches: const [3],
+          numberOfBatches: const [3], branchId: '',
         ),
       );
     });

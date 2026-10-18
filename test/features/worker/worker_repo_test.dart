@@ -495,7 +495,7 @@ void main() {
 
           final result = await repo.updateOrderInDatabase(
             order: order,
-            bakeryId: 'b1',
+            bakeryId: 'b1', branchId: '',
           );
 
           expect((result as FailureResponse<bool>).error, 'Bakery not found');

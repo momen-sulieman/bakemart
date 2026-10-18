@@ -149,7 +149,11 @@ class CreationScreen extends StatelessWidget {
                       otherRadius: 15,
                       child: Text(
                         "locationNote".tr(),
-                        style: TextStyle(fontSize:context.locale.languageCode=="ar"? 14: 12),
+                        style: TextStyle(
+                          fontSize: context.locale.languageCode == "ar"
+                              ? 14
+                              : 12,
+                        ),
                       ),
                     ),
                   ),
@@ -164,7 +168,7 @@ class CreationScreen extends StatelessWidget {
                       child: CustomTextFormField(
                         "bakeryName".tr(),
                         controller: cubit.nameController,
-                        onChanged: cubit.onNameChanged,
+                        onChanged: cubit.onNameSet,
                       ),
                     ),
                   ),
@@ -210,97 +214,6 @@ class CreationScreen extends StatelessWidget {
               ),
               BlocBuilder<BakeryTabCubit, BakeryTabState>(
                 builder: (context, state) {
-                  final captured = cubit.pendingCertificateImage != null;
-                  return GlassCard(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 5,
-                    ),
-                    orange: !captured,
-                    green: captured,
-                    responsive: true,
-                    child: SizedBox(
-                      width: (screenWidth * 0.5) - 60,
-                      child: Text(
-                        "photographicConfirmation".tr(),
-                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: context.locale.languageCode=="ar"? 18:16),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              BlocBuilder<BakeryTabCubit, BakeryTabState>(
-                builder: (context, state) {
-                  final captured = cubit.pendingCertificateImage != null;
-                  return InkWell(
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      final XFile? picked = await ImagePicker().pickImage(
-                        source: ImageSource.camera,
-                        preferredCameraDevice: CameraDevice.rear,
-                        imageQuality: 85,
-                      );
-                      if (picked == null) return;
-                      cubit.setCertificateImage(File(picked.path));
-                    },
-                    child: GlassCard(
-                      margin: EdgeInsets.zero,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      radius: 20,
-                      otherRadius: 20,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15,bottom: 5),
-                            child: Text(
-                              "pictureBakery".tr(),
-                              style: TextStyle(fontSize:context.locale.languageCode=="ar"? 14: 12),
-                            ),
-                          ),
-                          GlassCard(
-                            margin: .symmetric(vertical: 10),
-                            padding: .zero,
-                            otherRadius: 25,
-                            orange: !captured,
-                            green: captured,
-                            child: SizedBox(
-                              height: 30,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.linked_camera,
-                                    color: ThemingColors.primaryColor,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    captured
-                                        ? "recapture".tr()
-                                        : "captureBakery".tr(),
-                                    style:TextStyle(
-                                      fontSize:context.locale.languageCode=="ar"? 14: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              BlocBuilder<BakeryTabCubit, BakeryTabState>(
-                builder: (context, state) {
                   if (cubit.isLocationEditing) {
                     final locationState = context.read<LocationCubit>().state;
                     final double? liveLat = locationState is LocationUpdated
@@ -339,6 +252,140 @@ class CreationScreen extends StatelessWidget {
                   return const SizedBox();
                 },
               ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassCard(
+                      margin: EdgeInsets.zero,
+                      padding: const EdgeInsets.all(10),
+                      radius: 15,
+                      otherRadius: 15,
+                      child: Text(
+                        "branchNameNote".tr(),
+                        style: TextStyle(
+                          fontSize: context.locale.languageCode == "ar"
+                              ? 14
+                              : 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 35,
+                child: CustomTextFormField(
+                  "branchName".tr(),
+                  controller: cubit.branchNameController,
+                  onChanged: cubit.onBranchNameSet,
+                ),
+              ),
+              const SizedBox(height: 10),
+              BlocBuilder<BakeryTabCubit, BakeryTabState>(
+                builder: (context, state) {
+                  final captured = cubit.pendingCertificateImage != null;
+                  return GlassCard(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 5,
+                    ),
+                    orange: !captured,
+                    green: captured,
+                    responsive: true,
+                    child: SizedBox(
+                      width: (screenWidth * 0.5) - 60,
+                      child: Text(
+                        "photographicConfirmation".tr(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: context.locale.languageCode == "ar"
+                              ? 18
+                              : 16,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              BlocBuilder<BakeryTabCubit, BakeryTabState>(
+                builder: (context, state) {
+                  final captured = cubit.pendingCertificateImage != null;
+                  return InkWell(
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () async {
+                      final XFile? picked = await ImagePicker().pickImage(
+                        source: ImageSource.camera,
+                        preferredCameraDevice: CameraDevice.rear,
+                        imageQuality: 85,
+                      );
+                      if (picked == null) return;
+                      cubit.setCertificateImage(File(picked.path));
+                    },
+                    child: GlassCard(
+                      margin: EdgeInsets.zero,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      radius: 20,
+                      otherRadius: 20,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15, bottom: 5),
+                            child: Text(
+                              "pictureBakery".tr(),
+                              style: TextStyle(
+                                fontSize: context.locale.languageCode == "ar"
+                                    ? 14
+                                    : 12,
+                              ),
+                            ),
+                          ),
+                          GlassCard(
+                            margin: .symmetric(vertical: 10),
+                            padding: .zero,
+                            otherRadius: 25,
+                            orange: !captured,
+                            green: captured,
+                            child: SizedBox(
+                              height: 30,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.linked_camera,
+                                    color: ThemingColors.primaryColor,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    captured
+                                        ? "recapture".tr()
+                                        : "captureBakery".tr(),
+                                    style: TextStyle(
+                                      fontSize:
+                                          context.locale.languageCode == "ar"
+                                          ? 14
+                                          : 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
               BlocBuilder<BakeryTabCubit, BakeryTabState>(
                 builder: (context, state) {
                   final products = cubit.editableProducts;
@@ -358,7 +405,12 @@ class CreationScreen extends StatelessWidget {
                           width: (screenWidth * 0.5) - 60,
                           child: Text(
                             "products".tr(),
-                            style: TextStyle(fontWeight: FontWeight.bold,fontSize: context.locale.languageCode=="ar"? 18:16),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: context.locale.languageCode == "ar"
+                                  ? 18
+                                  : 16,
+                            ),
                           ),
                         ),
                       ),
@@ -375,8 +427,15 @@ class CreationScreen extends StatelessWidget {
                             products.isEmpty
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 15),
-                                    child: Text("addYourProductsHere".tr(),
-                                      style: TextStyle(fontSize:context.locale.languageCode=="ar"? 14:12),),
+                                    child: Text(
+                                      "addYourProductsHere".tr(),
+                                      style: TextStyle(
+                                        fontSize:
+                                            context.locale.languageCode == "ar"
+                                            ? 14
+                                            : 12,
+                                      ),
+                                    ),
                                   )
                                 : Table(
                                     border: TableBorder(
@@ -632,7 +691,13 @@ class CreationScreen extends StatelessWidget {
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                         style: TextStyle(
-                                                          fontSize:context.locale.languageCode=="ar"? 14: 12,
+                                                          fontSize:
+                                                              context
+                                                                      .locale
+                                                                      .languageCode ==
+                                                                  "ar"
+                                                              ? 14
+                                                              : 12,
                                                           color: ThemingColors
                                                               .primaryColor,
                                                           decoration:
@@ -669,8 +734,14 @@ class CreationScreen extends StatelessWidget {
                                                         maxLines: 1,
                                                         overflow: TextOverflow
                                                             .ellipsis,
-                                                        style:TextStyle(
-                                                          fontSize:context.locale.languageCode=="ar"? 14: 12,
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              context
+                                                                      .locale
+                                                                      .languageCode ==
+                                                                  "ar"
+                                                              ? 14
+                                                              : 12,
                                                         ),
                                                       ),
                                                     ),
@@ -678,7 +749,13 @@ class CreationScreen extends StatelessWidget {
                                                   Text(
                                                     "g".tr(),
                                                     style: TextStyle(
-                                                      fontSize:context.locale.languageCode=="ar"? 14: 12,
+                                                      fontSize:
+                                                          context
+                                                                  .locale
+                                                                  .languageCode ==
+                                                              "ar"
+                                                          ? 14
+                                                          : 12,
                                                       color: context.isDark
                                                           ? Colors.amber
                                                           : Colors.orange,
@@ -705,7 +782,13 @@ class CreationScreen extends StatelessWidget {
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       style: TextStyle(
-                                                        fontSize:context.locale.languageCode=="ar"? 14: 12,
+                                                        fontSize:
+                                                            context
+                                                                    .locale
+                                                                    .languageCode ==
+                                                                "ar"
+                                                            ? 14
+                                                            : 12,
                                                       ),
                                                     ),
                                                   ),
@@ -773,7 +856,12 @@ class CreationScreen extends StatelessWidget {
                       width: (screenWidth * 0.5) - 60,
                       child: Text(
                         "payroll".tr(),
-                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: context.locale.languageCode=="ar"? 18:16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: context.locale.languageCode == "ar"
+                              ? 18
+                              : 16,
+                        ),
                       ),
                     ),
                   );
@@ -800,16 +888,26 @@ class CreationScreen extends StatelessWidget {
                       radius: 15,
                       child: Text.rich(
                         TextSpan(
-                          style: TextStyle(fontSize:context.locale.languageCode=="ar"? 14: 12),
+                          style: TextStyle(
+                            fontSize: context.locale.languageCode == "ar"
+                                ? 14
+                                : 12,
+                          ),
                           children: [
                             TextSpan(text: "payrollNote1".tr()),
                             TextSpan(
                               text: "payrollNote2".tr(),
                               style: TextStyle(
-                                fontSize:context.locale.languageCode=="ar"? 14: 12,
+                                fontSize: context.locale.languageCode == "ar"
+                                    ? 14
+                                    : 12,
                                 color: context.isDark
-                                    ? ThemingColors.white.withAlpha((0.5*255).toInt())
-                                    : ThemingColors.black.withAlpha((0.3*255).toInt()),
+                                    ? ThemingColors.white.withAlpha(
+                                        (0.5 * 255).toInt(),
+                                      )
+                                    : ThemingColors.black.withAlpha(
+                                        (0.3 * 255).toInt(),
+                                      ),
                               ),
                             ),
                             TextSpan(text: "payrollNote3".tr()),
@@ -826,7 +924,11 @@ class CreationScreen extends StatelessWidget {
                               : const EdgeInsets.only(right: 10),
                           child: Text(
                             "payrollMethod".tr(),
-                            style: TextStyle(fontSize:context.locale.languageCode=="ar"? 14: 12),
+                            style: TextStyle(
+                              fontSize: context.locale.languageCode == "ar"
+                                  ? 14
+                                  : 12,
+                            ),
                           ),
                         ),
                         Container(
@@ -931,8 +1033,11 @@ class CreationScreen extends StatelessWidget {
                                     : const EdgeInsets.only(left: 10),
                                 child: Text(
                                   "required".tr(),
-                                  style:TextStyle(
-                                    fontSize:context.locale.languageCode=="ar"? 12: 10,
+                                  style: TextStyle(
+                                    fontSize:
+                                        context.locale.languageCode == "ar"
+                                        ? 12
+                                        : 10,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -967,7 +1072,12 @@ class CreationScreen extends StatelessWidget {
                       width: (screenWidth * 0.5) - 60,
                       child: Text(
                         "storageTab".tr(),
-                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: context.locale.languageCode=="ar"? 18:16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: context.locale.languageCode == "ar"
+                              ? 18
+                              : 16,
+                        ),
                       ),
                     ),
                   );
@@ -997,7 +1107,11 @@ class CreationScreen extends StatelessWidget {
                             radius: 15,
                             child: Text(
                               "storageNote".tr(),
-                              style: TextStyle(fontSize:context.locale.languageCode=="ar"? 14: 12),
+                              style: TextStyle(
+                                fontSize: context.locale.languageCode == "ar"
+                                    ? 14
+                                    : 12,
+                              ),
                             ),
                           ),
                         ),
@@ -1028,7 +1142,9 @@ class CreationScreen extends StatelessWidget {
                               child: Text(
                                 unit.tr(),
                                 style: TextStyle(
-                                  fontSize:context.locale.languageCode=="ar"? 14: 12,
+                                  fontSize: context.locale.languageCode == "ar"
+                                      ? 14
+                                      : 12,
                                   fontWeight: FontWeight.bold,
                                   color: context.isDark
                                       ? Colors.amber
@@ -1100,10 +1216,14 @@ class CreationScreen extends StatelessWidget {
                                 final BakeryModel bakeryData = BakeryModel(
                                   bakeryName: cubit.nameController.text
                                       .capitalize(),
+                                  branchName: cubit.branchNameController.text
+                                      .capitalize(),
                                   bakeryId: "",
+                                  branchId: "",
                                   bakeryLat: cubit.bakeryLat,
                                   bakeryLng: cubit.bakeryLng,
                                   supervisorId: [],
+                                  branchNumber: 1,
                                 );
 
                                 double? valueFor(String label) {
@@ -1126,6 +1246,7 @@ class CreationScreen extends StatelessWidget {
 
                                 final PayrollModel payroll = PayrollModel(
                                   bakeryId: "",
+                                  branchId: "",
                                   payrollMethod: cubit.selectedPayrollMethod,
                                   supervisor: valueFor(
                                     PayrollsTableColumns.supervisor,
@@ -1142,6 +1263,7 @@ class CreationScreen extends StatelessWidget {
 
                                 final StorageModel storage = StorageModel(
                                   bakeryId: "",
+                                  branchId: "",
                                   fineWheat: storageValueFor(
                                     StorageItems.fineWheat,
                                   ),

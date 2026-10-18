@@ -4,6 +4,7 @@ import '../../utils/enums/shifts_table_columns.dart';
 
 class ShiftModel {
   final String bakeryId;
+  final String branchId;
   final String workerId;
   final String workerName;
   final double wage;
@@ -14,6 +15,7 @@ class ShiftModel {
 
   ShiftModel({
     required this.bakeryId,
+    required this.branchId,
     required this.workerId,
     required this.workerName,
     required this.wage,
@@ -47,6 +49,7 @@ class ShiftModel {
 
     return ShiftModel(
       bakeryId: json[ShiftsTableColumns.bakeryId] as String? ?? '',
+      branchId: json[ShiftsTableColumns.branchId] as String? ?? '',
       workerId: json[ShiftsTableColumns.workerId] as String? ?? '',
       workerName:
       json[ShiftsTableColumns.workerName] as String? ?? 'Unknown Worker',
@@ -63,6 +66,7 @@ class ShiftModel {
   Map<String, dynamic> toJson() {
     return {
       ShiftsTableColumns.bakeryId: bakeryId,
+      ShiftsTableColumns.branchId: branchId,
       ShiftsTableColumns.workerId: workerId,
       ShiftsTableColumns.workerName: workerName,
       ShiftsTableColumns.wage: wage,
@@ -76,6 +80,7 @@ class ShiftModel {
 
   ShiftModel copyWith({
     String? bakeryId,
+    String? branchId,
     String? workerId,
     String? workerName,
     double? wage,
@@ -86,6 +91,7 @@ class ShiftModel {
   }) {
     return ShiftModel(
       bakeryId: bakeryId ?? this.bakeryId,
+      branchId: branchId ?? this.branchId,
       workerId: workerId ?? this.workerId,
       workerName: workerName ?? this.workerName,
       wage: wage ?? this.wage,
@@ -101,6 +107,7 @@ class ShiftModel {
     if (identical(this, other)) return true;
     return other is ShiftModel &&
         other.bakeryId == bakeryId &&
+        other.branchId == branchId &&
         other.workerId == workerId &&
         other.workerName == workerName &&
         other.wage == wage &&
@@ -113,6 +120,7 @@ class ShiftModel {
   @override
   int get hashCode => Object.hash(
     bakeryId,
+    branchId,
     workerId,
     workerName,
     wage,

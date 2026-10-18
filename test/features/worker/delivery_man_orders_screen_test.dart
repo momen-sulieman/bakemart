@@ -188,7 +188,7 @@ void main() {
           when(
                 () => repo.updateOrderInDatabase(
               order: any(named: 'order'),
-              bakeryId: any(named: 'bakeryId'),
+              bakeryId: any(named: 'bakeryId'), branchId: '',
             ),
           ).thenAnswer((_) async => SuccessResponse<bool>(true));
           when(() => repo.fetchProducts('b1'))
@@ -203,7 +203,7 @@ void main() {
           await tester.pumpAndSettle();
 
           verify(
-                () => repo.updateOrderInDatabase(order: order, bakeryId: 'b1'),
+                () => repo.updateOrderInDatabase(order: order, bakeryId: 'b1', branchId: ''),
           ).called(1);
           verify(() => repo.fetchProducts('b1')).called(1);
           verify(() => repo.fetchFinance('b1')).called(1);

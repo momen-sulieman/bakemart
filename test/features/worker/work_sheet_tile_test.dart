@@ -60,6 +60,7 @@ class TestWorkerRepo extends WorkerRepo {
   @override
   Future<ResponseResult<bool>> postPayrollExpenses({
     required String bakeryId,
+    required String branchId,
     required double payrollExpenses,
     required DateTime date,
   }) async {
@@ -79,7 +80,7 @@ void main() {
   late ShiftsCubit shiftsCubit;
   final today = DateTime.now();
   final payroll =
-  PayrollModel(bakeryId: 'b1', payrollMethod: false, chef: 50);
+  PayrollModel(bakeryId: 'b1', payrollMethod: false, chef: 50, branchId: '');
   final shift = ShiftModel(
     bakeryId: 'b1',
     workerId: 'w1',
@@ -87,7 +88,7 @@ void main() {
     wage: 150,
     role: const ['chef'],
     numberOfBatches: const [3],
-    date: today,
+    date: today, branchId: '',
   );
 
   setUpAll(() async {

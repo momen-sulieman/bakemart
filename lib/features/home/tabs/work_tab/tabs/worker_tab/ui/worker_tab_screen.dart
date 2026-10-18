@@ -88,6 +88,7 @@ class WorkerTabScreen extends StatelessWidget {
       workerName: "",
       workerId: "",
       bakeryId: "",
+      branchId: "",
     );
     final double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -526,7 +527,7 @@ class WorkerTabScreen extends StatelessWidget {
             color: ThemingColors.primaryColor,
             backgroundColor: Colors.transparent,
             onRefresh: () async {
-              cubit.frame(withLoading: cubit.payroll==null);
+              cubit.frame(withLoading: cubit.payroll == null);
             },
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
@@ -1194,6 +1195,7 @@ class WorkerTabScreen extends StatelessWidget {
                                                                                                   ShiftModel newWorker = ShiftModel(
                                                                                                     bakeryId: workerToAdd.bakeryId,
                                                                                                     workerId: workerToAdd.workerId,
+                                                                                                    branchId: workerToAdd.branchId,
                                                                                                     workerName: workerToAdd.workerName,
                                                                                                     wage: 0,
                                                                                                     role: [

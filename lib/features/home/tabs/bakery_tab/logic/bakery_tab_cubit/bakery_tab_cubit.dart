@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../../../core/dependency_injection/dependency_injection.dart';
 import '../../../../../../core/shared/cubits/location_cubit/location_cubit.dart';
 import '../../../../../../core/shared/cubits/location_cubit/location_state.dart';
 import '../../../../../../core/shared/models/product_model.dart';
@@ -147,7 +148,11 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
     branchName: "",
     branchNumber: 1,
   );
-  PayrollModel payroll = PayrollModel(bakeryId: "", payrollMethod: true, branchId: "");
+  PayrollModel payroll = PayrollModel(
+    bakeryId: "",
+    payrollMethod: true,
+    branchId: "",
+  );
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController branchNameController = TextEditingController();
@@ -254,6 +259,7 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   void onNameSet(String text) {
     setValidity(nameValidityState: text.isNotEmpty);
   }
+
   void onBranchNameSet(String text) {
     setValidity(branchNameValidityState: text.isNotEmpty);
   }
@@ -467,8 +473,10 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
+    if (isClosed) return;
     nameController.dispose();
+    branchNameController.dispose();
     pageController.dispose();
     for (final field in storageFields) {
       field.$2.dispose();
@@ -476,7 +484,14 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
     for (final field in payrollFields) {
       field.$2.dispose();
     }
-    _locationSubscription?.cancel();
+    await _locationSubscription?.cancel();
+    if (DependencyInjection.getIt.isRegistered<BakeryTabCubit>(
+      instance: this,
+    )) {
+      await DependencyInjection.getIt.resetLazySingleton<BakeryTabCubit>(
+        instance: this,
+      );
+    }
     return super.close();
   }
 }

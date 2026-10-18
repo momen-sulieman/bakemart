@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../../core/dependency_injection/dependency_injection.dart';
+
 part 'sign_in_state.dart';
 
 class SignInCubit extends Cubit<SignInState> {
@@ -15,6 +17,7 @@ class SignInCubit extends Cubit<SignInState> {
 
   Future<void> signIn() async {
     emit(SignInLoading());
+    await DependencyInjection.resetUserSession();
     final ResponseResult<User> signInResponse = await _repo.signInWithEmail(
       emailController.text,
       passwordController.text,

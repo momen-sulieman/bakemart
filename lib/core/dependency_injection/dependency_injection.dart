@@ -153,4 +153,21 @@ class DependencyInjection {
     getIt.registerLazySingleton(() => WorkerCubit(getIt<WorkerRepo>()));
     getIt.registerFactory(() => SplashCubit(getIt<SplashRepo>()));
   }
+  static Future<void> resetUserSession() async {
+    await getIt.resetLazySingleton<ExpensesCubit>(
+      disposingFunction: (c) => c.isClosed ? null : c.close(),
+    );
+    await getIt.resetLazySingleton<DeliveryCubit>(
+      disposingFunction: (c) => c.isClosed ? null : c.close(),
+    );
+    await getIt.resetLazySingleton<WorkerCubit>(
+      disposingFunction: (c) => c.isClosed ? null : c.close(),
+    );
+    await getIt.resetLazySingleton<CartCubit>(
+      disposingFunction: (c) => c.isClosed ? null : c.close(),
+    );
+    await getIt.resetLazySingleton<ActiveOrdersCubit>(
+      disposingFunction: (c) => c.isClosed ? null : c.close(),
+    );
+  }
 }

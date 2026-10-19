@@ -27,7 +27,7 @@ class WindowSalesCubit extends Cubit<WindowSalesState> {
       product: product,
     );
     if(result is SuccessResponse<bool>){
-      await _workerCubit.updateProducts(product.bakeryId);
+      await _workerCubit.updateProducts(product.bakeryId,product.branchId);
       emit(WindowSalesSuccess());
       emit(WindowSalesInitial());
     }else{

@@ -18,6 +18,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     required FinanceModel financeRecord,
     required FinanceModel baselineRecord,
     required String bakeryId,
+    required String branchId,
   }) async {
     emit(ExpensesLoading(action: ExpensesAction.save));
     final result = await _repo.upsertFinancerecord(
@@ -42,9 +43,9 @@ class ExpensesCubit extends Cubit<ExpensesState> {
         );
       }
 
-      await _workerCubit.updateFinance(bakeryId);
+      await _workerCubit.updateFinance(bakeryId,branchId);
       if (isToday) {
-        await _workerCubit.updateProducts(bakeryId);
+        await _workerCubit.updateProducts(bakeryId,branchId);
       }
       emit(ExpensesSuccess());
       emit(ExpensesInitial());
@@ -58,6 +59,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     required FinanceModel financeRecord,
     required WasteModel product,
     required String bakeryId,
+    required String branchId,
   }) async {
     emit(
       ExpensesLoading(
@@ -71,7 +73,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
       product: product,
     );
     if (result is SuccessResponse<bool>) {
-      await _workerCubit.updateFinance(bakeryId);
+      await _workerCubit.updateFinance(bakeryId,branchId);
       emit(ExpensesSuccess());
       emit(ExpensesInitial());
     } else {

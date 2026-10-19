@@ -119,6 +119,7 @@ class SettingsRepo {
     }
   }
   Future<ResponseResult<bool>> addWorker({
+    required String branchId,
     String? workerId,
     String? workerName,
   }) async {
@@ -127,7 +128,8 @@ class SettingsRepo {
       StaffModel newWorker = StaffModel(
         workerName: "",
         workerId: "",
-        bakeryId: "", branchId: '',
+        bakeryId: "",
+        branchId: "",
       );
       if (workerId != null) {
         final worker = await getUserData(workerId);
@@ -136,6 +138,7 @@ class SettingsRepo {
             workerName: "${worker.data.firstName} ${worker.data.secondName}",
             workerId: workerId,
             bakeryId: bakeryId,
+            branchId: branchId,
           );
         } else {
           return FailureResponse("Wrong QR code");
@@ -146,6 +149,7 @@ class SettingsRepo {
           workerName: workerName,
           workerId: generatedWorkerId,
           bakeryId: bakeryId,
+          branchId: branchId,
         );
       }
       await _supabase.from(Tables.staffs).insert(newWorker.toJson());

@@ -68,14 +68,14 @@ class ProductionCubit extends Cubit<ProductionState> {
       batchCounter: batchCounter,
       manufacturingWasteCounter: manufacturingWasteCounter,
       product: product,
-      currentStorage: currentStorage
+      currentStorage: currentStorage,
     );
     if (salesUpdateResult is FailureResponse) {
       emit(ProductionFailure("Sales error: ${salesUpdateResult.toString()}"));
       emit(ProductionInitial());
       return;
     }
-    await _workerCubit.updateProducts(product.bakeryId);
+    await _workerCubit.updateProducts(product.bakeryId, product.branchId);
     final payrollMethod = _workerCubit.payrollMethod;
     if (!payrollMethod) {
       final now = DateTime.now();
@@ -103,17 +103,17 @@ class ProductionCubit extends Cubit<ProductionState> {
         emit(ProductionInitial());
         return;
       }
-      await _workerCubit.updateShifts(product.bakeryId);
+      await _workerCubit.updateShifts(product.bakeryId, product.branchId);
       final double payrollExpenses = updatedShiftTable.fold(
         0.0,
         (sum, shift) => sum + shift.wage,
       );
-      final DateTime date=DateTime.now();
+      final DateTime date = DateTime.now();
       final payrollExpensesPostingResult = await _repo.postPayrollExpenses(
         bakeryId: product.bakeryId,
         branchId: product.branchId,
         payrollExpenses: payrollExpenses,
-        date: date
+        date: date,
       );
       if (payrollExpensesPostingResult is! SuccessResponse<bool>) {
         final errorMsg =
@@ -121,7 +121,7 @@ class ProductionCubit extends Cubit<ProductionState> {
         emit(ProductionFailure("Expenses error: $errorMsg"));
         ProductionInitial();
       } else {
-        await _workerCubit.updateFinance(product.bakeryId);
+        await _workerCubit.updateFinance(product.bakeryId, product.branchId);
       }
     }
     emit(ProductionSuccess());

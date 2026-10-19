@@ -17,7 +17,7 @@ class SettingsUpdateCubit extends Cubit<SettingsUpdateState> {
   SettingsUpdateCubit(this._settingsCubit) : super(SettingsUpdateInitial());
 
   final StreamController<String> _errorController =
-  StreamController<String>.broadcast();
+      StreamController<String>.broadcast();
 
   Stream<String> get errorMessages => _errorController.stream;
 
@@ -64,9 +64,14 @@ class SettingsUpdateCubit extends Cubit<SettingsUpdateState> {
     emit(SettingsUpdateInitial());
   }
 
-  Future<void> addWorker({String? workerId, String? workerName}) async {
+  Future<void> addWorker({
+    required String branchId,
+    String? workerId,
+    String? workerName,
+  }) async {
     emit(SettingsUpdateLoading(action: SettingsUpdateAction.addWorker));
     final result = await _settingsCubit.addWorker(
+      branchId: branchId,
       workerName: workerName,
       workerId: workerId,
     );

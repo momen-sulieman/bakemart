@@ -92,12 +92,13 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<BakeryModel>> getBakeryData(String employerId) async {
+  Future<ResponseResult<BakeryModel>> getBakeryData(String employerId,String branchId) async {
     try {
       final response = await _supabase
           .from(Tables.bakeries)
           .select()
           .eq(BakeriesTableColumns.bakeryId, employerId)
+          .eq(BakeriesTableColumns.branchId, branchId)
           .single();
       final bakery = BakeryModel.fromJson(response);
       return SuccessResponse(bakery);
@@ -236,12 +237,13 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<PayrollModel?>> fetchPayroll(String id) async {
+  Future<ResponseResult<PayrollModel?>> fetchPayroll(String id,String branchId) async {
     try {
       final Map<String, dynamic>? payrollResponse = await _supabase
           .from(Tables.payrolls)
           .select()
           .eq(PayrollsTableColumns.bakeryId, id)
+          .eq(PayrollsTableColumns.branchId, branchId)
           .maybeSingle();
       if (payrollResponse != null) {
         final payroll = PayrollModel.fromJson(payrollResponse);
@@ -254,12 +256,13 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<ProductModel>?>> fetchProducts(String id) async {
+  Future<ResponseResult<List<ProductModel>?>> fetchProducts(String id,String branchId) async {
     try {
       final List<Map<String, dynamic>> productsResponse = await _supabase
           .from(Tables.products)
           .select()
-          .eq(ProductsTableColumns.bakeryId, id);
+          .eq(ProductsTableColumns.bakeryId, id)
+          .eq(ProductsTableColumns.branchId, branchId);
       if (productsResponse.isNotEmpty) {
         final List<ProductModel> products = productsResponse
             .map((json) => ProductModel.fromJson(json))
@@ -273,12 +276,13 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<StaffModel>?>> fetchStaff(String id) async {
+  Future<ResponseResult<List<StaffModel>?>> fetchStaff(String id,String branchId) async {
     try {
       final List<Map<String, dynamic>> staffResponse = await _supabase
           .from(Tables.staffs)
           .select()
-          .eq(StaffsTableColumns.bakeryId, id);
+          .eq(StaffsTableColumns.bakeryId, id)
+          .eq(StaffsTableColumns.branchId, branchId);
       if (staffResponse.isNotEmpty) {
         final List<StaffModel> staff = staffResponse
             .map((json) => StaffModel.fromJson(json))
@@ -292,7 +296,7 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<ShiftModel>?>> fetchShifts(String id) async {
+  Future<ResponseResult<List<ShiftModel>?>> fetchShifts(String id,String branchId) async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T').first;
@@ -306,6 +310,7 @@ class WorkerRepo {
           .from(Tables.shifts)
           .select()
           .eq(ShiftsTableColumns.bakeryId, id)
+          .eq(ShiftsTableColumns.branchId, branchId)
           .gte(ShiftsTableColumns.date, fourDaysAgoStr)
           .lte(ShiftsTableColumns.date, todayStr);
 
@@ -340,7 +345,7 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<FinanceModel>?>> fetchFinance(String id) async {
+  Future<ResponseResult<List<FinanceModel>?>> fetchFinance(String id,String branchId) async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T').first;
@@ -367,7 +372,7 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<StorageModel?>> fetchStorage(String id) async {
+  Future<ResponseResult<StorageModel?>> fetchStorage(String id,String branchId) async {
     try {
       final Map<String, dynamic>? storageResponse = await _supabase
           .from(Tables.storages)

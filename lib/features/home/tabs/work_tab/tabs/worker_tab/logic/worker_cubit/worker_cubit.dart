@@ -7,7 +7,6 @@ import 'package:bakemart/core/shared/models/staff_model.dart';
 import 'package:bakemart/core/shared/models/storage_model.dart';
 import 'package:bakemart/core/shared/models/user_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../../../../../core/shared/models/bakery_model.dart';
 import '../../data/worker_repo.dart';
@@ -31,14 +30,14 @@ class WorkerCubit extends Cubit<WorkerState> {
   List<ShiftModel>? shifts;
   List<FinanceModel>? finance;
 
-
   Future<void> quit() async {
     emit(WorkerLoading());
     await _repo.quit();
     frame();
   }
-  Future<void> frame({bool withLoading=true}) async {
-    if(withLoading)emit(WorkerLoading());
+
+  Future<void> frame({bool withLoading = true}) async {
+    if (withLoading) emit(WorkerLoading());
     final userResponse = await _repo.getUserData();
     if (userResponse is! SuccessResponse<UserModel>) {
       emit(
@@ -74,8 +73,9 @@ class WorkerCubit extends Cubit<WorkerState> {
     }
 
     final bakeryId = staffData.bakeryId;
+    final branchId = staffData.branchId;
 
-    final bakeryResponse = await _repo.getBakeryData(bakeryId);
+    final bakeryResponse = await _repo.getBakeryData(bakeryId, branchId);
     if (bakeryResponse is! SuccessResponse<BakeryModel>) {
       emit(
         WorkerFailure(
@@ -90,14 +90,13 @@ class WorkerCubit extends Cubit<WorkerState> {
 
     if (userModel.id != null &&
         bakeryModel.supervisorId.contains(userModel.id)) {
-
       final results = await Future.wait([
-        _repo.fetchPayroll(bakeryModel.bakeryId),
-        _repo.fetchProducts(bakeryModel.bakeryId),
-        _repo.fetchStaff(bakeryModel.bakeryId),
-        _repo.fetchShifts(bakeryModel.bakeryId),
-        _repo.fetchFinance(bakeryModel.bakeryId),
-        _repo.fetchStorage(bakeryModel.bakeryId),
+        _repo.fetchPayroll(bakeryModel.bakeryId, bakeryModel.branchId),
+        _repo.fetchProducts(bakeryModel.bakeryId, bakeryModel.branchId),
+        _repo.fetchStaff(bakeryModel.bakeryId, bakeryModel.branchId),
+        _repo.fetchShifts(bakeryModel.bakeryId, bakeryModel.branchId),
+        _repo.fetchFinance(bakeryModel.bakeryId, bakeryModel.branchId),
+        _repo.fetchStorage(bakeryModel.bakeryId, bakeryModel.branchId),
       ]);
 
       final payrollResponse = results[0] as ResponseResult<PayrollModel?>;
@@ -150,8 +149,8 @@ class WorkerCubit extends Cubit<WorkerState> {
     }
   }
 
-  Future<void> updateShifts(String bakeryId) async {
-    final shiftsResponse = await _repo.fetchShifts(bakeryId);
+  Future<void> updateShifts(String bakeryId, String branchId) async {
+    final shiftsResponse = await _repo.fetchShifts(bakeryId, branchId);
     if (shiftsResponse is SuccessResponse<List<ShiftModel>?>) {
       shifts = shiftsResponse.data;
       emit(
@@ -168,8 +167,8 @@ class WorkerCubit extends Cubit<WorkerState> {
     }
   }
 
-  Future<void> updateProducts(String bakeryId) async {
-    final productsResponse = await _repo.fetchProducts(bakeryId);
+  Future<void> updateProducts(String bakeryId, String branchId) async {
+    final productsResponse = await _repo.fetchProducts(bakeryId, branchId);
     if (productsResponse is SuccessResponse<List<ProductModel>?>) {
       products = productsResponse.data;
       emit(
@@ -186,8 +185,8 @@ class WorkerCubit extends Cubit<WorkerState> {
     }
   }
 
-  Future<void> updateFinance(String bakeryId) async {
-    final financeResponse = await _repo.fetchFinance(bakeryId);
+  Future<void> updateFinance(String bakeryId, String branchId) async {
+    final financeResponse = await _repo.fetchFinance(bakeryId, branchId);
     if (financeResponse is SuccessResponse<List<FinanceModel>?>) {
       finance = financeResponse.data;
       emit(
@@ -201,16 +200,6 @@ class WorkerCubit extends Cubit<WorkerState> {
           finance: finance,
         ),
       );
-    }
-  }
-
-  Future<void> join(BarcodeCapture qrScanResult) async {
-    emit(WorkerLoading());
-    final result = await _repo.join(qrScanResult);
-    if (result is SuccessResponse<bool>) {
-      frame();
-    } else {
-      emit(WorkerFailure((result as FailureResponse).error));
     }
   }
 }

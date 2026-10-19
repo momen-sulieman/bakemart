@@ -143,6 +143,8 @@ class StaffSettingsTile extends StatelessWidget {
                                     context
                                         .read<SettingsUpdateCubit>()
                                         .addWorker(
+                                      //Todo branchId
+                                      branchId: "",
                                           workerName: nameController.text,
                                         );
                                     Navigator.pop(dialogContext);
@@ -175,7 +177,8 @@ class StaffSettingsTile extends StatelessWidget {
               builder: (_) => QrScannerScreen(
                 scanningLabel: "addWorkerScanningLabel".tr(),
                 onDetect: (code) {
-                  settingsUpdateCubit.addWorker(workerId: code);
+                  //Todo branchId
+                  settingsUpdateCubit.addWorker(branchId: "",workerId: code);
                 },
               ),
             ),

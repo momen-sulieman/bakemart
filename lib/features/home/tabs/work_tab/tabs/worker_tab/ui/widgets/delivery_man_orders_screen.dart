@@ -396,15 +396,25 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                                 product.productPrice * quantity;
 
                                             final int originalQuantity = () {
-                                              if (scannedOrder == null) return 0;
-                                              final int originalIndex = scannedOrder.orderedProducts.indexWhere(
-                                                    (p) => p.productId == product.productId,
-                                              );
-                                              if (originalIndex == -1 ||
-                                                  originalIndex >= scannedOrder.orderedQuantities.length) {
+                                              if (scannedOrder == null) {
                                                 return 0;
                                               }
-                                              return scannedOrder.orderedQuantities[originalIndex];
+                                              final int originalIndex =
+                                                  scannedOrder.orderedProducts
+                                                      .indexWhere(
+                                                        (p) =>
+                                                            p.productId ==
+                                                            product.productId,
+                                                      );
+                                              if (originalIndex == -1 ||
+                                                  originalIndex >=
+                                                      scannedOrder
+                                                          .orderedQuantities
+                                                          .length) {
+                                                return 0;
+                                              }
+                                              return scannedOrder
+                                                  .orderedQuantities[originalIndex];
                                             }();
                                             final bool isThisQuantityChanged =
                                                 quantity != originalQuantity;
@@ -984,6 +994,9 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                                           workerCubit
                                                               .bakery!
                                                               .bakeryId,
+                                                          workerCubit
+                                                              .bakery!
+                                                              .branchId,
                                                         ); // add this
                                                     controller.reset();
                                                     if (deliveryCubit
@@ -1054,12 +1067,9 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                               highlightColor: Colors.transparent,
                               onTap: () => Navigator.pop(context),
                               child: GlassCard(
-                                margin:context.locale.languageCode == "ar"
-                                    ? .only(
-                                  right: 15
-                                ): .only(
-                                    left: 15
-                                ),
+                                margin: context.locale.languageCode == "ar"
+                                    ? .only(right: 15)
+                                    : .only(left: 15),
                                 padding: .symmetric(horizontal: 15),
                                 child: SizedBox(
                                   height: 30,
@@ -1077,7 +1087,7 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 15,),
+                            SizedBox(width: 15),
                             Expanded(
                               child: InkWell(
                                 splashColor: Colors.transparent,
@@ -1103,9 +1113,11 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                         );
                                         await workerCubit.updateProducts(
                                           workerCubit.bakery!.bakeryId,
+                                          workerCubit.bakery!.branchId,
                                         );
                                         await workerCubit.updateFinance(
                                           workerCubit.bakery!.bakeryId,
+                                          workerCubit.bakery!.branchId,
                                         );
                                         if (context.mounted) {
                                           Navigator.pop(context);
@@ -1113,11 +1125,8 @@ class DeliveryManOrdersScreen extends StatelessWidget {
                                       },
                                 child: GlassCard(
                                   margin: context.locale.languageCode == "ar"
-                                      ? .only(
-                                      left: 15
-                                  ): .only(
-                                      right: 15
-                                  ),
+                                      ? .only(left: 15)
+                                      : .only(right: 15),
                                   padding: .zero,
                                   child: SizedBox(
                                     height: 30,

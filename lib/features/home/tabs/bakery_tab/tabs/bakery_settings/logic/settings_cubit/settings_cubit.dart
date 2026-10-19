@@ -328,10 +328,12 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<ResponseResult<bool>> addWorker({
+    required String branchId,
     String? workerId,
     String? workerName,
   }) async {
     final addingResult = await _repo.addWorker(
+      branchId: branchId,
       workerId: workerId,
       workerName: workerName,
     );

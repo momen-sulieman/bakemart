@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bakemart/core/shared/widgets/dialogs/value_changing_dialog.dart';
 import 'package:bakemart/core/shared/widgets/table_cells/product_cell.dart';
 import 'package:bakemart/core/shared/widgets/transparent_button/transparent_button.dart';
@@ -336,6 +334,7 @@ class ExpensesTile extends StatelessWidget {
                                     baselineRecord:
                                         cubit.currentFilteredExpenses,
                                     bakeryId: workerCubit.bakery!.bakeryId,
+                                    branchId: workerCubit.bakery!.branchId,
                                   );
                                   cubit.filter();
                                   cubit.changeEditMode();
@@ -836,6 +835,9 @@ class ExpensesTile extends StatelessWidget {
                                                         bakeryId: workerCubit
                                                             .bakery!
                                                             .bakeryId,
+                                                        branchId: workerCubit
+                                                            .bakery!
+                                                            .branchId,
                                                         product: waste,
                                                       );
                                                   cubit.setMealDeleted(true);

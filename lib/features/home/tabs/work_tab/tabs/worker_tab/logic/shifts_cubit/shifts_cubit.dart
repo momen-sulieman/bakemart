@@ -11,17 +11,22 @@ class ShiftsCubit extends Cubit<ShiftsState> {
   final WorkerRepo _repo;
   final WorkerCubit _workerCubit;
 
-  ShiftsCubit(this._repo, this._workerCubit)
-    : super(ShiftsInitial());
+  ShiftsCubit(this._repo, this._workerCubit) : super(ShiftsInitial());
 
-  Future<void> save({required List<ShiftModel> shiftTable, required DateTime date}) async {
+  Future<void> save({
+    required List<ShiftModel> shiftTable,
+    required DateTime date,
+  }) async {
     emit(ShiftsLoading(action: ShiftsAction.save));
     final bakeryId = _workerCubit.bakery!.bakeryId;
     final branchId = _workerCubit.bakery!.branchId;
     final result = await _repo.upsertShiftsTable(shiftTable: shiftTable);
     if (result is SuccessResponse<bool>) {
-      await _workerCubit.updateShifts(bakeryId);
-      final double payrollExpenses = shiftTable.fold(0.0, (sum, shift) => sum + shift.wage);
+      await _workerCubit.updateShifts(bakeryId, branchId);
+      final double payrollExpenses = shiftTable.fold(
+        0.0,
+        (sum, shift) => sum + shift.wage,
+      );
       final payrollExpensesPostingResult = await _repo.postPayrollExpenses(
         bakeryId: bakeryId,
         branchId: branchId,
@@ -29,11 +34,12 @@ class ShiftsCubit extends Cubit<ShiftsState> {
         date: date,
       );
       if (payrollExpensesPostingResult is SuccessResponse<bool>) {
-        await _workerCubit.updateFinance(bakeryId);
+        await _workerCubit.updateFinance(bakeryId, branchId);
         emit(ShiftsSuccess());
         emit(ShiftsInitial());
       } else {
-        final errorMsg = (payrollExpensesPostingResult as FailureResponse).error;
+        final errorMsg =
+            (payrollExpensesPostingResult as FailureResponse).error;
         emit(ShiftsFailure("Expenses error: $errorMsg"));
         emit(ShiftsInitial());
       }
@@ -44,11 +50,17 @@ class ShiftsCubit extends Cubit<ShiftsState> {
   }
 
   Future<void> deleteWorker({required ShiftModel worker}) async {
-    emit(ShiftsLoading(targetId: worker.workerId, action: ShiftsAction.deleteWorker));
+    emit(
+      ShiftsLoading(
+        targetId: worker.workerId,
+        action: ShiftsAction.deleteWorker,
+      ),
+    );
     final bakeryId = _workerCubit.bakery!.bakeryId;
+    final branchId = _workerCubit.bakery!.branchId;
     final result = await _repo.deleteShift(worker: worker);
     if (result is SuccessResponse<bool>) {
-      await _workerCubit.updateShifts(bakeryId);
+      await _workerCubit.updateShifts(bakeryId, branchId);
       emit(ShiftsSuccess());
       emit(ShiftsInitial());
     } else {

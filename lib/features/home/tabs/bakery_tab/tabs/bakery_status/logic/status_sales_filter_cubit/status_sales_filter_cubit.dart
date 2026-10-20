@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bakemart/core/shared/models/bakery_model.dart';
 import 'package:bakemart/core/shared/models/sales_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +16,7 @@ class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
   late final StreamSubscription _bakerySubscription;
 
   StatusSalesFilterCubit(this._repo, this._cubit)
-      : super(StatusSalesFilterInitial()){
+      : super(StatusSalesFilterInitial()) {
     filterSales();
     _bakerySubscription = _cubit.stream.listen((_) {
       filterSales();
@@ -24,7 +25,23 @@ class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
 
   DateTime selectedDate = DateTime.now();
   bool isExpanded = true;
-  List<SalesModel>filteredSalesRecords=[];
+  String selectedBranchId = "";
+  List<SalesModel> filteredSalesRecords = [];
+
+  List<BakeryModel> get branches => _cubit.bakeries;
+
+  List<SalesModel> get _branchSales => selectedBranchId.isEmpty
+      ? _cubit.sales
+      : _cubit.sales
+      .where((record) => record.branchId == selectedBranchId)
+      .toList();
+
+  void _syncBranch() {
+    final ids = _cubit.bakeries.map((bakery) => bakery.branchId).toList();
+    if (ids.isNotEmpty && !ids.contains(selectedBranchId)) {
+      selectedBranchId = ids.first;
+    }
+  }
 
   List<int> get dynamicDaysList {
     final int daysInTargetMonth = DateTime(
@@ -34,6 +51,12 @@ class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
     ).day;
     return List.generate(daysInTargetMonth, (index) => index + 1);
   }
+
+  void changeBranch(String branchId) {
+    selectedBranchId = branchId;
+    filterSales();
+  }
+
   void changeSelectedDate({int? year, int? month, int? day}) {
     int targetYear = year ?? selectedDate.year;
     int targetMonth = month ?? selectedDate.month;
@@ -54,12 +77,13 @@ class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
   void filterSales({DateTime? selectedDate}) {
     emit(StatusSalesFilterLoading());
     this.selectedDate = selectedDate ?? this.selectedDate;
+    _syncBranch();
     final filterResult = _repo.filterSalesByDate(
-      allSales: _cubit.sales,
+      allSales: _branchSales,
       selectedDate: this.selectedDate,
     );
     if (filterResult is SuccessResponse<List<SalesModel>>) {
-      filteredSalesRecords=filterResult.data;
+      filteredSalesRecords = filterResult.data;
       emit(StatusSalesFilterSuccess());
     }
   }

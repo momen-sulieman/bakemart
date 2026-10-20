@@ -137,22 +137,15 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   List<FinanceModel> finance = [];
   List<ShiftModel> shifts = [];
   List<StaffModel> staff = [];
-  StorageModel storage = StorageModel(bakeryId: "", branchId: "");
-  BakeryModel bakery = BakeryModel(
-    bakeryName: "",
-    bakeryLat: 0,
-    bakeryLng: 0,
-    supervisorId: [],
-    bakeryId: "",
-    branchId: "",
-    branchName: "",
-    branchNumber: 1,
-  );
-  PayrollModel payroll = PayrollModel(
-    bakeryId: "",
-    payrollMethod: true,
-    branchId: "",
-  );
+  List<BakeryModel> bakeries = [];
+  List<StorageModel> storages = [];
+  List<PayrollModel> payrolls = [];
+  PayrollModel payrollFor(String branchId) {
+    final matches = payrolls.where((payroll) => payroll.branchId == branchId);
+    if (matches.isNotEmpty) return matches.first;
+    if (payrolls.isNotEmpty) return payrolls.first;
+    return PayrollModel(bakeryId: '', branchId: branchId, payrollMethod: false);
+  }
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController branchNameController = TextEditingController();
@@ -326,14 +319,14 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   }
 
   Future<void> check() async {
-    final bakeryResponse = await _repo.fetchBakery();
-    if (bakeryResponse is SuccessResponse<BakeryModel?> &&
-        bakeryResponse.data != null) {
-      bakery = bakeryResponse.data!;
+    final bakeryResponse = await _repo.fetchBakeries();
+    if (bakeryResponse is SuccessResponse<List<BakeryModel>> &&
+        bakeryResponse.data.isNotEmpty) {
+      bakeries = bakeryResponse.data;
       emit(HasBakery());
       await loadAll();
-    } else if (bakeryResponse is SuccessResponse<BakeryModel?> &&
-        bakeryResponse.data == null) {
+    } else if (bakeryResponse is SuccessResponse<List<BakeryModel>> &&
+        bakeryResponse.data.isEmpty) {
       emit(HasNoBakery());
     } else {
       emit(BakeryTabFailure((bakeryResponse as FailureResponse).error));
@@ -354,28 +347,28 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   }
 
   Future<void> loadBakeryData({bool withEmit = true}) async {
-    final bakeryResponse = await _repo.fetchBakery();
-    if (bakeryResponse is SuccessResponse<BakeryModel?> &&
-        bakeryResponse.data != null) {
-      bakery = bakeryResponse.data!;
+    final bakeryResponse = await _repo.fetchBakeries();
+    if (bakeryResponse is SuccessResponse<List<BakeryModel>> &&
+        bakeryResponse.data.isNotEmpty) {
+      bakeries = bakeryResponse.data;
       if (withEmit) emit(HasBakery());
     }
   }
 
   Future<void> loadStorage({bool withEmit = true}) async {
-    final storageResponse = await _repo.fetchStorage();
-    if (storageResponse is SuccessResponse<StorageModel?> &&
-        storageResponse.data != null) {
-      storage = storageResponse.data!;
+    final storageResponse = await _repo.fetchStorages();
+    if (storageResponse is SuccessResponse<List<StorageModel>> &&
+        storageResponse.data.isNotEmpty) {
+      storages = storageResponse.data;
       if (withEmit) emit(HasBakery());
     }
   }
 
   Future<void> loadPayroll({bool withEmit = true}) async {
-    final payrollResponse = await _repo.fetchPayroll();
-    if (payrollResponse is SuccessResponse<PayrollModel?> &&
-        payrollResponse.data != null) {
-      payroll = payrollResponse.data!;
+    final payrollResponse = await _repo.fetchPayrolls();
+    if (payrollResponse is SuccessResponse<List<PayrollModel>> &&
+        payrollResponse.data.isNotEmpty) {
+      payrolls = payrollResponse.data;
       if (withEmit) emit(HasBakery());
     }
   }

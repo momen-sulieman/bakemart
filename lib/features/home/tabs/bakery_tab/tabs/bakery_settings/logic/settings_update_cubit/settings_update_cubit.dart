@@ -39,7 +39,7 @@ class SettingsUpdateCubit extends Cubit<SettingsUpdateState> {
     emit(SettingsUpdateInitial());
   }
 
-  Future<void> changeBakeryData({
+  Future<void> changeBakerySupervisor({
     required BakeryModel updatedBakery,
     String? targetId,
   }) async {
@@ -49,7 +49,26 @@ class SettingsUpdateCubit extends Cubit<SettingsUpdateState> {
         action: SettingsUpdateAction.supervisor,
       ),
     );
-    await _settingsCubit.changeBakeryData(updatedBakery: updatedBakery);
+    await _settingsCubit.changeBakerySupervisor(updatedBakery: updatedBakery);
+    emit(SettingsUpdateInitial());
+  }
+  Future<void> changeBranchLocation({
+    required String branchId,
+    required double lat,
+    required double lng,
+  }) async {
+    emit(SettingsUpdateLoading(action: SettingsUpdateAction.other));
+    await _settingsCubit.changeBranchLocation(
+      branchId: branchId,
+      lat: lat,
+      lng: lng,
+    );
+    emit(SettingsUpdateInitial());
+  }
+
+  Future<void> changeBakeryName({required String name}) async {
+    emit(SettingsUpdateLoading(action: SettingsUpdateAction.other));
+    await _settingsCubit.changeBakeryName(name: name);
     emit(SettingsUpdateInitial());
   }
 

@@ -91,7 +91,8 @@ class BakeryTabScreen extends StatelessWidget {
             ),
           );
         } else if (bakeryState is HasBakery) {
-          if (!cubit.bakery.verified) {
+          final bool allUnverified = cubit.bakeries.every((bakery) => !bakery.verified);
+          if (allUnverified) {
             return Scaffold(
               extendBody: true,
               appBar: AppBar(

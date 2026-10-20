@@ -27,61 +27,61 @@ class BakeryTabRepo {
   BakeryTabRepo({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
-  Future<ResponseResult<BakeryModel?>> fetchBakery() async {
+  Future<ResponseResult<List<BakeryModel>>> fetchBakeries() async {
     try {
       final String? id = _supabase.auth.currentUser?.id;
       if (id == null) return FailureResponse("User is not authenticated.");
 
-      final Map<String, dynamic>? bakeryResponse = await _supabase
+      final List<Map<String, dynamic>> bakeriesResponse = await _supabase
           .from(Tables.bakeries)
           .select()
-          .eq(BakeriesTableColumns.bakeryId, id)
-          .maybeSingle();
+          .eq(BakeriesTableColumns.bakeryId, id);
 
-      final BakeryModel? bakery = bakeryResponse != null
-          ? BakeryModel.fromJson(bakeryResponse)
-          : null;
-      return SuccessResponse(bakery);
+      final List<BakeryModel> bakeries = bakeriesResponse
+          .map((json) => BakeryModel.fromJson(json))
+          .toList();
+
+      return SuccessResponse(bakeries);
     } catch (error) {
       return FailureResponse(error.toString());
     }
   }
 
-  Future<ResponseResult<StorageModel?>> fetchStorage() async {
+  Future<ResponseResult<List<StorageModel>>> fetchStorages() async {
     try {
       final String? id = _supabase.auth.currentUser?.id;
       if (id == null) return FailureResponse("User is not authenticated.");
 
-      final Map<String, dynamic>? storageResponse = await _supabase
+      final List<Map<String, dynamic>> storagesResponse = await _supabase
           .from(Tables.storages)
           .select()
-          .eq(StoragesTableColumns.bakeryId, id)
-          .maybeSingle();
+          .eq(StoragesTableColumns.bakeryId, id);
 
-      final StorageModel? storage = storageResponse != null
-          ? StorageModel.fromJson(storageResponse)
-          : null;
-      return SuccessResponse(storage);
+      final List<StorageModel> storages = storagesResponse
+          .map((json) => StorageModel.fromJson(json))
+          .toList();
+
+      return SuccessResponse(storages);
     } catch (error) {
       return FailureResponse(error.toString());
     }
   }
 
-  Future<ResponseResult<PayrollModel?>> fetchPayroll() async {
+  Future<ResponseResult<List<PayrollModel>>> fetchPayrolls() async {
     try {
       final String? id = _supabase.auth.currentUser?.id;
       if (id == null) return FailureResponse("User is not authenticated.");
 
-      final Map<String, dynamic>? payrollResponse = await _supabase
+      final List<Map<String, dynamic>> payrollsResponse = await _supabase
           .from(Tables.payrolls)
           .select()
-          .eq(PayrollsTableColumns.bakeryId, id)
-          .maybeSingle();
+          .eq(PayrollsTableColumns.bakeryId, id);
 
-      final PayrollModel? payroll = payrollResponse != null
-          ? PayrollModel.fromJson(payrollResponse)
-          : null;
-      return SuccessResponse(payroll);
+      final List<PayrollModel> payrolls = payrollsResponse
+          .map((json) => PayrollModel.fromJson(json))
+          .toList();
+
+      return SuccessResponse(payrolls);
     } catch (error) {
       return FailureResponse(error.toString());
     }

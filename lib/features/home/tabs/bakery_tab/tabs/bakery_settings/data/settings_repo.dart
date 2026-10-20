@@ -18,7 +18,7 @@ class SettingsRepo {
   final Uuid _uuid = const Uuid();
 
   SettingsRepo({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   Future<ResponseResult<bool>> updateBakeryData(
     BakeryModel updatedBakeryData,
@@ -64,21 +64,64 @@ class SettingsRepo {
     }
   }
 
-  Future<ResponseResult<bool>> changeBakeryData({
+  Future<ResponseResult<bool>> changeBranchLocation({
+    required String branchId,
+    required double lat,
+    required double lng,
+  }) async {
+    try {
+      final String? bakeryId = _supabase.auth.currentUser?.id;
+      if (bakeryId == null) {
+        return FailureResponse("User is not authenticated.");
+      }
+      await _supabase
+          .from(Tables.bakeries)
+          .update({
+            BakeriesTableColumns.bakeryLat: lat,
+            BakeriesTableColumns.bakeryLng: lng,
+          })
+          .eq(BakeriesTableColumns.bakeryId, bakeryId)
+          .eq(BakeriesTableColumns.branchId, branchId);
+      return SuccessResponse(true);
+    } catch (error) {
+      return FailureResponse(error.toString());
+    }
+  }
+
+  Future<ResponseResult<bool>> changeBakeryName({required String name}) async {
+    try {
+      final String? bakeryId = _supabase.auth.currentUser?.id;
+      if (bakeryId == null)
+        return FailureResponse("User is not authenticated.");
+
+      await _supabase
+          .from(Tables.bakeries)
+          .update({BakeriesTableColumns.bakeryName: name})
+          .eq(BakeriesTableColumns.bakeryId, bakeryId);
+
+      return SuccessResponse(true);
+    } catch (error) {
+      return FailureResponse(error.toString());
+    }
+  }
+
+  Future<ResponseResult<bool>> changeBakerySupervisor({
     required BakeryModel updatedBakery,
   }) async {
     try {
       await _supabase
           .from(Tables.bakeries)
           .update(updatedBakery.toJson())
-          .eq(BakeriesTableColumns.bakeryId, updatedBakery.bakeryId);
+          .eq(BakeriesTableColumns.bakeryId, updatedBakery.bakeryId)
+          .eq(BakeriesTableColumns.branchId, updatedBakery.branchId);
       return SuccessResponse(true);
     } catch (error) {
       return FailureResponse(error.toString());
     }
   }
+
   Future<ResponseResult<bool>> deleteWorker({
-    required StaffModel worker
+    required StaffModel worker,
   }) async {
     try {
       await _supabase
@@ -105,6 +148,7 @@ class SettingsRepo {
       return FailureResponse(error.toString());
     }
   }
+
   Future<ResponseResult<UserModel>> getUserData(String id) async {
     try {
       final response = await _supabase
@@ -118,6 +162,7 @@ class SettingsRepo {
       return FailureResponse(error.toString());
     }
   }
+
   Future<ResponseResult<bool>> addWorker({
     required String branchId,
     String? workerId,
@@ -143,9 +188,9 @@ class SettingsRepo {
         } else {
           return FailureResponse("Wrong QR code");
         }
-      } else if(workerName!=null){
-        final generatedWorkerId=_uuid.v4();
-        newWorker=newWorker.copyWith(
+      } else if (workerName != null) {
+        final generatedWorkerId = _uuid.v4();
+        newWorker = newWorker.copyWith(
           workerName: workerName,
           workerId: generatedWorkerId,
           bakeryId: bakeryId,

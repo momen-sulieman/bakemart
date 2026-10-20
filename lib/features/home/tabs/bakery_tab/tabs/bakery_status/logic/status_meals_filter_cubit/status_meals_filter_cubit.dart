@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bakemart/core/shared/models/bakery_model.dart';
 import 'package:bakemart/core/shared/models/finance_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,12 +24,28 @@ class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState> {
 
   DateTime selectedDate = DateTime.now();
   bool isExpanded = true;
+  String selectedBranchId = "";
   FinanceModel filteredMealsRecord = FinanceModel(
     bakeryId: "",
     branchId: "",
     cleaningExpenses: 0,
     wastes: [],
   );
+
+  List<BakeryModel> get branches => _cubit.bakeries;
+
+  List<FinanceModel> get _branchFinance => selectedBranchId.isEmpty
+      ? _cubit.finance
+      : _cubit.finance
+      .where((record) => record.branchId == selectedBranchId)
+      .toList();
+
+  void _syncBranch() {
+    final ids = _cubit.bakeries.map((bakery) => bakery.branchId).toList();
+    if (ids.isNotEmpty && !ids.contains(selectedBranchId)) {
+      selectedBranchId = ids.first;
+    }
+  }
 
   List<int> get dynamicDaysList {
     final int daysInTargetMonth = DateTime(
@@ -37,6 +54,11 @@ class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState> {
       0,
     ).day;
     return List.generate(daysInTargetMonth, (index) => index + 1);
+  }
+
+  void changeBranch(String branchId) {
+    selectedBranchId = branchId;
+    filterMealsRecords();
   }
 
   void changeSelectedDate({int? year, int? month, int? day}) {
@@ -58,8 +80,9 @@ class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState> {
 
   void filterMealsRecords({DateTime? selectedDate}) {
     this.selectedDate = selectedDate ?? this.selectedDate;
+    _syncBranch();
     final filterResult = _repo.filterFinanceRecordsByDate(
-      allFinanceRecords: _cubit.finance,
+      allFinanceRecords: _branchFinance,
       selectedDate: this.selectedDate,
     );
     if (filterResult is SuccessResponse<FinanceModel>) {

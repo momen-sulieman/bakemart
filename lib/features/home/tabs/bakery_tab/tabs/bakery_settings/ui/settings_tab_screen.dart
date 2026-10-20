@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:bakemart/core/shared/widgets/glass_card/glass_card.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/logic/settings_cubit/settings_cubit.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/logic/settings_update_cubit/settings_update_cubit.dart';
+import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/ui/widgets/branches_settings_tile.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/ui/widgets/payroll_settings_tile.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/ui/widgets/products_settings_tile.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/ui/widgets/staff_settings_tile.dart';
@@ -12,9 +13,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../../../../core/dependency_injection/dependency_injection.dart';
-import '../../../../../../../core/shared/cubits/location_cubit/location_cubit.dart';
-import '../../../../../../../core/shared/cubits/location_cubit/location_state.dart';
-import '../../../../../../../core/shared/widgets/location_picker_map/location_picker_map.dart';
 import '../../../../../../../core/shared/widgets/supabase_image/logic/supabase_image_cubit/supabase_image_cubit.dart';
 import '../../../../../../../core/shared/widgets/supabase_image/ui/supabase_image.dart';
 import '../../../../../../../core/theming/theming_colors.dart';
@@ -42,14 +40,6 @@ class SettingsTabScreen extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           final cubit = context.read<SettingsCubit>();
-          final updateCubit = context.read<SettingsUpdateCubit>();
-          final locationState = context.read<LocationCubit>().state;
-          final double? liveLat = locationState is LocationUpdated
-              ? locationState.lat
-              : null;
-          final double? liveLng = locationState is LocationUpdated
-              ? locationState.lng
-              : null;
           return Scaffold(
             extendBodyBehindAppBar: true,
             appBar: AppBar(
@@ -121,7 +111,7 @@ class SettingsTabScreen extends StatelessWidget {
                               create: (_) =>
                                   DependencyInjection.getIt<SupabaseImageCubit>(
                                     param1: Buckets.bakeriesImages,
-                                    param2: settingsState.bakery.bakeryId,
+                                    param2: settingsState.bakeries[0].bakeryId,
                                   ),
                               child: Builder(
                                 builder: (imageContext) {
@@ -194,7 +184,7 @@ class SettingsTabScreen extends StatelessWidget {
                                 SizedBox(width: 33),
                                 Flexible(
                                   child: Text(
-                                    settingsState.bakery.bakeryName,
+                                    settingsState.bakeries[0].bakeryName,
                                     maxLines: 1,
                                     overflow: .ellipsis,
                                     style: TextStyle(
@@ -215,7 +205,7 @@ class SettingsTabScreen extends StatelessWidget {
                                       builder: (dialogContext) {
                                         final TextEditingController
                                         nameController = TextEditingController(
-                                          text: cubit.bakery!.bakeryName,
+                                          text: cubit.bakeries[0].bakeryName,
                                         );
                                         return BlocProvider.value(
                                           value: cubit,
@@ -278,10 +268,9 @@ class SettingsTabScreen extends StatelessWidget {
                                                                 ? .ltr
                                                                 : .rtl,
                                                             onChanged: (text) {
-                                                              final oldValue =
-                                                                  cubit
-                                                                      .bakery!
-                                                                      .bakeryName;
+                                                              final oldValue = cubit
+                                                                  .bakeries[0]
+                                                                  .bakeryName;
                                                               if (text !=
                                                                       oldValue &&
                                                                   text.isNotEmpty) {
@@ -405,16 +394,10 @@ class SettingsTabScreen extends StatelessWidget {
                                                           Expanded(
                                                             child: InkWell(
                                                               onTap: () {
-                                                                final updatedBakery = cubit
-                                                                    .bakery!
-                                                                    .copyWith(
-                                                                      bakeryName:
-                                                                          nameController
-                                                                              .text,
-                                                                    );
-                                                                cubit.changeBakeryData(
-                                                                  updatedBakery:
-                                                                      updatedBakery,
+                                                                cubit.changeBakeryName(
+                                                                  name:
+                                                                      nameController
+                                                                          .text,
                                                                 );
                                                                 cubit
                                                                     .nameChanged(
@@ -475,92 +458,19 @@ class SettingsTabScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
-                            InkWell(
-                              hoverColor: Colors.transparent,
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () {
-                                cubit.locationEditingMode(
-                                  !cubit.isLocationEditing,
-                                );
-                              },
-                              child: GlassCard(
-                                margin: .zero,
-                                padding: .symmetric(
-                                  horizontal: 10,
-                                  vertical: 3,
-                                ),
-                                otherRadius: 30,
-                                orange: !cubit.isLocationEditing,
-                                dark: cubit.isLocationEditing,
-                                child: Row(
-                                  mainAxisSize: .min,
-                                  mainAxisAlignment: .center,
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_outlined,
-                                      color: ThemingColors.primaryColor,
-                                      size: 18,
-                                    ),
-                                    Padding(
-                                      padding: .symmetric(horizontal: 5),
-                                      child: Text(
-                                        "location".tr(),
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: .bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            if (cubit.isLocationEditing)
-                              Container(
-                                height: screenHeight * 0.5,
-                                width: double.infinity,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 25,
-                                  vertical: 10,
-                                ),
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.2 * 255).toInt(),
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: LocationPickerMap.setter(
-                                  initialLat: cubit.bakery!.bakeryLat,
-                                  initialLng: cubit.bakery!.bakeryLng,
-                                  deviceLat: liveLat,
-                                  deviceLng: liveLng,
-                                  resetLat: cubit.bakery!.bakeryLat,
-                                  resetLng: cubit.bakery!.bakeryLng,
-                                  resetMarkerIcon: Icons.location_on_outlined,
-                                  alwaysShow: false,
-                                  hideWhenRecenter: false,
-                                  onSet: (lat, lng) {
-                                    final updatedBakery = cubit.bakery!
-                                        .copyWith(
-                                          bakeryLat: lat,
-                                          bakeryLng: lng,
-                                        );
-                                    updateCubit.changeBakeryData(
-                                      updatedBakery: updatedBakery,
-                                      targetId: 'location',
-                                    );
-                                    cubit.locationCancelEditing();
-                                  },
-                                ),
-                              ),
+                            SizedBox(height: 30),
+                            BranchesSettingsTile(branches: cubit.bakeries),
                             ProductsSettingsTile(
-                              products: settingsState.products,
+                              products: cubit.editableProducts
+                                  .where((product) => product.branchId == cubit.productsViewedBranch)
+                                  .toList(),
                             ),
                             PayrollSettingsTile(),
-                            StaffSettingsTile(staff: settingsState.staff),
+                            StaffSettingsTile(
+                              staff: cubit.staff
+                                  .where((worker) => worker.branchId == cubit.staffsViewedBranch)
+                                  .toList(),
+                            ),
                           ],
                         ),
                       )

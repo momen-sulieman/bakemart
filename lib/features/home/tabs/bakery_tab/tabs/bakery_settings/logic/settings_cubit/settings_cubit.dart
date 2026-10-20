@@ -5,6 +5,8 @@ import 'package:bakemart/core/shared/models/bakery_model.dart';
 import 'package:bakemart/core/shared/models/payroll_model.dart';
 import 'package:bakemart/core/shared/models/product_model.dart';
 import 'package:bakemart/core/shared/models/staff_model.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../../../core/shared/widgets/supabase_image/logic/supabase_image_cubit/supabase_image_cubit.dart';
@@ -21,17 +23,22 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SupabaseImageCubit Function(String bucket) _imageCubitFactory;
 
   SettingsCubit(
-      this._repo,
-      this._bakeryTabCubit, {
-        SupabaseImageCubit Function(String bucket)? imageCubitFactory,
-      }) : _imageCubitFactory =
-      imageCubitFactory ?? ((bucket) => SupabaseImageCubit(bucket, null)),
-        super(SettingsLoading()) {
+    this._repo,
+    this._bakeryTabCubit, {
+    SupabaseImageCubit Function(String bucket)? imageCubitFactory,
+  }) : _imageCubitFactory =
+           imageCubitFactory ?? ((bucket) => SupabaseImageCubit(bucket, null)),
+       super(SettingsLoading()) {
     getSettings();
   }
-  BakeryModel? bakery;
-  PayrollModel? payroll;
-  PayrollModel? editablePayroll;
+
+  TextEditingController branchNameController=TextEditingController();
+  String productsViewedBranch = "";
+  String payrollsViewedBranch = "";
+  String staffsViewedBranch = "";
+  List<BakeryModel> bakeries = [];
+  List<PayrollModel> payrolls = [];
+  List<PayrollModel> editablePayrolls = [];
   List<StaffModel> staff = [];
   List<ProductModel> products = [];
   List<ProductModel> editableProducts = [];
@@ -44,16 +51,47 @@ class SettingsCubit extends Cubit<SettingsState> {
   bool isPayrollChanged = false;
   bool isPayrollRateChanged = false;
   bool isProductsExpanded = true;
+  bool isBranchesExpanded = true;
   bool isProductsEditing = false;
+  bool isBranchesEditing = false;
   bool isProductsChanged = false;
+  bool isBranchesChanged = false;
   bool isOneProductChanged = false;
   bool isProductDataChanged = false;
+  bool newBranchFormValidity=false;
 
   final Set<String> changedProductPictures = {};
   bool newProductFormValidity = false;
   bool isLocationChanged = false;
   final Map<String, File> pendingProductImages = {};
   final Map<String, int> productImageVersion = {};
+  PayrollModel? get payroll => payrolls.firstWhereOrNull(
+        (item) => item.branchId == payrollsViewedBranch,
+  );
+
+  PayrollModel? get editablePayroll => editablePayrolls.firstWhereOrNull(
+        (item) => item.branchId == payrollsViewedBranch,
+  );
+
+  String _validBranch(String current) {
+    if (bakeries.any((branch) => branch.branchId == current)) return current;
+    return bakeries.isNotEmpty ? bakeries.first.branchId : "";
+  }
+
+  void productsBranchChanged(String branchId) {
+    productsViewedBranch = branchId;
+    _emitSuccess();
+  }
+
+  void payrollsBranchChanged(String branchId) {
+    payrollsViewedBranch = branchId;
+    _emitSuccess();
+  }
+
+  void staffBranchChanged(String branchId) {
+    staffsViewedBranch = branchId;
+    _emitSuccess();
+  }
 
   void bumpProductImageVersion(String productId) {
     productImageVersion[productId] = (productImageVersion[productId] ?? 0) + 1;
@@ -69,7 +107,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     isLocationEditing = false;
     _emitSuccess();
   }
-
 
   void setProductPictureChanged(String productId, bool status) {
     if (status) {
@@ -91,8 +128,13 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  void setValidity({required bool newProductFormValidityState}) {
-    newProductFormValidity = newProductFormValidityState;
+  void setValidity({bool? newProductFormValidityState,bool? newBranchFormValidityState}) {
+    if (newProductFormValidityState!=null){
+      newProductFormValidity = newProductFormValidityState;
+    }
+    if (newBranchFormValidityState!=null){
+      newProductFormValidity = newBranchFormValidityState;
+    }
     _emitSuccess();
   }
 
@@ -112,6 +154,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   void updateProductsTileExpansion(bool expanded) {
     isProductsExpanded = expanded;
+    _emitSuccess();
+  }
+  void updateBranchesTileExpansion(bool expanded) {
+    isBranchesExpanded = expanded;
     _emitSuccess();
   }
 
@@ -139,14 +185,17 @@ class SettingsCubit extends Cubit<SettingsState> {
     isProductsEditing = editing;
     _emitSuccess();
   }
+  void branchesEditingMode(bool editing) {
+    isBranchesEditing = editing;
+    _emitSuccess();
+  }
 
   void payrollCancelEditing() {
-    editablePayroll = payroll;
+    editablePayrolls = payrolls;
     isPayrollChanged = false;
     isPayrollEditing = false;
     _emitSuccess();
   }
-
 
   void productsCancelEditing() {
     editableProducts = products;
@@ -154,6 +203,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     isProductsChanged = false;
     isProductsEditing = false;
     changedProductPictures.clear();
+    _emitSuccess();
+  }
+  void branchesCancelEditing() {
+    isBranchesChanged = false;
+    isBranchesEditing = false;
     _emitSuccess();
   }
 
@@ -188,57 +242,88 @@ class SettingsCubit extends Cubit<SettingsState> {
     _emitSuccess();
   }
 
-  void updatePayrollMethod(bool method) {
-    editablePayroll = editablePayroll!.copyWith(payrollMethod: method);
+  void updatePayrollMethod(PayrollModel payroll) {
+    editablePayrolls = editablePayrolls.map((item) {
+      return item.branchId == payroll.branchId ? payroll : item;
+    }).toList();
     isPayrollChanged = true;
     isPayrollRateChanged = false;
     _emitSuccess();
   }
 
-  void postNewRate({required String role, required double newRate}) {
-    switch (role) {
-      case PayrollsTableColumns.ajan:
-        editablePayroll = editablePayroll!.copyWith(ajan: newRate);
-        break;
-      case PayrollsTableColumns.faran:
-        editablePayroll = editablePayroll!.copyWith(faran: newRate);
-        break;
-      case PayrollsTableColumns.tawlaji:
-        editablePayroll = editablePayroll!.copyWith(tawlaji: newRate);
-        break;
-      case PayrollsTableColumns.chef:
-        editablePayroll = editablePayroll!.copyWith(chef: newRate);
-        break;
-      case PayrollsTableColumns.coChef:
-        editablePayroll = editablePayroll!.copyWith(coChef: newRate);
-        break;
-      case PayrollsTableColumns.bagger:
-        editablePayroll = editablePayroll!.copyWith(bagger: newRate);
-        break;
-      case PayrollsTableColumns.supervisor:
-        editablePayroll = editablePayroll!.copyWith(supervisor: newRate);
-        break;
-    }
+  void postNewRate({
+    required String role,
+    required double newRate,
+    required String branchId,
+  }) {
+    editablePayrolls = editablePayrolls.map((payroll) {
+      if (payroll.branchId != branchId) return payroll;
+
+      switch (role) {
+        case PayrollsTableColumns.ajan:
+          return payroll.copyWith(ajan: newRate);
+        case PayrollsTableColumns.faran:
+          return payroll.copyWith(faran: newRate);
+        case PayrollsTableColumns.tawlaji:
+          return payroll.copyWith(tawlaji: newRate);
+        case PayrollsTableColumns.chef:
+          return payroll.copyWith(chef: newRate);
+        case PayrollsTableColumns.coChef:
+          return payroll.copyWith(coChef: newRate);
+        case PayrollsTableColumns.bagger:
+          return payroll.copyWith(bagger: newRate);
+        case PayrollsTableColumns.supervisor:
+          return payroll.copyWith(supervisor: newRate);
+        default:
+          return payroll;
+      }
+    }).toList();
+
     isPayrollChanged = true;
     isPayrollRateChanged = false;
     _emitSuccess();
   }
 
   void _emitSuccess() {
+    productsViewedBranch = _validBranch(productsViewedBranch);
+    payrollsViewedBranch = _validBranch(payrollsViewedBranch);
+    staffsViewedBranch = _validBranch(staffsViewedBranch);
     emit(
       SettingsSuccess(
-        bakery: bakery!,
-        payroll: editablePayroll!,
+        bakeries: bakeries,
+        payrolls: editablePayrolls,
         staff: staff,
         products: editableProducts,
       ),
     );
   }
+  Future<void> changeBranchLocation({
+    required String branchId,
+    required double lat,
+    required double lng,
+  }) async {
+    final result = await _repo.changeBranchLocation(
+      branchId: branchId,
+      lat: lat,
+      lng: lng,
+    );
+    if (result is SuccessResponse<bool>) {
+      await _bakeryTabCubit.loadBakeryData();
+      bakeries = _bakeryTabCubit.bakeries;
+      _emitSuccess();
+    } else if (result is FailureResponse) {
+      emit(SettingsFailure((result as FailureResponse).error));
+    }
+  }
 
   Future<void> getSettings() async {
-    bakery = _bakeryTabCubit.bakery;
-    payroll = _bakeryTabCubit.payroll;
-    editablePayroll = _bakeryTabCubit.payroll;
+    debugPrint('bakeries: ${_bakeryTabCubit.bakeries.map((b) => "${b.branchId}|${b.branchName}").toList()}');
+    debugPrint('payrolls: ${_bakeryTabCubit.payrolls.map((p) => p.branchId).toList()}');
+    debugPrint('products: ${_bakeryTabCubit.products.map((p) => p.branchId).toSet()}');
+    debugPrint('staff: ${_bakeryTabCubit.staff.map((s) => s.branchId).toSet()}');
+    bakeries = _bakeryTabCubit.bakeries;
+    payrolls = _bakeryTabCubit.payrolls;
+    editablePayrolls = _bakeryTabCubit.payrolls;
     staff = _bakeryTabCubit.staff;
     products = _bakeryTabCubit.products;
     editableProducts = _bakeryTabCubit.products;
@@ -249,7 +334,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final updateResponse = await _repo.updateBakeryData(updatedBakeryData);
     if (updateResponse is SuccessResponse<bool>) {
       await _bakeryTabCubit.loadBakeryData();
-      bakery = _bakeryTabCubit.bakery;
+      bakeries = _bakeryTabCubit.bakeries;
       _emitSuccess();
     }
   }
@@ -260,7 +345,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       isPayrollChanged = false;
       isPayrollEditing = false;
       await _bakeryTabCubit.loadPayroll();
-      payroll = _bakeryTabCubit.payroll;
+      payrolls = _bakeryTabCubit.payrolls;
+      editablePayrolls = payrolls;
       _emitSuccess();
     }
   }
@@ -279,7 +365,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     final updateResponse = await _repo.updateProducts(updatedProducts);
     if (updateResponse is SuccessResponse<bool>) {
       if (pendingProductImages.isNotEmpty) {
-        final imageCubit = _imageCubitFactory(Buckets.productsImages);        for (final entry in pendingProductImages.entries) {
+        final imageCubit = _imageCubitFactory(Buckets.productsImages);
+        for (final entry in pendingProductImages.entries) {
           final uploadResult = await imageCubit.uploadImage(
             entry.value,
             id: entry.key,
@@ -303,13 +390,26 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> changeBakeryData({required BakeryModel updatedBakery}) async {
-    final changeSupervisorResult = await _repo.changeBakeryData(
+  Future<void> changeBakeryName({required String name}) async {
+    final changeNameResult = await _repo.changeBakeryName(name: name);
+    if (changeNameResult is SuccessResponse<bool>) {
+      await _bakeryTabCubit.loadBakeryData();
+      bakeries = _bakeryTabCubit.bakeries;
+      _emitSuccess();
+    } else if (changeNameResult is FailureResponse) {
+      emit(SettingsFailure((changeNameResult as FailureResponse).error));
+    }
+  }
+
+  Future<void> changeBakerySupervisor({
+    required BakeryModel updatedBakery,
+  }) async {
+    final changeSupervisorResult = await _repo.changeBakerySupervisor(
       updatedBakery: updatedBakery,
     );
     if (changeSupervisorResult is SuccessResponse<bool>) {
       await _bakeryTabCubit.loadBakeryData();
-      bakery = _bakeryTabCubit.bakery;
+      bakeries = _bakeryTabCubit.bakeries;
       _emitSuccess();
     } else if (changeSupervisorResult is FailureResponse) {
       emit(SettingsFailure((changeSupervisorResult as FailureResponse).error));

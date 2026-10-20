@@ -255,5 +255,8 @@
   "date": "Date",
   "day": "Day",
   "joinABakery": "Join a bakery",
-  "letTheBakeryOwnerScanHere": "Let the bakery owner scan here"
+  "letTheBakeryOwnerScanHere": "Let the bakery owner scan here",
+  "branches": "Branches",
+  "main": "(main)",
+  "addBranch": "Add new branch"
 }

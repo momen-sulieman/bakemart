@@ -1,3 +1,4 @@
+import 'package:bakemart/core/shared/widgets/branch_pager/branch_pager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,10 +29,15 @@ class StorageTabScreen extends StatelessWidget {
     if (unitFactor == 453.59237) return 2;
     return 1;
   }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final List<String> units = ["storageGram".tr(), "storageKilogram".tr(), "storagePounds".tr()];
+    final List<String> units = [
+      "storageGram".tr(),
+      "storageKilogram".tr(),
+      "storagePounds".tr(),
+    ];
 
     return MultiBlocProvider(
       providers: [
@@ -122,7 +128,10 @@ class StorageTabScreen extends StatelessWidget {
                             builder: (context, index) => Center(
                               child: Text(
                                 units[index],
-                                style: TextStyle(fontSize: 12,fontWeight: .bold),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: .bold,
+                                ),
                               ),
                             ),
                           ),
@@ -161,6 +170,7 @@ class StorageTabScreen extends StatelessWidget {
                       ),
                     );
                   } else if (storageState is StorageSucces) {
+                    final storageCubit = context.read<StorageCubit>();
                     return RefreshIndicator(
                       edgeOffset: 190,
                       strokeWidth: 2,
@@ -171,30 +181,42 @@ class StorageTabScreen extends StatelessWidget {
                       onRefresh: () async {
                         await context.read<BakeryTabCubit>().loadAll();
                       },
-                      child: GridView.builder(
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         padding: .only(
                           bottom: 130,
                           top: 210,
                           left: 15,
                           right: 15,
                         ),
-                        gridDelegate:
+                        child: BranchPager(
+                          branches: storageCubit.branches,
+                          storage: true,
+                          selectedBranchId: storageCubit.storageViewedBranch,
+                          onBranchChanged: storageCubit.storageBranchChanged,
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            gridDelegate:
                             SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 10,
                               mainAxisSpacing: 20,
                               childAspectRatio: 0.8,
                             ),
-                        itemCount: StorageHelper.allItems.length,
-                        itemBuilder: (context, index) {
-                          final itemName = StorageHelper.allItems[index];
-                          return StorageItemCard(
-                            storage: storageState.storage,
-                            itemName: itemName,
-                            itemUnit: unit,
-                            itemUnitFactor: unitFactor,
-                          );
-                        },
+                            itemCount: StorageHelper.allItems.length,
+                            itemBuilder: (context, index) {
+                              final itemName = StorageHelper.allItems[index];
+                              return StorageItemCard(
+                                storage: storageState.storage,
+                                itemName: itemName,
+                                itemUnit: unit,
+                                itemUnitFactor: unitFactor,
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     );
                   } else if (storageState is StorageFailure) {

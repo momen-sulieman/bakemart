@@ -33,14 +33,14 @@ class BakeryListTile extends StatelessWidget {
         margin: .symmetric(horizontal: 25, vertical: 8),
         padding: .only(top: 10, bottom: 10, left: 15, right: 5),
         radius: 50,
-        otherRadius:10,
+        otherRadius: 10,
         child: Directionality(
           textDirection: ui.TextDirection.ltr,
           child: Row(
             children: [
               Container(
-                width: 70,
-                height: 70,
+                width: 75,
+                height: 75,
                 margin: .only(right: 20),
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
@@ -48,7 +48,7 @@ class BakeryListTile extends StatelessWidget {
                     topLeft: .circular(35),
                     topRight: .circular(5),
                     bottomRight: .circular(35),
-                    bottomLeft: .circular(5)
+                    bottomLeft: .circular(5),
                   ),
                   color: ThemingColors.primaryColor.withAlpha(
                     (0.2 * 255).toInt(),
@@ -68,7 +68,35 @@ class BakeryListTile extends StatelessWidget {
                   children: [
                     Text(
                       bakery.bakeryModel.bakeryName,
-                      style: TextStyle(fontWeight: .bold),
+                      style: TextStyle(fontSize: 15,fontWeight: .bold),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          "Branch: ",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.isDark
+                                ? ThemingColors.white.withAlpha(
+                                    (0.5 * 255).toInt(),
+                                  )
+                                : ThemingColors.white.withAlpha(
+                                    (0.5 * 255).toInt(),
+                                  ),
+                          ),
+                        ),
+                        Flexible(
+                          child: Padding(
+                            padding: .only(right: 10),
+                            child: Text(bakery.bakeryModel.branchName,
+                              overflow: .ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 11,
+                              ),),
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: .symmetric(vertical: 7),
@@ -85,7 +113,7 @@ class BakeryListTile extends StatelessWidget {
                                       alignment: Alignment.center,
                                       children: [
                                         CircleAvatar(
-                                          radius: 16,
+                                          radius: 15,
                                           backgroundColor: ThemingColors
                                               .primaryColor
                                               .withAlpha((0.2 * 255).toInt()),
@@ -102,7 +130,7 @@ class BakeryListTile extends StatelessWidget {
                                           ),
                                         ),
                                         CircleAvatar(
-                                          radius: 16,
+                                          radius: 15,
                                           backgroundColor: ThemingColors.black
                                               .withAlpha(
                                                 ((context.isDark ? 0.8 : 0.1) *
@@ -115,16 +143,15 @@ class BakeryListTile extends StatelessWidget {
                                           child: Icon(
                                             Icons.more_horiz,
                                             size: 15,
-                                            color: ThemingColors.white.withAlpha(
-                                              (0.5 * 255).toInt(),
-                                            ),
+                                            color: ThemingColors.white
+                                                .withAlpha((0.5 * 255).toInt()),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 CircleAvatar(
-                                  radius: 16,
+                                  radius: 15,
                                   backgroundColor: ThemingColors.primaryColor
                                       .withAlpha((0.2 * 255).toInt()),
                                   child: ClipOval(
@@ -154,8 +181,7 @@ class BakeryListTile extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: List.generate(5, (starIndex) {
-                                final double rate =
-                                    bakery.bakeryRate;
+                                final double rate = bakery.bakeryRate;
                                 final double starValue = rate - starIndex;
 
                                 if (starValue >= 0.95) {
@@ -225,7 +251,8 @@ class BakeryListTile extends StatelessWidget {
                                           mainAxisAlignment: .end,
                                           children: [
                                             TransparentButton(
-                                              onTap: () => Navigator.pop(context),
+                                              onTap: () =>
+                                                  Navigator.pop(context),
                                               icon: Icons.close,
                                               color: Colors.redAccent,
                                               size: 20,
@@ -233,11 +260,15 @@ class BakeryListTile extends StatelessWidget {
                                           ],
                                         ),
                                         Dialog(
-                                          insetPadding: const EdgeInsets.all(20),
+                                          insetPadding: const EdgeInsets.all(
+                                            20,
+                                          ),
                                           backgroundColor: Colors.transparent,
                                           child: SizedBox(
                                             height:
-                                                MediaQuery.of(context).size.height *
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
                                                 0.6,
                                             child: LocationPickerMap.viewer(
                                               initialLat:
@@ -250,8 +281,12 @@ class BakeryListTile extends StatelessWidget {
                                               deviceLng: liveLng,
                                               markers: [
                                                 MapMarkerData(
-                                                  lat: bakery.bakeryModel.bakeryLat,
-                                                  lng: bakery.bakeryModel.bakeryLng,
+                                                  lat: bakery
+                                                      .bakeryModel
+                                                      .bakeryLat,
+                                                  lng: bakery
+                                                      .bakeryModel
+                                                      .bakeryLng,
                                                   icon: Icons.location_pin,
                                                   color: ThemingColors.black,
                                                 ),

@@ -254,5 +254,8 @@
   "date": "التاريخ",
   "day": "يوم",
   "joinABakery": "الإنضمام الى مخبز",
-  "letTheBakeryOwnerScanHere": "دع مالك المخبز يمسح الرمز"
+  "letTheBakeryOwnerScanHere": "دع مالك المخبز يمسح الرمز",
+  "branches": "الفروع",
+  "main": "(الرئيسي)",
+  "addBranch": "إضافة فرع جديد"
 }

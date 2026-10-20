@@ -1,5 +1,6 @@
 import 'package:bakemart/core/shared/models/payroll_model.dart';
 import 'package:bakemart/core/utils/extensions/string_extension.dart';
+import 'package:bakemart/core/shared/widgets/branch_pager/branch_pager.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/logic/settings_cubit/settings_cubit.dart';
 import 'package:bakemart/features/home/tabs/bakery_tab/tabs/bakery_settings/logic/settings_update_cubit/settings_update_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -24,8 +25,13 @@ class PayrollSettingsTile extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<SettingsCubit>();
 
-        final PayrollModel oldPayroll = cubit.payroll!;
-        final PayrollModel payroll = cubit.editablePayroll!;
+        final PayrollModel? currentOldPayroll = cubit.payroll;
+        final PayrollModel? currentEditablePayroll = cubit.editablePayroll;
+        if (currentOldPayroll == null || currentEditablePayroll == null) {
+          return const SizedBox.shrink();
+        }
+        final PayrollModel oldPayroll = currentOldPayroll;
+        final PayrollModel payroll = currentEditablePayroll;
 
         final List<MapEntry<String, double?>> allRoles = [
           MapEntry(PayrollsTableColumns.supervisor, payroll.supervisor),
@@ -48,7 +54,7 @@ class PayrollSettingsTile extends StatelessWidget {
         };
         final payrollMethod = payroll.payrollMethod;
         final List<MapEntry<String, double?>> visibleRoles =
-            cubit.isPayrollEditing
+        cubit.isPayrollEditing
             ? allRoles
             : allRoles.where((e) => e.value != null && e.value! > 0).toList();
 
@@ -71,12 +77,12 @@ class PayrollSettingsTile extends StatelessWidget {
                           fontSize: 12,
                           color: cubit.isPayrollEditing
                               ? context.isDark
-                                    ? ThemingColors.white.withAlpha(
-                                        ((changed ? 1 : 0.5) * 255).toInt(),
-                                      )
-                                    : ThemingColors.black.withAlpha(
-                                        ((changed ? 1 : 0.5) * 255).toInt(),
-                                      )
+                              ? ThemingColors.white.withAlpha(
+                            ((changed ? 1 : 0.5) * 255).toInt(),
+                          )
+                              : ThemingColors.black.withAlpha(
+                            ((changed ? 1 : 0.5) * 255).toInt(),
+                          )
                               : null,
                         ),
                       ),
@@ -119,11 +125,11 @@ class PayrollSettingsTile extends StatelessWidget {
                                           ),
                                           backgroundColor: context.isDark
                                               ? ThemingColors.black.withAlpha(
-                                                  (0.8 * 255).toInt(),
-                                                )
+                                            (0.8 * 255).toInt(),
+                                          )
                                               : ThemingColors.white.withAlpha(
-                                                  (0.8 * 255).toInt(),
-                                                ),
+                                            (0.8 * 255).toInt(),
+                                          ),
                                           title: Text(
                                             roleName.tr(),
                                             textAlign: .center,
@@ -141,16 +147,16 @@ class PayrollSettingsTile extends StatelessWidget {
                                                 child: TextFormField(
                                                   controller: rateController,
                                                   keyboardType:
-                                                      TextInputType.number,
+                                                  TextInputType.number,
                                                   textAlign: .center,
                                                   onTap: () {
                                                     rateController.text = "";
                                                   },
                                                   onChanged: (text) {
                                                     final number =
-                                                        double.tryParse(
-                                                          text.toEnglishDigits(),
-                                                        );
+                                                    double.tryParse(
+                                                      text.toEnglishDigits(),
+                                                    );
                                                     if (number != oldRate &&
                                                         text.isNotEmpty &&
                                                         roleName ==
@@ -162,7 +168,7 @@ class PayrollSettingsTile extends StatelessWidget {
                                                         true,
                                                       );
                                                     } else if (number !=
-                                                            oldRate &&
+                                                        oldRate &&
                                                         text.isNotEmpty &&
                                                         roleName !=
                                                             PayrollsTableColumns
@@ -179,13 +185,13 @@ class PayrollSettingsTile extends StatelessWidget {
                                                   decoration: InputDecoration(
                                                     border: InputBorder.none,
                                                     focusedBorder:
-                                                        InputBorder.none,
+                                                    InputBorder.none,
                                                     enabledBorder:
-                                                        InputBorder.none,
+                                                    InputBorder.none,
                                                     errorBorder:
-                                                        InputBorder.none,
+                                                    InputBorder.none,
                                                     disabledBorder:
-                                                        InputBorder.none,
+                                                    InputBorder.none,
                                                   ),
                                                 ),
                                               ),
@@ -196,62 +202,62 @@ class PayrollSettingsTile extends StatelessWidget {
                                               children: [
                                                 cubit.isPayrollRateChanged
                                                     ? InkWell(
-                                                        hoverColor:
-                                                            Colors.transparent,
-                                                        splashColor:
-                                                            Colors.transparent,
-                                                        highlightColor:
-                                                            Colors.transparent,
-                                                        onTap: () {
-                                                          Navigator.pop(
-                                                            dialogContext,
-                                                          );
-                                                        },
-                                                        child: GlassCard(
-                                                          margin: .symmetric(
-                                                            horizontal: 6,
-                                                          ),
-                                                          padding: .symmetric(
-                                                            vertical: 2,
-                                                            horizontal: 10,
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.arrow_back,
-                                                            size: 18,
-                                                            color: ThemingColors
-                                                                .primaryColor,
-                                                          ),
-                                                        ),
-                                                      )
+                                                  hoverColor:
+                                                  Colors.transparent,
+                                                  splashColor:
+                                                  Colors.transparent,
+                                                  highlightColor:
+                                                  Colors.transparent,
+                                                  onTap: () {
+                                                    Navigator.pop(
+                                                      dialogContext,
+                                                    );
+                                                  },
+                                                  child: GlassCard(
+                                                    margin: .symmetric(
+                                                      horizontal: 6,
+                                                    ),
+                                                    padding: .symmetric(
+                                                      vertical: 2,
+                                                      horizontal: 10,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.arrow_back,
+                                                      size: 18,
+                                                      color: ThemingColors
+                                                          .primaryColor,
+                                                    ),
+                                                  ),
+                                                )
                                                     : Expanded(
-                                                        child: InkWell(
-                                                          hoverColor: Colors
-                                                              .transparent,
-                                                          splashColor: Colors
-                                                              .transparent,
-                                                          highlightColor: Colors
-                                                              .transparent,
-                                                          onTap: () {
-                                                            Navigator.pop(
-                                                              dialogContext,
-                                                            );
-                                                          },
-                                                          child: GlassCard(
-                                                            margin: .symmetric(
-                                                              horizontal: 6,
-                                                            ),
-                                                            padding: .symmetric(
-                                                              vertical: 2,
-                                                            ),
-                                                            child: Icon(
-                                                              Icons.arrow_back,
-                                                              size: 18,
-                                                              color: ThemingColors
-                                                                  .primaryColor,
-                                                            ),
-                                                          ),
-                                                        ),
+                                                  child: InkWell(
+                                                    hoverColor: Colors
+                                                        .transparent,
+                                                    splashColor: Colors
+                                                        .transparent,
+                                                    highlightColor: Colors
+                                                        .transparent,
+                                                    onTap: () {
+                                                      Navigator.pop(
+                                                        dialogContext,
+                                                      );
+                                                    },
+                                                    child: GlassCard(
+                                                      margin: .symmetric(
+                                                        horizontal: 6,
                                                       ),
+                                                      padding: .symmetric(
+                                                        vertical: 2,
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.arrow_back,
+                                                        size: 18,
+                                                        color: ThemingColors
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                                 if (cubit.isPayrollRateChanged)
                                                   Expanded(
                                                     child: InkWell(
@@ -262,21 +268,23 @@ class PayrollSettingsTile extends StatelessWidget {
                                                                   .text
                                                                   .toEnglishDigits(),
                                                             ) ??
-                                                            0;
+                                                                0;
                                                         cubit.postNewRate(
                                                           role: roleName,
                                                           newRate: newRate,
+                                                          branchId:
+                                                          payroll.branchId,
                                                         );
                                                         Navigator.pop(
                                                           dialogContext,
                                                         );
                                                       },
                                                       hoverColor:
-                                                          Colors.transparent,
+                                                      Colors.transparent,
                                                       splashColor:
-                                                          Colors.transparent,
+                                                      Colors.transparent,
                                                       highlightColor:
-                                                          Colors.transparent,
+                                                      Colors.transparent,
                                                       child: GlassCard(
                                                         margin: .symmetric(
                                                           horizontal: 6,
@@ -310,8 +318,8 @@ class PayrollSettingsTile extends StatelessWidget {
                             fontSize: 12,
                             color: cubit.isPayrollEditing
                                 ? ThemingColors.primaryColor.withAlpha(
-                                    ((changed ? 1 : 0.5) * 255).toInt(),
-                                  )
+                              ((changed ? 1 : 0.5) * 255).toInt(),
+                            )
                                 : null,
                             decoration: cubit.isPayrollEditing
                                 ? TextDecoration.underline
@@ -350,604 +358,612 @@ class PayrollSettingsTile extends StatelessWidget {
                 Spacer(),
                 cubit.isPayrollEditing
                     ? Container(
-                        margin: .only(right: 10),
-                        padding: .symmetric(
-                          horizontal: cubit.isPayrollChanged ? 15 : 5,
-                          vertical: 5,
+                  margin: .only(right: 10),
+                  padding: .symmetric(
+                    horizontal: cubit.isPayrollChanged ? 15 : 5,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: .circular(50),
+                    border: Border.all(
+                      color: context.isDark
+                          ? Colors.white.withAlpha((0.2 * 255).toInt())
+                          : ThemingColors.black.withAlpha(
+                        (0.2 * 255).toInt(),
+                      ),
+                      width: 0.7,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.isDark
+                            ? Colors.white.withAlpha((0.1 * 255).toInt())
+                            : Colors.black.withAlpha((0.1 * 255).toInt()),
+                        blurRadius: 10,
+                        spreadRadius: -2,
+                        offset: Offset(5, -5),
+                      ),
+                      BoxShadow(
+                        color: context.isDark
+                            ? Colors.black.withAlpha((0.4 * 255).toInt())
+                            : Colors.white.withAlpha((0.4 * 255).toInt()),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                        offset: Offset(15, 8),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        hoverColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () {
+                          cubit.payrollCancelEditing();
+                        },
+                        child: Icon(
+                          Icons.close,
+                          size: 18,
+                          color: Colors.redAccent,
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius: .circular(50),
-                          border: Border.all(
-                            color: context.isDark
-                                ? Colors.white.withAlpha((0.2 * 255).toInt())
-                                : ThemingColors.black.withAlpha(
-                                    (0.2 * 255).toInt(),
-                                  ),
-                            width: 0.7,
+                      ),
+                      if (cubit.isPayrollChanged)
+                        SizedBox(
+                          height: 17,
+                          width: 35,
+                          child: Center(
+                            child: Container(
+                              width: 1,
+                              color: context.isDark
+                                  ? ThemingColors.white.withAlpha(
+                                (0.4 * 255).toInt(),
+                              )
+                                  : ThemingColors.black.withAlpha(
+                                (0.2 * 255).toInt(),
+                              ),
+                            ),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: context.isDark
-                                  ? Colors.white.withAlpha((0.1 * 255).toInt())
-                                  : Colors.black.withAlpha((0.1 * 255).toInt()),
-                              blurRadius: 10,
-                              spreadRadius: -2,
-                              offset: Offset(5, -5),
-                            ),
-                            BoxShadow(
-                              color: context.isDark
-                                  ? Colors.black.withAlpha((0.4 * 255).toInt())
-                                  : Colors.white.withAlpha((0.4 * 255).toInt()),
-                              blurRadius: 20,
-                              spreadRadius: 2,
-                              offset: Offset(15, 8),
-                            ),
-                          ],
                         ),
-                        child: Row(
-                          children: [
-                            InkWell(
-                              hoverColor: Colors.transparent,
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () {
-                                cubit.payrollCancelEditing();
-                              },
-                              child: Icon(
-                                Icons.close,
-                                size: 18,
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                            if (cubit.isPayrollChanged)
-                              SizedBox(
-                                height: 17,
-                                width: 35,
-                                child: Center(
-                                  child: Container(
-                                    width: 1,
-                                    color: context.isDark
-                                        ? ThemingColors.white.withAlpha(
-                                            (0.4 * 255).toInt(),
-                                          )
-                                        : ThemingColors.black.withAlpha(
-                                            (0.2 * 255).toInt(),
-                                          ),
-                                  ),
-                                ),
-                              ),
-                            if (cubit.isPayrollChanged)
-                              InkWell(
-                                hoverColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () {},
+                      if (cubit.isPayrollChanged)
+                        InkWell(
+                          hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () {},
+                          child:
+                          BlocBuilder<
+                              SettingsUpdateCubit,
+                              SettingsUpdateState
+                          >(
+                            builder: (context, updateState) {
+                              final updateCubit = context
+                                  .read<SettingsUpdateCubit>();
+                              return SizedBox(
+                                width: 18,
                                 child:
-                                    BlocBuilder<
-                                      SettingsUpdateCubit,
-                                      SettingsUpdateState
-                                    >(
-                                      builder: (context, updateState) {
-                                        final updateCubit = context
-                                            .read<SettingsUpdateCubit>();
-                                        return SizedBox(
-                                          width: 18,
-                                          child:
-                                              (updateState
-                                                  is SettingsUpdateInitial)
-                                              ? InkWell(
-                                                  onTap: () async {
-                                                    await updateCubit
-                                                        .updatePayroll(
-                                                          cubit
-                                                              .editablePayroll!,
-                                                        );
-                                                  },
-                                                  child: Icon(
-                                                    Icons.done,
-                                                    size: 18,
-                                                    color: Colors.green,
-                                                  ),
-                                                )
-                                              : LoadingAnimationWidget.staggeredDotsWave(
-                                                  color: Colors.green,
-                                                  size: 13,
-                                                ),
-                                        );
-                                      },
-                                    ),
-                              ),
-                          ],
+                                (updateState
+                                is SettingsUpdateInitial)
+                                    ? InkWell(
+                                  onTap: () async {
+                                    await updateCubit
+                                        .updatePayroll(
+                                      cubit
+                                          .editablePayroll!,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.done,
+                                    size: 18,
+                                    color: Colors.green,
+                                  ),
+                                )
+                                    : LoadingAnimationWidget.staggeredDotsWave(
+                                  color: Colors.green,
+                                  size: 13,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      )
+                    ],
+                  ),
+                )
                     : cubit.isPayrollExpanded
                     ? Padding(
-                        padding: .only(right: 10),
-                        child: InkWell(
-                          onTap: () {
-                            cubit.payrollEditingMode(!cubit.isPayrollEditing);
-                          },
-                          child: Icon(Icons.edit),
-                        ),
-                      )
+                  padding: .only(right: 10),
+                  child: InkWell(
+                    onTap: () {
+                      cubit.payrollEditingMode(!cubit.isPayrollEditing);
+                    },
+                    child: Icon(Icons.edit),
+                  ),
+                )
                     : SizedBox(),
               ],
             ),
           ),
           children: [
-            Padding(
-              padding: .symmetric(horizontal: 25),
-              child: Column(
-                children: [
-                  GlassCard(
-                    margin: .zero,
-                    padding: context.locale.languageCode == 'ar'
-                        ? .only(top: 10, bottom: 10, right: 15, left: 5)
-                        : .only(top: 10, bottom: 10, left: 15, right: 5),
-                    otherRadius: 30,
-                    child: Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        Text(
-                          "payrollMethod".tr(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: cubit.isPayrollEditing
-                                ? context.isDark
-                                      ? ThemingColors.white.withAlpha(
-                                          (((cubit.payroll!.payrollMethod !=
-                                                          cubit
-                                                              .editablePayroll!
-                                                              .payrollMethod)
-                                                      ? 1
-                                                      : 0.5) *
-                                                  255)
-                                              .toInt(),
-                                        )
-                                      : ThemingColors.black.withAlpha(
-                                          (((cubit.payroll!.payrollMethod !=
-                                                          cubit
-                                                              .editablePayroll!
-                                                              .payrollMethod)
-                                                      ? 1
-                                                      : 0.5) *
-                                                  255)
-                                              .toInt(),
-                                        )
-                                : null,
+            BranchPager(
+              branches: cubit.bakeries,
+              selectedBranchId: cubit.payrollsViewedBranch,
+              onBranchChanged: cubit.payrollsBranchChanged,
+              child: Padding(
+                padding: .symmetric(horizontal: 25),
+                child: Column(
+                  children: [
+                    GlassCard(
+                      margin: .zero,
+                      padding: context.locale.languageCode == 'ar'
+                          ? .only(top: 10, bottom: 10, right: 15, left: 5)
+                          : .only(top: 10, bottom: 10, left: 15, right: 5),
+                      otherRadius: 30,
+                      child: Row(
+                        mainAxisAlignment: .spaceBetween,
+                        children: [
+                          Text(
+                            "payrollMethod".tr(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: cubit.isPayrollEditing
+                                  ? context.isDark
+                                  ? ThemingColors.white.withAlpha(
+                                (((cubit.payroll!.payrollMethod !=
+                                    cubit
+                                        .editablePayroll!
+                                        .payrollMethod)
+                                    ? 1
+                                    : 0.5) *
+                                    255)
+                                    .toInt(),
+                              )
+                                  : ThemingColors.black.withAlpha(
+                                (((cubit.payroll!.payrollMethod !=
+                                    cubit
+                                        .editablePayroll!
+                                        .payrollMethod)
+                                    ? 1
+                                    : 0.5) *
+                                    255)
+                                    .toInt(),
+                              )
+                                  : null,
+                            ),
                           ),
-                        ),
-                        InkWell(
-                          hoverColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () {
-                            if (cubit.isPayrollEditing) {
-                              final List<String> methods = [
-                                "dailyPayment".tr(),
-                                "batchPayment".tr(),
-                              ];
-                              final oldMethodIndex = payrollMethod ? 0 : 1;
-                              bool updatedMethod = payrollMethod;
-                              cubit.payrollRateChanged(false);
-                              showDialog(
-                                barrierColor: Colors.transparent,
-                                context: context,
-                                builder: (dialogContext) {
-                                  return BlocProvider.value(
-                                    value: cubit,
-                                    child: BlocBuilder<SettingsCubit, SettingsState>(
-                                      builder: (context, state) {
-                                        return BackdropFilter(
-                                          filter: .blur(sigmaX: 2, sigmaY: 2),
-                                          child: AlertDialog(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: .circular(20),
-                                              side: BorderSide(
-                                                width: 0.2,
-                                                color: context.isDark
-                                                    ? ThemingColors.white
-                                                    : ThemingColors.black,
+                          InkWell(
+                            hoverColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              if (cubit.isPayrollEditing) {
+                                final List<String> methods = [
+                                  "dailyPayment".tr(),
+                                  "batchPayment".tr(),
+                                ];
+                                final oldMethodIndex = payrollMethod ? 0 : 1;
+                                bool updatedMethod = payrollMethod;
+                                cubit.payrollRateChanged(false);
+                                showDialog(
+                                  barrierColor: Colors.transparent,
+                                  context: context,
+                                  builder: (dialogContext) {
+                                    return BlocProvider.value(
+                                      value: cubit,
+                                      child: BlocBuilder<SettingsCubit, SettingsState>(
+                                        builder: (context, state) {
+                                          return BackdropFilter(
+                                            filter: .blur(sigmaX: 2, sigmaY: 2),
+                                            child: AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: .circular(20),
+                                                side: BorderSide(
+                                                  width: 0.2,
+                                                  color: context.isDark
+                                                      ? ThemingColors.white
+                                                      : ThemingColors.black,
+                                                ),
                                               ),
-                                            ),
-                                            backgroundColor: context.isDark
-                                                ? ThemingColors.black.withAlpha(
-                                                    (0.8 * 255).toInt(),
-                                                  )
-                                                : ThemingColors.white.withAlpha(
-                                                    (0.8 * 255).toInt(),
-                                                  ),
-                                            title: Text(
-                                              "payrollMethod".tr(),
-                                              textAlign: .center,
-                                              style: TextStyle(
-                                                fontWeight: .bold,
-                                                fontSize: 16,
+                                              backgroundColor: context.isDark
+                                                  ? ThemingColors.black.withAlpha(
+                                                (0.8 * 255).toInt(),
+                                              )
+                                                  : ThemingColors.white.withAlpha(
+                                                (0.8 * 255).toInt(),
                                               ),
-                                            ),
-                                            titlePadding: .only(top: 25),
-                                            contentPadding: .symmetric(
-                                              vertical: 20,
-                                            ),
-                                            content: SizedBox(
-                                              width: 100,
-                                              height: 100,
-                                              child: Row(
-                                                mainAxisAlignment: .center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.arrow_right,
-                                                    size: 22,
-                                                    color: ThemingColors
-                                                        .primaryColor,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 100,
-                                                    child: WheelPicker(
-                                                      controller:
-                                                          WheelPickerController(
-                                                            itemCount:
-                                                                methods.length,
-                                                            initialIndex:
-                                                                oldMethodIndex,
-                                                          ),
-                                                      looping: false,
-                                                      style: WheelPickerStyle(
-                                                        itemExtent: 30,
-                                                        surroundingOpacity: 0.4,
-                                                        diameterRatio: 10,
-                                                        magnification: 1,
+                                              title: Text(
+                                                "payrollMethod".tr(),
+                                                textAlign: .center,
+                                                style: TextStyle(
+                                                  fontWeight: .bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              titlePadding: .only(top: 25),
+                                              contentPadding: .symmetric(
+                                                vertical: 20,
+                                              ),
+                                              content: SizedBox(
+                                                width: 100,
+                                                height: 100,
+                                                child: Row(
+                                                  mainAxisAlignment: .center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.arrow_right,
+                                                      size: 22,
+                                                      color: ThemingColors
+                                                          .primaryColor,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: WheelPicker(
+                                                        controller:
+                                                        WheelPickerController(
+                                                          itemCount:
+                                                          methods.length,
+                                                          initialIndex:
+                                                          oldMethodIndex,
+                                                        ),
+                                                        looping: false,
+                                                        style: WheelPickerStyle(
+                                                          itemExtent: 30,
+                                                          surroundingOpacity: 0.4,
+                                                          diameterRatio: 10,
+                                                          magnification: 1,
+                                                        ),
+                                                        onIndexChanged: (index, _) {
+                                                          if (index !=
+                                                              oldMethodIndex) {
+                                                            updatedMethod =
+                                                            index == 0
+                                                                ? true
+                                                                : false;
+                                                            cubit
+                                                                .payrollRateChanged(
+                                                              true,
+                                                            );
+                                                          } else {
+                                                            updatedMethod =
+                                                            index == 0
+                                                                ? true
+                                                                : false;
+                                                            cubit
+                                                                .payrollRateChanged(
+                                                              false,
+                                                            );
+                                                          }
+                                                        },
+                                                        builder:
+                                                            (context, index) {
+                                                          return Center(
+                                                            child: Text(
+                                                              methods[index],
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  .ellipsis,
+                                                              style:
+                                                              TextStyle(
+                                                                fontSize:
+                                                                12,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
                                                       ),
-                                                      onIndexChanged: (index, _) {
-                                                        if (index !=
-                                                            oldMethodIndex) {
-                                                          updatedMethod =
-                                                              index == 0
-                                                              ? true
-                                                              : false;
-                                                          cubit
-                                                              .payrollRateChanged(
-                                                                true,
-                                                              );
-                                                        } else {
-                                                          updatedMethod =
-                                                              index == 0
-                                                              ? true
-                                                              : false;
-                                                          cubit
-                                                              .payrollRateChanged(
-                                                                false,
-                                                              );
-                                                        }
+                                                    ),
+                                                    Icon(
+                                                      Icons.arrow_left,
+                                                      size: 22,
+                                                      color: ThemingColors
+                                                          .primaryColor,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              actions: [
+                                                Row(
+                                                  children: [
+                                                    cubit.isPayrollRateChanged
+                                                        ? InkWell(
+                                                      hoverColor: Colors
+                                                          .transparent,
+                                                      splashColor: Colors
+                                                          .transparent,
+                                                      highlightColor: Colors
+                                                          .transparent,
+                                                      onTap: () {
+                                                        Navigator.pop(
+                                                          dialogContext,
+                                                        );
                                                       },
-                                                      builder:
-                                                          (context, index) {
-                                                            return Center(
-                                                              child: Text(
-                                                                methods[index],
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    .ellipsis,
-                                                                style:
-                                                                    TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                    ),
+                                                      child: GlassCard(
+                                                        margin: .symmetric(
+                                                          horizontal: 6,
+                                                        ),
+                                                        padding: .symmetric(
+                                                          vertical: 2,
+                                                          horizontal: 10,
+                                                        ),
+                                                        child: Icon(
+                                                          Icons.arrow_back,
+                                                          size: 18,
+                                                          color: ThemingColors
+                                                              .primaryColor,
+                                                        ),
+                                                      ),
+                                                    )
+                                                        : Expanded(
+                                                      child: InkWell(
+                                                        hoverColor: Colors
+                                                            .transparent,
+                                                        splashColor: Colors
+                                                            .transparent,
+                                                        highlightColor:
+                                                        Colors
+                                                            .transparent,
+                                                        onTap: () {
+                                                          Navigator.pop(
+                                                            dialogContext,
+                                                          );
+                                                        },
+                                                        child: GlassCard(
+                                                          margin:
+                                                              .symmetric(
+                                                            horizontal:
+                                                            6,
+                                                          ),
+                                                          padding:
+                                                              .symmetric(
+                                                            vertical: 2,
+                                                          ),
+                                                          child: Icon(
+                                                            Icons
+                                                                .arrow_back,
+                                                            size: 18,
+                                                            color: ThemingColors
+                                                                .primaryColor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    if (cubit
+                                                        .isPayrollRateChanged)
+                                                      Expanded(
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            cubit
+                                                                .updatePayrollMethod(
+                                                              payroll.copyWith(
+                                                                payrollMethod:
+                                                                updatedMethod,
                                                               ),
                                                             );
-                                                          },
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    Icons.arrow_left,
-                                                    size: 22,
-                                                    color: ThemingColors
-                                                        .primaryColor,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            actions: [
-                                              Row(
-                                                children: [
-                                                  cubit.isPayrollRateChanged
-                                                      ? InkWell(
-                                                          hoverColor: Colors
-                                                              .transparent,
-                                                          splashColor: Colors
-                                                              .transparent,
-                                                          highlightColor: Colors
-                                                              .transparent,
-                                                          onTap: () {
                                                             Navigator.pop(
                                                               dialogContext,
                                                             );
                                                           },
+                                                          hoverColor:
+                                                          Colors.transparent,
+                                                          splashColor:
+                                                          Colors.transparent,
+                                                          highlightColor:
+                                                          Colors.transparent,
                                                           child: GlassCard(
                                                             margin: .symmetric(
                                                               horizontal: 6,
                                                             ),
                                                             padding: .symmetric(
                                                               vertical: 2,
-                                                              horizontal: 10,
                                                             ),
                                                             child: Icon(
-                                                              Icons.arrow_back,
+                                                              Icons.done,
                                                               size: 18,
-                                                              color: ThemingColors
-                                                                  .primaryColor,
+                                                              color: Colors.green,
                                                             ),
-                                                          ),
-                                                        )
-                                                      : Expanded(
-                                                          child: InkWell(
-                                                            hoverColor: Colors
-                                                                .transparent,
-                                                            splashColor: Colors
-                                                                .transparent,
-                                                            highlightColor:
-                                                                Colors
-                                                                    .transparent,
-                                                            onTap: () {
-                                                              Navigator.pop(
-                                                                dialogContext,
-                                                              );
-                                                            },
-                                                            child: GlassCard(
-                                                              margin:
-                                                                  .symmetric(
-                                                                    horizontal:
-                                                                        6,
-                                                                  ),
-                                                              padding:
-                                                                  .symmetric(
-                                                                    vertical: 2,
-                                                                  ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .arrow_back,
-                                                                size: 18,
-                                                                color: ThemingColors
-                                                                    .primaryColor,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                  if (cubit
-                                                      .isPayrollRateChanged)
-                                                    Expanded(
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          cubit
-                                                              .updatePayrollMethod(
-                                                                updatedMethod,
-                                                              );
-                                                          Navigator.pop(
-                                                            dialogContext,
-                                                          );
-                                                        },
-                                                        hoverColor:
-                                                            Colors.transparent,
-                                                        splashColor:
-                                                            Colors.transparent,
-                                                        highlightColor:
-                                                            Colors.transparent,
-                                                        child: GlassCard(
-                                                          margin: .symmetric(
-                                                            horizontal: 6,
-                                                          ),
-                                                          padding: .symmetric(
-                                                            vertical: 2,
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.done,
-                                                            size: 18,
-                                                            color: Colors.green,
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              );
-                            }
-                          },
-                          child: Row(
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.arrow_right,
+                                  size: 22,
+                                  color: ThemingColors.primaryColor.withAlpha(
+                                    ((cubit.isPayrollEditing
+                                        ? (cubit.payroll!.payrollMethod ==
+                                        cubit
+                                            .editablePayroll!
+                                            .payrollMethod)
+                                        ? 0.5
+                                        : 1
+                                        : 0) *
+                                        255)
+                                        .toInt(),
+                                  ),
+                                ),
+                                Text(
+                                  payrollMethod
+                                      ? "dailyPayment".tr()
+                                      : "batchPayment".tr(),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: cubit.isPayrollEditing
+                                        ? (cubit.payroll!.payrollMethod ==
+                                        cubit
+                                            .editablePayroll!
+                                            .payrollMethod)
+                                        ? ThemingColors.primaryColor
+                                        .withAlpha(
+                                      ((context.isDark
+                                          ? 0.5
+                                          : 0.7) *
+                                          255)
+                                          .toInt(),
+                                    )
+                                        : ThemingColors.primaryColor
+                                        : null,
+                                    decoration: .underline,
+                                    decorationColor: cubit.isPayrollEditing
+                                        ? (cubit.payroll!.payrollMethod ==
+                                        cubit
+                                            .editablePayroll!
+                                            .payrollMethod)
+                                        ? ThemingColors.primaryColor
+                                        .withAlpha(
+                                      ((context.isDark
+                                          ? 0.5
+                                          : 0.7) *
+                                          255)
+                                          .toInt(),
+                                    )
+                                        : ThemingColors.primaryColor
+                                        : null,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_left,
+                                  size: 22,
+                                  color: ThemingColors.primaryColor.withAlpha(
+                                    ((cubit.isPayrollEditing
+                                        ? (cubit.payroll!.payrollMethod ==
+                                        cubit
+                                            .editablePayroll!
+                                            .payrollMethod)
+                                        ? 0.5
+                                        : 1
+                                        : 0) *
+                                        255)
+                                        .toInt(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 7),
+                    GlassCard(
+                      margin: .zero,
+                      padding: .symmetric(horizontal: 10, vertical: 5),
+                      radius: 20,
+                      otherRadius: 20,
+                      child: Table(
+                        border: TableBorder(
+                          horizontalInside: BorderSide(
+                            width: 0.5,
+                            color: ThemingColors.primaryColor.withAlpha(
+                              (0.2 * 255).toInt(),
+                            ),
+                          ),
+                          verticalInside: BorderSide(
+                            width: 2,
+                            color: ThemingColors.primaryColor.withAlpha(
+                              (0.2 * 255).toInt(),
+                            ),
+                          ),
+                        ),
+                        columnWidths: {
+                          0: FlexColumnWidth(1),
+                          1: FlexColumnWidth(2.5),
+                        },
+                        children: [
+                          TableRow(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 2,
+                                  color: ThemingColors.primaryColor.withAlpha(
+                                    (0.4 * 255).toInt(),
+                                  ),
+                                ),
+                              ),
+                            ),
                             children: [
-                              Icon(
-                                Icons.arrow_right,
-                                size: 22,
-                                color: ThemingColors.primaryColor.withAlpha(
-                                  ((cubit.isPayrollEditing
-                                              ? (cubit.payroll!.payrollMethod ==
-                                                        cubit
-                                                            .editablePayroll!
-                                                            .payrollMethod)
-                                                    ? 0.5
-                                                    : 1
-                                              : 0) *
-                                          255)
-                                      .toInt(),
-                                ),
+                              Row(
+                                mainAxisAlignment: .start,
+                                children: [
+                                  Padding(
+                                    padding: .symmetric(
+                                      vertical: 7,
+                                      horizontal: 10,
+                                    ),
+                                    child: TextCell(
+                                      string: Text(
+                                        "role".tr(),
+                                        textAlign: .center,
+                                        style: TextStyle(
+                                          fontWeight: .bold,
+                                          color: context.isDark
+                                              ? ThemingColors.white.withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          )
+                                              : ThemingColors.black.withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                payrollMethod
-                                    ? "dailyPayment".tr()
-                                    : "batchPayment".tr(),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: cubit.isPayrollEditing
-                                      ? (cubit.payroll!.payrollMethod ==
-                                                cubit
-                                                    .editablePayroll!
-                                                    .payrollMethod)
-                                            ? ThemingColors.primaryColor
-                                                  .withAlpha(
-                                                    ((context.isDark
-                                                                ? 0.5
-                                                                : 0.7) *
-                                                            255)
-                                                        .toInt(),
-                                                  )
-                                            : ThemingColors.primaryColor
-                                      : null,
-                                  decoration: .underline,
-                                  decorationColor: cubit.isPayrollEditing
-                                      ? (cubit.payroll!.payrollMethod ==
-                                                cubit
-                                                    .editablePayroll!
-                                                    .payrollMethod)
-                                            ? ThemingColors.primaryColor
-                                                  .withAlpha(
-                                                    ((context.isDark
-                                                                ? 0.5
-                                                                : 0.7) *
-                                                            255)
-                                                        .toInt(),
-                                                  )
-                                            : ThemingColors.primaryColor
-                                      : null,
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_left,
-                                size: 22,
-                                color: ThemingColors.primaryColor.withAlpha(
-                                  ((cubit.isPayrollEditing
-                                              ? (cubit.payroll!.payrollMethod ==
-                                                        cubit
-                                                            .editablePayroll!
-                                                            .payrollMethod)
-                                                    ? 0.5
-                                                    : 1
-                                              : 0) *
-                                          255)
-                                      .toInt(),
-                                ),
+                              Row(
+                                mainAxisAlignment: .center,
+                                children: [
+                                  Padding(
+                                    padding: .symmetric(vertical: 7),
+                                    child: TextCell(
+                                      string: Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: payrollMethod
+                                                  ? "ratePerDay".tr()
+                                                  : "ratePerBatch".tr(),
+                                            ),
+                                            if (payrollMethod)
+                                              TextSpan(
+                                                text: "24hours".tr(),
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: context.isDark
+                                              ? ThemingColors.white.withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          )
+                                              : ThemingColors.black.withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 7),
-                  GlassCard(
-                    margin: .zero,
-                    padding: .symmetric(horizontal: 10, vertical: 5),
-                    radius: 20,
-                    otherRadius: 20,
-                    child: Table(
-                      border: TableBorder(
-                        horizontalInside: BorderSide(
-                          width: 0.5,
-                          color: ThemingColors.primaryColor.withAlpha(
-                            (0.2 * 255).toInt(),
-                          ),
-                        ),
-                        verticalInside: BorderSide(
-                          width: 2,
-                          color: ThemingColors.primaryColor.withAlpha(
-                            (0.2 * 255).toInt(),
-                          ),
-                        ),
+                          ...payrollRoleRows,
+                        ],
                       ),
-                      columnWidths: {
-                        0: FlexColumnWidth(1),
-                        1: FlexColumnWidth(2.5),
-                      },
-                      children: [
-                        TableRow(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 2,
-                                color: ThemingColors.primaryColor.withAlpha(
-                                  (0.4 * 255).toInt(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          children: [
-                            Row(
-                              mainAxisAlignment: .start,
-                              children: [
-                                Padding(
-                                  padding: .symmetric(
-                                    vertical: 7,
-                                    horizontal: 10,
-                                  ),
-                                  child: TextCell(
-                                    string: Text(
-                                      "role".tr(),
-                                      textAlign: .center,
-                                      style: TextStyle(
-                                        fontWeight: .bold,
-                                        color: context.isDark
-                                            ? ThemingColors.white.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              )
-                                            : ThemingColors.black.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: .center,
-                              children: [
-                                Padding(
-                                  padding: .symmetric(vertical: 7),
-                                  child: TextCell(
-                                    string: Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: payrollMethod
-                                                ? "ratePerDay".tr()
-                                                : "ratePerBatch".tr(),
-                                          ),
-                                          if (payrollMethod)
-                                            TextSpan(
-                                              text: "24hours".tr(),
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: context.isDark
-                                            ? ThemingColors.white.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              )
-                                            : ThemingColors.black.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        ...payrollRoleRows,
-                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

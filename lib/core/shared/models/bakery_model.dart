@@ -39,13 +39,16 @@ class BakeryModel {
     return BakeryModel(
       bakeryId: json[BakeriesTableColumns.bakeryId] as String? ?? '',
       bakeryName: json[BakeriesTableColumns.bakeryName] as String? ?? '',
-      bakeryLat: (json[BakeriesTableColumns.bakeryLat] as num?)?.toDouble() ?? 0.0,
-      bakeryLng: (json[BakeriesTableColumns.bakeryLng] as num?)?.toDouble() ?? 0.0,
+      bakeryLat:
+          (json[BakeriesTableColumns.bakeryLat] as num?)?.toDouble() ?? 0.0,
+      bakeryLng:
+          (json[BakeriesTableColumns.bakeryLng] as num?)?.toDouble() ?? 0.0,
       supervisorId: parsedSupervisorIds,
       verified: json[BakeriesTableColumns.verified] as bool? ?? false,
-      branchId: json['branchId'] as String? ?? '',
-      branchName: json['branchName'] as String? ?? '',
-      branchNumber: (json['branchNumber'] as num?)?.toInt() ?? 0,
+      branchId: json[BakeriesTableColumns.branchId] as String? ?? '',
+      branchName: json[BakeriesTableColumns.branchName] as String? ?? '',
+      branchNumber:
+          (json[BakeriesTableColumns.branchNumber] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -57,9 +60,9 @@ class BakeryModel {
       BakeriesTableColumns.bakeryLng: bakeryLng,
       BakeriesTableColumns.supervisorId: supervisorId,
       BakeriesTableColumns.verified: verified,
-      'branchId': branchId,
-      'branchName': branchName,
-      'branchNumber': branchNumber,
+      BakeriesTableColumns.branchId: branchId,
+      BakeriesTableColumns.branchName: branchName,
+      BakeriesTableColumns.branchNumber: branchNumber,
     };
   }
 

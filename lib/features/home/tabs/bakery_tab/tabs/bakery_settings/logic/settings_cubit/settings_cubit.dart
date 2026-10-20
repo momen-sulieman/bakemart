@@ -9,6 +9,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../../../core/shared/models/storage_model.dart';
 import '../../../../../../../../core/shared/widgets/supabase_image/logic/supabase_image_cubit/supabase_image_cubit.dart';
 import '../../../../../../../../core/utils/enums/buckts.dart';
 import '../../../../../../../../core/utils/enums/payrolls_table_columns.dart';
@@ -32,7 +33,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     getSettings();
   }
 
-  TextEditingController branchNameController=TextEditingController();
   String productsViewedBranch = "";
   String payrollsViewedBranch = "";
   String staffsViewedBranch = "";
@@ -58,19 +58,26 @@ class SettingsCubit extends Cubit<SettingsState> {
   bool isBranchesChanged = false;
   bool isOneProductChanged = false;
   bool isProductDataChanged = false;
-  bool newBranchFormValidity=false;
+  bool newBranchFormValidity = false;
+  double newBranchLat = 0;
+  double newBranchLng = 0;
 
+  void setNewBranchLocation({required double lat,required double lng}){
+    newBranchLat=lat;
+    newBranchLng=lng;
+  }
   final Set<String> changedProductPictures = {};
   bool newProductFormValidity = false;
   bool isLocationChanged = false;
   final Map<String, File> pendingProductImages = {};
   final Map<String, int> productImageVersion = {};
+
   PayrollModel? get payroll => payrolls.firstWhereOrNull(
-        (item) => item.branchId == payrollsViewedBranch,
+    (item) => item.branchId == payrollsViewedBranch,
   );
 
   PayrollModel? get editablePayroll => editablePayrolls.firstWhereOrNull(
-        (item) => item.branchId == payrollsViewedBranch,
+    (item) => item.branchId == payrollsViewedBranch,
   );
 
   String _validBranch(String current) {
@@ -128,12 +135,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  void setValidity({bool? newProductFormValidityState,bool? newBranchFormValidityState}) {
-    if (newProductFormValidityState!=null){
+  void setValidity({
+    bool? newProductFormValidityState,
+    bool? newBranchFormValidityState,
+  }) {
+    if (newProductFormValidityState != null) {
       newProductFormValidity = newProductFormValidityState;
     }
-    if (newBranchFormValidityState!=null){
-      newProductFormValidity = newBranchFormValidityState;
+    if (newBranchFormValidityState != null) {
+      newBranchFormValidity = newBranchFormValidityState;
     }
     _emitSuccess();
   }
@@ -156,6 +166,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     isProductsExpanded = expanded;
     _emitSuccess();
   }
+
   void updateBranchesTileExpansion(bool expanded) {
     isBranchesExpanded = expanded;
     _emitSuccess();
@@ -185,6 +196,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     isProductsEditing = editing;
     _emitSuccess();
   }
+
   void branchesEditingMode(bool editing) {
     isBranchesEditing = editing;
     _emitSuccess();
@@ -205,6 +217,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     changedProductPictures.clear();
     _emitSuccess();
   }
+
   void branchesCancelEditing() {
     isBranchesChanged = false;
     isBranchesEditing = false;
@@ -297,6 +310,29 @@ class SettingsCubit extends Cubit<SettingsState> {
       ),
     );
   }
+
+  Future<void> createNewBranch({
+    required BakeryModel bakeryData,
+    required List<ProductModel> products,
+    required PayrollModel payroll,
+    required StorageModel storage,
+  }) async {
+    final result = await _repo.createNewBranch(
+      bakeryData: bakeryData,
+      products: products,
+      payroll: payroll,
+      storage: storage,
+    );
+    if (result is SuccessResponse<bool>) {
+      await _bakeryTabCubit.loadAll();
+      _bakeryTabCubit.emitLoading();
+      _bakeryTabCubit.check();
+      _emitSuccess();
+    } else if (result is FailureResponse) {
+      emit(SettingsFailure((result as FailureResponse).error));
+    }
+  }
+
   Future<void> changeBranchLocation({
     required String branchId,
     required double lat,
@@ -317,10 +353,18 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> getSettings() async {
-    debugPrint('bakeries: ${_bakeryTabCubit.bakeries.map((b) => "${b.branchId}|${b.branchName}").toList()}');
-    debugPrint('payrolls: ${_bakeryTabCubit.payrolls.map((p) => p.branchId).toList()}');
-    debugPrint('products: ${_bakeryTabCubit.products.map((p) => p.branchId).toSet()}');
-    debugPrint('staff: ${_bakeryTabCubit.staff.map((s) => s.branchId).toSet()}');
+    debugPrint(
+      'bakeries: ${_bakeryTabCubit.bakeries.map((b) => "${b.branchId}|${b.branchName}").toList()}',
+    );
+    debugPrint(
+      'payrolls: ${_bakeryTabCubit.payrolls.map((p) => p.branchId).toList()}',
+    );
+    debugPrint(
+      'products: ${_bakeryTabCubit.products.map((p) => p.branchId).toSet()}',
+    );
+    debugPrint(
+      'staff: ${_bakeryTabCubit.staff.map((s) => s.branchId).toSet()}',
+    );
     bakeries = _bakeryTabCubit.bakeries;
     payrolls = _bakeryTabCubit.payrolls;
     editablePayrolls = _bakeryTabCubit.payrolls;

@@ -140,6 +140,7 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
   List<BakeryModel> bakeries = [];
   List<StorageModel> storages = [];
   List<PayrollModel> payrolls = [];
+
   PayrollModel payrollFor(String branchId) {
     final matches = payrolls.where((payroll) => payroll.branchId == branchId);
     if (matches.isNotEmpty) return matches.first;
@@ -331,6 +332,10 @@ class BakeryTabCubit extends Cubit<BakeryTabState> {
     } else {
       emit(BakeryTabFailure((bakeryResponse as FailureResponse).error));
     }
+  }
+
+  void emitLoading() {
+    emit(BakeryTabLoading());
   }
 
   Future<void> loadAll() async {

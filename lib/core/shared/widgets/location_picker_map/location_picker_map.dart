@@ -25,6 +25,18 @@ class MapMarkerData {
   });
 }
 
+class _ButtonsVisibilityCubit extends Cubit<({bool reset, bool set})> {
+  _ButtonsVisibilityCubit() : super((reset: false, set: false));
+
+  void showBoth() {
+    if (!state.reset || !state.set) emit((reset: true, set: true));
+  }
+
+  void hideReset() => emit((reset: false, set: state.set));
+
+  void hideAll() => emit((reset: false, set: false));
+}
+
 class LocationPickerMap extends StatelessWidget {
   final double initialLat;
   final double initialLng;
@@ -38,6 +50,7 @@ class LocationPickerMap extends StatelessWidget {
   final bool hideWhenRecenter;
   final bool hideOnSet;
   final bool alwaysShowPin;
+  final bool independentButtons;
   final void Function(double lat, double lng)? onPositionChanged;
   final void Function(double lat, double lng)? onSet;
   final List<MapMarkerData> markers;
@@ -56,11 +69,12 @@ class LocationPickerMap extends StatelessWidget {
     this.hideWhenRecenter = false,
     this.hideOnSet = false,
     this.alwaysShowPin = false,
+    this.independentButtons = false,
     this.onPositionChanged,
     super.key,
   }) : mode = LocationMapMode.setter,
-       markers = const [],
-       routePoints = const [];
+        markers = const [],
+        routePoints = const [];
 
   const LocationPickerMap.viewer({
     required this.initialLat,
@@ -70,7 +84,7 @@ class LocationPickerMap extends StatelessWidget {
     this.deviceLat,
     this.deviceLng,
     super.key,
-  })  : mode = LocationMapMode.viewer,
+  }) : mode = LocationMapMode.viewer,
         onSet = null,
         onPositionChanged = null,
         resetLat = null,
@@ -79,13 +93,19 @@ class LocationPickerMap extends StatelessWidget {
         alwaysShow = true,
         hideWhenRecenter = false,
         hideOnSet = false,
-        alwaysShowPin = false;
+        alwaysShowPin = false,
+        independentButtons = false;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          MapPickerCubit(initialLat: initialLat, initialLng: initialLng),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              MapPickerCubit(initialLat: initialLat, initialLng: initialLng),
+        ),
+        BlocProvider(create: (_) => _ButtonsVisibilityCubit()),
+      ],
       child: _LocationPickerMapView(
         mode: mode,
         deviceLat: deviceLat,
@@ -97,6 +117,7 @@ class LocationPickerMap extends StatelessWidget {
         hideWhenRecenter: hideWhenRecenter,
         hideOnSet: hideOnSet,
         alwaysShowPin: alwaysShowPin,
+        independentButtons: independentButtons,
         onPositionChanged: onPositionChanged,
         onSet: onSet,
         markers: markers,
@@ -117,6 +138,7 @@ class _LocationPickerMapView extends StatelessWidget {
   final bool hideWhenRecenter;
   final bool hideOnSet;
   final bool alwaysShowPin;
+  final bool independentButtons;
   final void Function(double lat, double lng)? onPositionChanged;
   final void Function(double lat, double lng)? onSet;
   final List<MapMarkerData> markers;
@@ -133,6 +155,7 @@ class _LocationPickerMapView extends StatelessWidget {
     required this.hideWhenRecenter,
     required this.hideOnSet,
     required this.alwaysShowPin,
+    required this.independentButtons,
     required this.onPositionChanged,
     required this.onSet,
     required this.markers,
@@ -142,236 +165,272 @@ class _LocationPickerMapView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<MapPickerCubit>();
-    return BlocBuilder<MapPickerCubit, MapPickerState>(
-      builder: (context, state) {
-        final bool hasDevice = deviceLat != null && deviceLng != null;
-        final bool hasReset = resetLat != null && resetLng != null;
-        final bool visible = alwaysShow || state.hasDragged;
+    final buttonsCubit = context.read<_ButtonsVisibilityCubit>();
+    return BlocBuilder<_ButtonsVisibilityCubit, ({bool reset, bool set})>(
+      builder: (context, buttons) {
+        return BlocBuilder<MapPickerCubit, MapPickerState>(
+          builder: (context, state) {
+            final bool hasDevice = deviceLat != null && deviceLng != null;
+            final bool hasReset = resetLat != null && resetLng != null;
+            final bool visible = alwaysShow || state.hasDragged;
+            final bool showResetButton =
+            independentButtons ? buttons.reset : visible;
+            final bool showSetButton =
+            independentButtons ? buttons.set : visible;
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Directionality(
-            textDirection: ui.TextDirection.ltr,
-            child: Stack(
-              children: [
-                FlutterMap(
-                  mapController: cubit.mapController,
-                  options: MapOptions(
-                    initialCenter: state.target,
-                    initialZoom: 16,
-                    onPositionChanged: (position, hasGesture) {
-                      cubit.onCameraMoved(position.center, hasGesture);
-                      if (hasGesture && mode == LocationMapMode.setter) {
-                        onPositionChanged?.call(
-                          position.center.latitude,
-                          position.center.longitude,
-                        );
-                      }
-                    },
-                  ),
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Directionality(
+                textDirection: ui.TextDirection.ltr,
+                child: Stack(
                   children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.bakemart.app',
-                    ),
-                    if (routePoints.length >= 2)
-                      PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: routePoints,
-                            strokeWidth: 4,
-                            color: ThemingColors.primaryColor,
-                          ),
-                        ],
+                    FlutterMap(
+                      mapController: cubit.mapController,
+                      options: MapOptions(
+                        initialCenter: state.target,
+                        initialZoom: 16,
+                        onPositionChanged: (position, hasGesture) {
+                          cubit.onCameraMoved(position.center, hasGesture);
+                          if (hasGesture && mode == LocationMapMode.setter) {
+                            if (independentButtons) buttonsCubit.showBoth();
+                            onPositionChanged?.call(
+                              position.center.latitude,
+                              position.center.longitude,
+                            );
+                          }
+                        },
                       ),
-                    MarkerLayer(
-                      markers: [
-                        if (hasDevice)
-                          Marker(
-                            point: LatLng(deviceLat!, deviceLng!),
-                            width: 18,
-                            height: 18,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.bakemart.app',
+                        ),
+                        if (routePoints.length >= 2)
+                          PolylineLayer(
+                            polylines: [
+                              Polyline(
+                                points: routePoints,
+                                strokeWidth: 4,
                                 color: ThemingColors.primaryColor,
-                                border: Border.all(color: Colors.white, width: 3),
                               ),
-                            ),
+                            ],
                           ),
-                        if (hasReset && resetMarkerIcon != null)
-                          Marker(
-                            point: LatLng(resetLat!, resetLng!),
-                            width: 34,
-                            height: 34,
-                            alignment: Alignment.bottomCenter,
+                        MarkerLayer(
+                          markers: [
+                            if (hasDevice)
+                              Marker(
+                                point: LatLng(deviceLat!, deviceLng!),
+                                width: 18,
+                                height: 18,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: ThemingColors.primaryColor,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 3,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            if (hasReset && resetMarkerIcon != null)
+                              Marker(
+                                point: LatLng(resetLat!, resetLng!),
+                                width: 34,
+                                height: 34,
+                                alignment: Alignment.bottomCenter,
+                                child: Icon(
+                                  resetMarkerIcon,
+                                  size: 35,
+                                  color: ThemingColors.black,
+                                ),
+                              ),
+                            if (mode == LocationMapMode.viewer)
+                              for (final marker in markers)
+                                Marker(
+                                  point: LatLng(marker.lat, marker.lng),
+                                  width: 34,
+                                  height: 34,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Icon(
+                                    marker.icon,
+                                    size: 34,
+                                    color: marker.color ?? ThemingColors.black,
+                                  ),
+                                ),
+                          ],
+                        ),
+                        const RichAttributionWidget(
+                          alignment: AttributionAlignment.bottomLeft,
+                          attributions: [
+                            TextSourceAttribution('OpenStreetMap contributors'),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (mode == LocationMapMode.setter &&
+                        (alwaysShowPin || visible))
+                      IgnorePointer(
+                        child: Center(
+                          child: Transform.translate(
+                            offset: const Offset(0, -18),
                             child: Icon(
-                              resetMarkerIcon,
-                              size: 35,
+                              Icons.location_pin,
+                              size: 40,
                               color: ThemingColors.black,
                             ),
                           ),
-                        if (mode == LocationMapMode.viewer)
-                          for (final marker in markers)
-                            Marker(
-                              point: LatLng(marker.lat, marker.lng),
-                              width: 34,
-                              height: 34,
-                              alignment: Alignment.bottomCenter,
+                        ),
+                      ),
+                    if (mode == LocationMapMode.setter &&
+                        hasReset &&
+                        showResetButton)
+                      Positioned(
+                        top: 15,
+                        right: 15,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            hoverColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            borderRadius: BorderRadius.circular(30),
+                            onTap: () {
+                              if (independentButtons) {
+                                cubit.recenter(resetLat!, resetLng!);
+                                buttonsCubit.hideReset();
+                              } else {
+                                cubit.recenter(
+                                  resetLat!,
+                                  resetLng!,
+                                  forceHide: true,
+                                );
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: ThemingColors.black.withAlpha(
+                                  (0.7 * 255).toInt(),
+                                ),
+                                shape: BoxShape.circle,
+                              ),
                               child: Icon(
-                                marker.icon,
-                                size: 34,
-                                color: marker.color ?? ThemingColors.black,
+                                resetMarkerIcon ?? Icons.location_on_outlined,
+                                size: 20,
+                                color: ThemingColors.white,
                               ),
                             ),
-                      ],
-                    ),
-                    const RichAttributionWidget(
-                      alignment: AttributionAlignment.bottomLeft,
-                      attributions: [
-                        TextSourceAttribution('OpenStreetMap contributors'),
-                      ],
-                    ),
-                  ],
-                ),
-                if (mode == LocationMapMode.setter && (alwaysShowPin || visible))
-                  IgnorePointer(
-                    child: Center(
-                      child: Transform.translate(
-                        offset: const Offset(0, -18),
-                        child: Icon(
-                          Icons.location_pin,
-                          size: 40,
-                          color: ThemingColors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (mode == LocationMapMode.setter && hasReset && visible)
-                  Positioned(
-                    top: 15,
-                    right: 15,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        hoverColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        borderRadius: BorderRadius.circular(30),
-                        onTap: () =>
-                            cubit.recenter(resetLat!, resetLng!, forceHide: true),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: ThemingColors.black.withAlpha(
-                              (0.7 * 255).toInt(),
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            resetMarkerIcon ?? Icons.location_on_outlined,
-                            size: 20,
-                            color: ThemingColors.white,
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                if (visible)
-                  Positioned(
-                    bottom: 10,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: mode == LocationMapMode.setter
-                                ? Center(
-                                    child: InkWell(
-                                      hoverColor: Colors.transparent,
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () {
-                                        onSet?.call(
-                                          state.target.latitude,
-                                          state.target.longitude,
-                                        );
-                                        if (hideOnSet) cubit.collapse();
-                                      },
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          left: 60,
-                                          right: 20,
-                                        ),
-                                        height: 30,
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.only(
-                                            topRight: Radius.circular(30),
-                                            bottomLeft: Radius.circular(30),
+                    if (showSetButton)
+                      Positioned(
+                        bottom: 10,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: mode == LocationMapMode.setter
+                                    ? Center(
+                                  child: InkWell(
+                                    hoverColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () {
+                                      onSet?.call(
+                                        state.target.latitude,
+                                        state.target.longitude,
+                                      );
+                                      if (independentButtons) {
+                                        buttonsCubit.hideAll();
+                                      } else if (hideOnSet) {
+                                        cubit.collapse();
+                                      }
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                        left: 60,
+                                        right: 20,
+                                      ),
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                        const BorderRadius.only(
+                                          topRight: Radius.circular(
+                                            30,
                                           ),
-                                          color: ThemingColors.black.withAlpha(
-                                            (0.7 * 255).toInt(),
+                                          bottomLeft: Radius.circular(
+                                            30,
                                           ),
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            "setLocation".tr(),
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              color: ThemingColors.white,
-                                            ),
+                                        color: ThemingColors.black
+                                            .withAlpha(
+                                          (0.7 * 255).toInt(),
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "setLocation".tr(),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: ThemingColors.white,
                                           ),
                                         ),
                                       ),
                                     ),
-                                  )
-                                : const SizedBox(),
+                                  ),
+                                )
+                                    : const SizedBox(),
+                              ),
+                              if (hasDevice)
+                                Container(
+                                  margin: const EdgeInsets.only(right: 40),
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(30),
+                                      bottomLeft: Radius.circular(30),
+                                    ),
+                                    color: ThemingColors.black.withAlpha(
+                                      (0.7 * 255).toInt(),
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: InkWell(
+                                    hoverColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () => cubit.recenter(
+                                      deviceLat!,
+                                      deviceLng!,
+                                      hideOnRecenter: hideWhenRecenter,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 15,
+                                      ),
+                                      child: Icon(
+                                        Icons.my_location,
+                                        size: 18,
+                                        color: ThemingColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                          if (hasDevice)
-                            Container(
-                              margin: const EdgeInsets.only(right: 40),
-                              height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(30),
-                                  bottomLeft: Radius.circular(30),
-                                ),
-                                color: ThemingColors.black.withAlpha(
-                                  (0.7 * 255).toInt(),
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: InkWell(
-                                hoverColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () => cubit.recenter(
-                                  deviceLat!,
-                                  deviceLng!,
-                                  hideOnRecenter: hideWhenRecenter,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 15,
-                                  ),
-                                  child: Icon(
-                                    Icons.my_location,
-                                    size: 18,
-                                    color: ThemingColors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:bakemart/core/shared/models/product_model.dart';
+import 'package:bakemart/core/shared/models/storage_model.dart';
 import 'package:bakemart/core/shared/widgets/glass_card/glass_card.dart';
 import 'package:bakemart/core/shared/widgets/transparent_button/transparent_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -10,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../../../../core/shared/cubits/location_cubit/location_cubit.dart';
 import '../../../../../../../../core/shared/cubits/location_cubit/location_state.dart';
 import '../../../../../../../../core/shared/models/bakery_model.dart';
+import '../../../../../../../../core/shared/models/payroll_model.dart';
 import '../../../../../../../../core/shared/widgets/location_picker_map/location_picker_map.dart';
 import '../../../../../../../../core/shared/widgets/text_form_field/text_form_field.dart';
 import '../../../../../../../../core/theming/theming_colors.dart';
@@ -88,7 +91,7 @@ class BranchesSettingsTile extends StatelessWidget {
                   isCircle: true,
                   icon: Icons.done,
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(dialogContext);
                   },
                 ),
               ],
@@ -101,6 +104,7 @@ class BranchesSettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
         final cubit = context.read<SettingsCubit>();
@@ -289,12 +293,29 @@ class BranchesSettingsTile extends StatelessWidget {
                       padding: .only(top: 20, bottom: 10),
                       child: TransparentButton(
                         onTap: () {
+                          final locationState = context
+                              .read<LocationCubit>()
+                              .state;
+                          final double? liveLat =
+                              locationState is LocationUpdated
+                              ? locationState.lat
+                              : null;
+                          final double? liveLng =
+                              locationState is LocationUpdated
+                              ? locationState.lng
+                              : null;
+                          cubit.setNewBranchLocation(
+                            lat: liveLat ?? cubit.bakeries[0].bakeryLat,
+                            lng: liveLng ?? cubit.bakeries[0].bakeryLng,
+                          );
                           showDialog(
                             barrierColor: Colors.transparent,
                             context: context,
                             builder: (dialogContext) {
                               final TextEditingController branchNameController =
                                   TextEditingController();
+                              final double initialLat = cubit.newBranchLat;
+                              final double initialLng = cubit.newBranchLng;
                               return BlocProvider.value(
                                 value: context.read<SettingsCubit>(),
                                 child: BlocBuilder<SettingsCubit, SettingsState>(
@@ -312,7 +333,7 @@ class BranchesSettingsTile extends StatelessWidget {
                                         ),
                                         contentPadding: .symmetric(
                                           horizontal: 25,
-                                          vertical: 40,
+                                          vertical: 20,
                                         ),
                                         actionsPadding: .only(
                                           bottom: 25,
@@ -355,22 +376,72 @@ class BranchesSettingsTile extends StatelessWidget {
                                                       keyBoardType:
                                                           TextInputType.text,
                                                       onChanged: (text) {
-                                                        if (text.isNotEmpty) {
-                                                          cubit.setValidity(
-                                                            newBranchFormValidityState:
-                                                                true,
-                                                          );
-                                                        } else {
-                                                          cubit.setValidity(
-                                                            newBranchFormValidityState:
-                                                                false,
-                                                          );
-                                                        }
+                                                        cubit.setValidity(
+                                                          newBranchFormValidityState:
+                                                              text.isNotEmpty,
+                                                        );
                                                       },
                                                     ),
                                                   ),
                                                 ),
                                               ],
+                                            ),
+                                            SizedBox(
+                                              width: double.maxFinite,
+                                              child: Container(
+                                                height: screenHeight * 0.4,
+                                                width: double.infinity,
+                                                margin: .only(
+                                                  top: 20,
+                                                  bottom: 20,
+                                                ),
+                                                clipBehavior: Clip.hardEdge,
+                                                decoration: BoxDecoration(
+                                                  color: ThemingColors
+                                                      .primaryColor
+                                                      .withAlpha(
+                                                        (0.2 * 255).toInt(),
+                                                      ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: LocationPickerMap.setter(
+                                                  initialLat: initialLat,
+                                                  initialLng: initialLng,
+                                                  deviceLat: liveLat,
+                                                  deviceLng: liveLng,
+                                                  alwaysShow: false,
+                                                  alwaysShowPin: true,
+                                                  independentButtons: true,
+                                                  onSet: (lat, lng) {
+                                                    cubit.setNewBranchLocation(
+                                                      lat: lat,
+                                                      lng: lng,
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            Text.rich(
+                                              TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "${"note".tr()}: ",
+                                                    style:TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 13,
+                                                      color:context.isDark? Colors.amber:Colors.orange,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text: "newBranchNote".tr(),
+                                                    style: TextStyle(
+                                                      fontSize: 13
+                                                    )
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -447,7 +518,67 @@ class BranchesSettingsTile extends StatelessWidget {
                                                         Colors.transparent,
                                                     highlightColor:
                                                         Colors.transparent,
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      final BakeryModel
+                                                      newBranchBakeryModel =
+                                                          BakeryModel(
+                                                            bakeryId: cubit
+                                                                .bakeries[0]
+                                                                .bakeryId,
+                                                            bakeryName: cubit
+                                                                .bakeries[0]
+                                                                .bakeryName,
+                                                            bakeryLat: cubit
+                                                                .newBranchLat,
+                                                            bakeryLng: cubit
+                                                                .newBranchLng,
+                                                            supervisorId: [],
+                                                            branchId: "",
+                                                            branchName:
+                                                                branchNameController
+                                                                    .text,
+                                                            branchNumber:
+                                                                cubit
+                                                                    .bakeries
+                                                                    .length +
+                                                                1,
+                                                          );
+                                                      final String
+                                                      mainBranchId = cubit
+                                                          .bakeries[0]
+                                                          .branchId;
+                                                      final List<ProductModel>
+                                                      newBranchProducts = cubit
+                                                          .products
+                                                          .where(
+                                                            (product) =>
+                                                                product
+                                                                    .branchId ==
+                                                                mainBranchId,
+                                                          )
+                                                          .toList();
+                                                      final PayrollModel
+                                                      newBranchPayroll =
+                                                          cubit.payrolls[0];
+                                                      final StorageModel
+                                                      newBranchStorage =
+                                                          StorageModel(
+                                                            bakeryId: cubit
+                                                                .bakeries[0]
+                                                                .bakeryId,
+                                                            branchId: "",
+                                                          );
+                                                      cubit.createNewBranch(
+                                                        bakeryData:
+                                                            newBranchBakeryModel,
+                                                        products:
+                                                            newBranchProducts,
+                                                        payroll:
+                                                            newBranchPayroll,
+                                                        storage:
+                                                            newBranchStorage,
+                                                      );
+                                                    },
                                                     child: GlassCard(
                                                       margin: .symmetric(
                                                         horizontal: 6,

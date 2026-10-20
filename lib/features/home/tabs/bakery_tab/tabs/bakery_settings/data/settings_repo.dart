@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../../../core/shared/models/staff_model.dart';
+import '../../../../../../../core/shared/models/storage_model.dart';
 import '../../../../../../../core/shared/models/user_model.dart';
 import '../../../../../../../core/utils/enums/bakeries_table_columns.dart';
 import '../../../../../../../core/utils/enums/products_table_columns.dart';
@@ -59,6 +60,42 @@ class SettingsRepo {
           .from(Tables.products)
           .upsert(payload, onConflict: ProductsTableColumns.productId);
       return SuccessResponse(true);
+    } catch (error) {
+      return FailureResponse(error.toString());
+    }
+  }
+  Future<ResponseResult<bool>> createNewBranch({
+    required BakeryModel bakeryData,
+    required List<ProductModel> products,
+    required PayrollModel payroll,
+    required StorageModel storage,
+  }) async {
+    try {
+      final branchId=_uuid.v4();
+      final updatedBakery = bakeryData.copyWith(
+        branchId: branchId,
+      );
+      final updatedProducts = products.map((product) {
+        return product.copyWith(
+          branchId:branchId,
+        );
+      }).toList();
+      final updatedPayroll = payroll.copyWith(branchId:branchId);
+      final updatedStorage = storage.copyWith(branchId:branchId);
+
+      await _supabase.rpc(
+        'create_bakery',
+        params: {
+          'p_bakery': updatedBakery.toJson(),
+          'p_products': updatedProducts.map((p) => p.toJson()).toList(),
+          'p_payroll': updatedPayroll.toJson(),
+          'p_storage': updatedStorage.toJson(),
+        },
+      );
+
+      return SuccessResponse(true);
+    } on PostgrestException catch (error) {
+      return FailureResponse(error.message);
     } catch (error) {
       return FailureResponse(error.toString());
     }

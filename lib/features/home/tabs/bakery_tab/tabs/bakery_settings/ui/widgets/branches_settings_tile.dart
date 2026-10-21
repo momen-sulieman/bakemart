@@ -570,18 +570,21 @@ class BranchesSettingsTile extends StatelessWidget {
                                                                 .bakeryId,
                                                             branchId: "",
                                                           );
-                                                      await cubit.createNewBranch(
-                                                        bakeryData:
-                                                            newBranchBakeryModel,
-                                                        products:
-                                                            newBranchProducts,
-                                                        payroll:
-                                                            newBranchPayroll,
-                                                        storage:
-                                                            newBranchStorage,
-                                                      );
-                                                      if (dialogContext
-                                                          .mounted) {
+                                                      final bool
+                                                      created = await cubit
+                                                          .createNewBranch(
+                                                            bakeryData:
+                                                                newBranchBakeryModel,
+                                                            products:
+                                                                newBranchProducts,
+                                                            payroll:
+                                                                newBranchPayroll,
+                                                            storage:
+                                                                newBranchStorage,
+                                                          );
+                                                      if (created &&
+                                                          dialogContext
+                                                              .mounted) {
                                                         Navigator.pop(
                                                           dialogContext,
                                                         );

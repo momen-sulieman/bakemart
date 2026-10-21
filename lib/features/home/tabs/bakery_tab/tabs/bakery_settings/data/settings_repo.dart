@@ -3,6 +3,7 @@ import 'package:bakemart/core/shared/models/bakery_model.dart';
 import 'package:bakemart/core/shared/models/payroll_model.dart';
 import 'package:bakemart/core/shared/models/product_model.dart';
 import 'package:bakemart/core/utils/enums/staffs_table_columns.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -42,7 +43,8 @@ class SettingsRepo {
       await _supabase
           .from(Tables.payrolls)
           .update(updatedPayroll.toJson())
-          .eq(BakeriesTableColumns.bakeryId, updatedPayroll.bakeryId);
+          .eq(BakeriesTableColumns.bakeryId, updatedPayroll.bakeryId)
+          .eq(BakeriesTableColumns.branchId, updatedPayroll.branchId);
       return SuccessResponse(true);
     } catch (error) {
       return FailureResponse(error.toString());
@@ -58,12 +60,17 @@ class SettingsRepo {
           .toList();
       await _supabase
           .from(Tables.products)
-          .upsert(payload, onConflict: ProductsTableColumns.productId);
+          .upsert(
+            payload,
+            onConflict:
+                '${ProductsTableColumns.productId},${ProductsTableColumns.branchId}',
+          );
       return SuccessResponse(true);
     } catch (error) {
       return FailureResponse(error.toString());
     }
   }
+
   Future<ResponseResult<bool>> createNewBranch({
     required BakeryModel bakeryData,
     required List<ProductModel> products,
@@ -71,17 +78,13 @@ class SettingsRepo {
     required StorageModel storage,
   }) async {
     try {
-      final branchId=_uuid.v4();
-      final updatedBakery = bakeryData.copyWith(
-        branchId: branchId,
-      );
+      final branchId = _uuid.v4();
+      final updatedBakery = bakeryData.copyWith(branchId: branchId);
       final updatedProducts = products.map((product) {
-        return product.copyWith(
-          branchId:branchId,
-        );
+        return product.copyWith(branchId: branchId);
       }).toList();
-      final updatedPayroll = payroll.copyWith(branchId:branchId);
-      final updatedStorage = storage.copyWith(branchId:branchId);
+      final updatedPayroll = payroll.copyWith(branchId: branchId);
+      final updatedStorage = storage.copyWith(branchId: branchId);
 
       await _supabase.rpc(
         'create_bakery',
@@ -95,8 +98,12 @@ class SettingsRepo {
 
       return SuccessResponse(true);
     } on PostgrestException catch (error) {
+      debugPrint(
+        'createNewBranch postgrest: ${error.message} | ${error.details} | ${error.hint}',
+      );
       return FailureResponse(error.message);
     } catch (error) {
+      debugPrint('createNewBranch error: $error');
       return FailureResponse(error.toString());
     }
   }
@@ -128,8 +135,9 @@ class SettingsRepo {
   Future<ResponseResult<bool>> changeBakeryName({required String name}) async {
     try {
       final String? bakeryId = _supabase.auth.currentUser?.id;
-      if (bakeryId == null)
+      if (bakeryId == null) {
         return FailureResponse("User is not authenticated.");
+      }
 
       await _supabase
           .from(Tables.bakeries)
@@ -174,12 +182,14 @@ class SettingsRepo {
 
   Future<ResponseResult<bool>> deleteProduct({
     required String productId,
+    required String branchId,
   }) async {
     try {
       await _supabase
           .from(Tables.products)
           .delete()
-          .eq(ProductsTableColumns.productId, productId);
+          .eq(ProductsTableColumns.productId, productId)
+          .eq(ProductsTableColumns.branchId, branchId);
       return SuccessResponse(true);
     } catch (error) {
       return FailureResponse(error.toString());

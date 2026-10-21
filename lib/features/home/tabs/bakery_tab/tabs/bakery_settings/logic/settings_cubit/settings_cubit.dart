@@ -62,10 +62,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   double newBranchLat = 0;
   double newBranchLng = 0;
 
-  void setNewBranchLocation({required double lat,required double lng}){
-    newBranchLat=lat;
-    newBranchLng=lng;
+  void setNewBranchLocation({required double lat, required double lng}) {
+    newBranchLat = lat;
+    newBranchLng = lng;
   }
+
   final Set<String> changedProductPictures = {};
   bool newProductFormValidity = false;
   bool isLocationChanged = false;
@@ -124,8 +125,14 @@ class SettingsCubit extends Cubit<SettingsState> {
     _emitSuccess();
   }
 
-  Future<void> deleteProduct({required String productId}) async {
-    final deleteResult = await _repo.deleteProduct(productId: productId);
+  Future<void> deleteProduct({
+    required String productId,
+    required String branchId,
+  }) async {
+    final deleteResult = await _repo.deleteProduct(
+      productId: productId,
+      branchId: branchId,
+    );
     if (deleteResult is SuccessResponse<bool>) {
       await _bakeryTabCubit.loadProducts();
       if (_bakeryTabCubit.products.isEmpty) emit(SettingsFailure("error"));
@@ -311,7 +318,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> createNewBranch({
+  Future<bool> createNewBranch({
     required BakeryModel bakeryData,
     required List<ProductModel> products,
     required PayrollModel payroll,
@@ -324,13 +331,14 @@ class SettingsCubit extends Cubit<SettingsState> {
       storage: storage,
     );
     if (result is SuccessResponse<bool>) {
+      await _bakeryTabCubit.loadBakeryData(withEmit: false);
       await _bakeryTabCubit.loadAll();
-      _bakeryTabCubit.emitLoading();
-      _bakeryTabCubit.check();
+      await getSettings();
+      newBranchFormValidity = false;
       _emitSuccess();
-    } else if (result is FailureResponse) {
-      emit(SettingsFailure((result as FailureResponse).error));
+      return true;
     }
+    return false;
   }
 
   Future<void> changeBranchLocation({
@@ -397,7 +405,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   void editProduct(ProductModel updatedProduct) {
     editableProducts = editableProducts.map((product) {
-      if (product.productId == updatedProduct.productId) {
+      if (product.productId == updatedProduct.productId &&
+          product.branchId == updatedProduct.branchId) {
         return updatedProduct;
       }
       return product;

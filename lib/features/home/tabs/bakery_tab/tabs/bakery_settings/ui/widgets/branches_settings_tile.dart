@@ -544,6 +544,7 @@ class BranchesSettingsTile extends StatelessWidget {
                                                                     .bakeries
                                                                     .length +
                                                                 1,
+                                                            verified: true
                                                           );
                                                       final String
                                                       mainBranchId = cubit

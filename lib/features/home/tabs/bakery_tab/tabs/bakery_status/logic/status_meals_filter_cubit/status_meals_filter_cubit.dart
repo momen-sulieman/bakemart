@@ -5,11 +5,30 @@ import 'package:bakemart/core/shared/models/finance_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../../../core/network/response_result.dart';
+import '../../../../../../../../core/shared/widgets/date_period_filter/date_period_filter.dart';
 import '../../../../data/bakery_tab_repo.dart';
 import '../../../../logic/bakery_tab_cubit/bakery_tab_cubit.dart';
+
 part 'status_meals_filter_state.dart';
 
-class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState> {
+class WasteSummary {
+  final String productId;
+  final String productName;
+  num manufacturing;
+  num notSold;
+  num meal;
+
+  WasteSummary({
+    required this.productId,
+    required this.productName,
+    required this.manufacturing,
+    required this.notSold,
+    required this.meal,
+  });
+}
+
+class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState>
+    with DatePeriodFilterMixin {
   final BakeryTabRepo _repo;
   final BakeryTabCubit _cubit;
   late final StreamSubscription _bakerySubscription;
@@ -22,9 +41,9 @@ class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState> {
     });
   }
 
-  DateTime selectedDate = DateTime.now();
   bool isExpanded = true;
   String selectedBranchId = "";
+  List<WasteSummary> filteredWastes = [];
   FinanceModel filteredMealsRecord = FinanceModel(
     bakeryId: "",
     branchId: "",
@@ -78,19 +97,53 @@ class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState> {
     emit(StatusMealsFilterSuccess(filteredMealsRecord));
   }
 
+  void applyDateFilter() {
+    commitPending();
+    filterMealsRecords();
+  }
+
   void filterMealsRecords({DateTime? selectedDate}) {
     this.selectedDate = selectedDate ?? this.selectedDate;
     _syncBranch();
-    final filterResult = _repo.filterFinanceRecordsByDate(
-      allFinanceRecords: _branchFinance,
-      selectedDate: this.selectedDate,
-    );
-    if (filterResult is SuccessResponse<FinanceModel>) {
-      filteredMealsRecord = filterResult.data;
-      emit(StatusMealsFilterSuccess(filteredMealsRecord));
-    } else {
-      emit(StatusMealsFilterFialure((filterResult as FailureResponse).error));
+    final records = _branchFinance;
+    final Map<String, WasteSummary> grouped = {};
+    FinanceModel? firstRecord;
+    Object? lastFailure;
+    for (final date in periodDates()) {
+      final result = _repo.filterFinanceRecordsByDate(
+        allFinanceRecords: records,
+        selectedDate: date,
+      );
+      if (result is SuccessResponse<FinanceModel>) {
+        firstRecord ??= result.data;
+        for (final waste in result.data.wastes) {
+          final existing = grouped[waste.productId];
+          if (existing == null) {
+            grouped[waste.productId] = WasteSummary(
+              productId: waste.productId,
+              productName: waste.productName,
+              manufacturing: waste.manufacturing,
+              notSold: waste.notSold,
+              meal: waste.meal,
+            );
+          } else {
+            existing.manufacturing += waste.manufacturing;
+            existing.notSold += waste.notSold;
+            existing.meal += waste.meal;
+          }
+        }
+      } else {
+        lastFailure = result;
+      }
     }
+    if (firstRecord == null) {
+      filteredWastes = [];
+      emit(StatusMealsFilterFialure((lastFailure as FailureResponse).error));
+      return;
+    }
+    filteredMealsRecord = firstRecord;
+    filteredWastes = grouped.values.toList();
+    emit(StatusMealsFilterSuccess(filteredMealsRecord));
   }
 
   @override

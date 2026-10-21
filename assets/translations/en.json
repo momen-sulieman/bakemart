@@ -254,6 +254,8 @@
   "workHistory": "Work history",
   "date": "Date",
   "day": "Day",
+  "month": "Month",
+  "year": "Year",
   "joinABakery": "Join a bakery",
   "letTheBakeryOwnerScanHere": "Let the bakery owner scan here",
   "branches": "Branches",

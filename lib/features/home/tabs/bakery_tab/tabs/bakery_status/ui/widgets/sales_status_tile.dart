@@ -1,5 +1,4 @@
 import 'package:bakemart/core/shared/models/product_model.dart';
-import 'package:bakemart/core/shared/models/sales_model.dart';
 import 'package:bakemart/core/shared/widgets/branch_pager/branch_pager.dart';
 import 'package:bakemart/core/shared/widgets/product_details_screen/product_details_screen.dart';
 import 'package:bakemart/core/shared/widgets/table_cells/product_cell.dart';
@@ -9,9 +8,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:wheel_picker/wheel_picker.dart';
 
 import '../../../../../../../../core/shared/models/recipe_model.dart';
+import '../../../../../../../../core/shared/widgets/date_period_filter/date_period_filter.dart';
 import '../../../../../../../../core/shared/widgets/glass_card/glass_card.dart';
 import '../../../../../../../../core/shared/widgets/table_cells/text_cell.dart';
 import '../../../../../../../../core/theming/theming_colors.dart';
@@ -22,19 +21,12 @@ class SalesStatusTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final months = List.generate(12, (index) => index + 1);
-    final years = List.generate(11, (index) => 2026 + index);
     return BlocBuilder<StatusSalesFilterCubit, StatusSalesFilterState>(
       builder: (context, salesFilterState) {
         final cubit = context.read<StatusSalesFilterCubit>();
         final records = context
             .read<StatusSalesFilterCubit>()
             .filteredSalesRecords;
-        final selected = cubit.selectedDate;
-        final days = cubit.dynamicDaysList;
-        final dayIndex = days.indexOf(selected.day);
-        final monthIndex = months.indexOf(selected.month);
-        final yearIndex = years.indexOf(selected.year);
         return BranchPager(
           branches: cubit.branches,
           selectedBranchId: cubit.selectedBranchId,
@@ -59,183 +51,27 @@ class SalesStatusTile extends StatelessWidget {
                     style: TextStyle(fontWeight: .bold, fontSize: 18),
                   ),
                   Spacer(),
-                  if (cubit.isExpanded)
+                  if (cubit.isExpanded) ...[
                     Padding(
-                      padding: .only(right: 5),
-                      child: Row(
-                        mainAxisSize: .min,
-                        children: [
-                          SizedBox(
-                            width: 40,
-                            child: Column(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                Icon(
-                                  Icons.arrow_drop_up,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.4 * 255).toInt(),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: WheelPicker(
-                                    key: ValueKey(days.length),
-                                    controller: WheelPickerController(
-                                      itemCount: days.length,
-                                      initialIndex: dayIndex != -1 ? dayIndex : 0,
-                                    ),
-                                    style: WheelPickerStyle(
-                                      itemExtent: 30,
-                                      surroundingOpacity: 0.25,
-                                      diameterRatio: 20,
-                                    ),
-                                    onIndexChanged: (index, _) {
-                                      cubit.changeSelectedDate(day: days[index]);
-                                    },
-                                    builder: (context, index) {
-                                      return Center(
-                                        child: Text(
-                                          "${days[index]}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: .bold,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.4 * 255).toInt(),
-                                  ),
-                                ),
-                              ],
+                      padding: const EdgeInsets.only(right: 5),
+                      child: DatePeriodWheels(
+                        selectedDate: cubit.selectedDate,
+                        showDay: cubit.useDay,
+                        showMonth: cubit.useMonth,
+                        onChanged: ({year, month, day}) =>
+                            cubit.changeSelectedDate(
+                              year: year,
+                              month: month,
+                              day: day,
                             ),
-                          ),
-                          Container(
-                            height: 20,
-                            width: 3,
-                            margin: .symmetric(horizontal: 3),
-                            color: ThemingColors.primaryColor.withAlpha(
-                              (0.4 * 255).toInt(),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 40,
-                            child: Column(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                Icon(
-                                  Icons.arrow_drop_up,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.4 * 255).toInt(),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: WheelPicker(
-                                    itemCount: months.length,
-                                    initialIndex: monthIndex != -1
-                                        ? monthIndex
-                                        : 0,
-                                    style: WheelPickerStyle(
-                                      itemExtent: 40,
-                                      surroundingOpacity: 0.25,
-                                      squeeze: 0.9,
-                                      diameterRatio: 3,
-                                    ),
-                                    onIndexChanged: (index, _) {
-                                      cubit.changeSelectedDate(
-                                        month: months[index],
-                                      );
-                                    },
-                                    builder: (context, index) {
-                                      return Center(
-                                        child: Text(
-                                          "${months[index]}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: .bold,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.4 * 255).toInt(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 20,
-                            width: 3,
-                            margin: .symmetric(horizontal: 3),
-                            color: ThemingColors.primaryColor.withAlpha(
-                              (0.4 * 255).toInt(),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 60,
-                            child: Column(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                Icon(
-                                  Icons.arrow_drop_up,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.4 * 255).toInt(),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: WheelPicker(
-                                    itemCount: years.length,
-                                    initialIndex: yearIndex != -1 ? yearIndex : 0,
-                                    style: WheelPickerStyle(
-                                      itemExtent: 40,
-                                      surroundingOpacity: 0.25,
-                                      squeeze: 0.9,
-                                      diameterRatio: 3,
-                                    ),
-                                    onIndexChanged: (index, _) {
-                                      cubit.changeSelectedDate(
-                                        year: years[index],
-                                      );
-                                    },
-                                    builder: (context, index) {
-                                      return Center(
-                                        child: Text(
-                                          "${years[index]}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: .bold,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor.withAlpha(
-                                    (0.4 * 255).toInt(),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    DatePeriodFilterButton(
+                      filter: cubit,
+                      onApply: cubit.applyDateFilter,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -478,7 +314,7 @@ class SalesStatusTile extends StatelessWidget {
                         )
                       else
                         ...records.asMap().entries.map((entry) {
-                          final SalesModel record = entry.value;
+                          final SalesSummary record = entry.value;
                           final int sold = record.sold;
                           final int produced = record.produced;
                           final bakeryCubit = context

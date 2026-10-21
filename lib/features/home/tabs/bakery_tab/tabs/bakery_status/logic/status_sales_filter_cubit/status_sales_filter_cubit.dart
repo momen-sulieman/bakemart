@@ -5,12 +5,34 @@ import 'package:bakemart/core/shared/models/sales_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../../../core/network/response_result.dart';
+import '../../../../../../../../core/shared/widgets/date_period_filter/date_period_filter.dart';
 import '../../../../data/bakery_tab_repo.dart';
 import '../../../../logic/bakery_tab_cubit/bakery_tab_cubit.dart';
 
 part 'status_sales_filter_state.dart';
 
-class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
+class SalesSummary {
+  final String bakeryId;
+  final String branchId;
+  final String productId;
+  final String productName;
+  final double productPrice;
+  int produced;
+  int sold;
+
+  SalesSummary({
+    required this.bakeryId,
+    required this.branchId,
+    required this.productId,
+    required this.productName,
+    required this.productPrice,
+    required this.produced,
+    required this.sold,
+  });
+}
+
+class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState>
+    with DatePeriodFilterMixin {
   final BakeryTabRepo _repo;
   final BakeryTabCubit _cubit;
   late final StreamSubscription _bakerySubscription;
@@ -23,10 +45,9 @@ class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
     });
   }
 
-  DateTime selectedDate = DateTime.now();
   bool isExpanded = true;
   String selectedBranchId = "";
-  List<SalesModel> filteredSalesRecords = [];
+  List<SalesSummary> filteredSalesRecords = [];
 
   List<BakeryModel> get branches => _cubit.bakeries;
 
@@ -74,18 +95,44 @@ class StatusSalesFilterCubit extends Cubit<StatusSalesFilterState> {
     emit(StatusSalesFilterSuccess());
   }
 
+  void applyDateFilter() {
+    commitPending();
+    filterSales();
+  }
+
   void filterSales({DateTime? selectedDate}) {
     emit(StatusSalesFilterLoading());
     this.selectedDate = selectedDate ?? this.selectedDate;
     _syncBranch();
-    final filterResult = _repo.filterSalesByDate(
-      allSales: _branchSales,
-      selectedDate: this.selectedDate,
-    );
-    if (filterResult is SuccessResponse<List<SalesModel>>) {
-      filteredSalesRecords = filterResult.data;
-      emit(StatusSalesFilterSuccess());
+    final sales = _branchSales;
+    final Map<String, SalesSummary> grouped = {};
+    for (final date in periodDates()) {
+      final result = _repo.filterSalesByDate(
+        allSales: sales,
+        selectedDate: date,
+      );
+      if (result is SuccessResponse<List<SalesModel>>) {
+        for (final record in result.data) {
+          final existing = grouped[record.productId];
+          if (existing == null) {
+            grouped[record.productId] = SalesSummary(
+              bakeryId: record.bakeryId,
+              branchId: record.branchId,
+              productId: record.productId,
+              productName: record.productName,
+              productPrice: record.productPrice,
+              produced: record.produced,
+              sold: record.sold,
+            );
+          } else {
+            existing.produced += record.produced;
+            existing.sold += record.sold;
+          }
+        }
+      }
     }
+    filteredSalesRecords = grouped.values.toList();
+    emit(StatusSalesFilterSuccess());
   }
 
   @override

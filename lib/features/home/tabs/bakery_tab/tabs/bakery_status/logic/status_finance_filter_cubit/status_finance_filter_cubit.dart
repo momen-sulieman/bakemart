@@ -7,23 +7,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../../../core/network/response_result.dart';
 import '../../../../data/bakery_tab_repo.dart';
 import '../../../../logic/bakery_tab_cubit/bakery_tab_cubit.dart';
+import '../../../../../../../../core/shared/widgets/date_period_filter/date_period_filter.dart';
 
 part 'status_finance_filter_state.dart';
 
-class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState> {
+class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState>
+    with DatePeriodFilterMixin {
   final BakeryTabRepo _repo;
   final BakeryTabCubit _cubit;
   late final StreamSubscription _bakerySubscription;
 
   StatusFinanceFilterCubit(this._repo, this._cubit)
-      : super(StatusFinanceFilterInitial()) {
+    : super(StatusFinanceFilterInitial()) {
     filterFinanceRecords();
     _bakerySubscription = _cubit.stream.listen((_) {
       filterFinanceRecords();
     });
   }
 
-  DateTime selectedDate = DateTime.now();
   bool isExpanded = true;
   String selectedBranchId = "";
   FinanceModel filteredFinanceRecord = FinanceModel(
@@ -38,8 +39,8 @@ class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState> {
   List<FinanceModel> get _branchFinance => selectedBranchId.isEmpty
       ? _cubit.finance
       : _cubit.finance
-      .where((record) => record.branchId == selectedBranchId)
-      .toList();
+            .where((record) => record.branchId == selectedBranchId)
+            .toList();
 
   void _syncBranch() {
     final ids = _cubit.bakeries.map((bakery) => bakery.branchId).toList();
@@ -79,19 +80,46 @@ class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState> {
     emit(StatusFinanceFilterSuccess(filteredFinanceRecord));
   }
 
+  void applyDateFilter() {
+    commitPending();
+    filterFinanceRecords();
+  }
+
   void filterFinanceRecords({DateTime? selectedDate}) {
     this.selectedDate = selectedDate ?? this.selectedDate;
     _syncBranch();
-    final filterResult = _repo.filterFinanceRecordsByDate(
-      allFinanceRecords: _branchFinance,
-      selectedDate: this.selectedDate,
-    );
-    if (filterResult is SuccessResponse<FinanceModel>) {
-      filteredFinanceRecord = filterResult.data;
-      emit(StatusFinanceFilterSuccess(filteredFinanceRecord));
-    } else {
-      emit(StatusFinanceFilterFialure((filterResult as FailureResponse).error));
+    final records = _branchFinance;
+    final matched = <FinanceModel>[];
+    Object? lastFailure;
+    for (final date in periodDates()) {
+      final result = _repo.filterFinanceRecordsByDate(
+        allFinanceRecords: records,
+        selectedDate: date,
+      );
+      if (result is SuccessResponse<FinanceModel>) {
+        matched.add(result.data);
+      } else {
+        lastFailure = result;
+      }
     }
+    if (matched.isEmpty) {
+      emit(StatusFinanceFilterFialure((lastFailure as FailureResponse).error));
+      return;
+    }
+    filteredFinanceRecord = matched.length == 1 ? matched.first : _sum(matched);
+    emit(StatusFinanceFilterSuccess(filteredFinanceRecord));
+  }
+
+  FinanceModel _sum(List<FinanceModel> list) {
+    return FinanceModel(
+      bakeryId: list.first.bakeryId,
+      branchId: list.first.branchId,
+      cleaningExpenses: list.fold(
+        0,
+        (sum, record) => sum + record.cleaningExpenses,
+      ),
+      wastes: list.expand((record) => record.wastes).toList(),
+    );
   }
 
   @override

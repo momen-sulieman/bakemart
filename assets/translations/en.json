@@ -260,5 +260,6 @@
   "main": "(main)",
   "addBranch": "Add new branch",
   "note": "Note",
+  "mainBranchNote": "This will represent your main branch",
   "newBranchNote": "New branch products and payroll will be copied from your main branch products and payroll (you can edit anything later), also you have no staff in the new branch so add your staff to manage it"
 }

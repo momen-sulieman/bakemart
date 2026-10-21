@@ -283,6 +283,28 @@ class CreationScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "${"note".tr()}: ",
+                      style:TextStyle(
+                        fontWeight:
+                        FontWeight.bold,
+                        fontSize: 13,
+                        color:context.isDark? Colors.amber:Colors.orange,
+                      ),
+                    ),
+                    TextSpan(
+                        text: "mainBranchNote".tr(),
+                        style: TextStyle(
+                            fontSize: 13
+                        )
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
               BlocBuilder<BakeryTabCubit, BakeryTabState>(
                 builder: (context, state) {
                   final captured = cubit.pendingCertificateImage != null;

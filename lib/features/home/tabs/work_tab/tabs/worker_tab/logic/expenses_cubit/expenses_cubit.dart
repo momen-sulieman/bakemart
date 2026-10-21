@@ -24,6 +24,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     final result = await _repo.upsertFinancerecord(
       financeRecord: financeRecord,
       bakeryId: bakeryId,
+      branchId: branchId
     );
     if (result is SuccessResponse<bool>) {
       final DateTime? recordDate = financeRecord.date;

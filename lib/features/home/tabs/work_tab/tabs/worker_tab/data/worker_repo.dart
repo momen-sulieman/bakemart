@@ -18,7 +18,6 @@ import 'package:bakemart/core/utils/enums/storages_table_columns.dart';
 import 'package:bakemart/core/utils/enums/tables.dart';
 import 'package:bakemart/core/utils/enums/users_table_columns.dart';
 import 'package:collection/collection.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../../../core/shared/models/order_model.dart';
@@ -92,7 +91,10 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<BakeryModel>> getBakeryData(String employerId,String branchId) async {
+  Future<ResponseResult<BakeryModel>> getBakeryData(
+    String employerId,
+    String branchId,
+  ) async {
     try {
       final response = await _supabase
           .from(Tables.bakeries)
@@ -175,7 +177,6 @@ class WorkerRepo {
 
           filteredOrders.add(
             order.copyWith(
-              // bakeries left untouched — indices must stay valid for later writes
               orderedProducts: bakeryProducts,
               orderedQuantities: bakeryQuantities,
               orderPrice: bakeryOrderPrice,
@@ -191,53 +192,10 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<bool>> join(BarcodeCapture qrScanResult) async {
-    try {
-      if (qrScanResult.barcodes.first.rawValue != null) {
-        final bakeryResponse = await _supabase
-            .from(Tables.bakeries)
-            .select()
-            .eq(
-              BakeriesTableColumns.bakeryId,
-              qrScanResult.barcodes.first.rawValue!,
-            )
-            .maybeSingle();
-        if (bakeryResponse != null) {
-          final bakeryId = BakeryModel.fromJson(bakeryResponse).bakeryId;
-          final String? id = _supabase.auth.currentUser?.id;
-          final userResponse = await _supabase
-              .from(Tables.users)
-              .select()
-              .eq(UsersTableColumns.id, id!)
-              .maybeSingle();
-          if (userResponse != null) {
-            final user = UserModel.fromJson(userResponse);
-            await _supabase
-                .from(Tables.staffs)
-                .insert(
-                  StaffModel(
-                    workerName: "${user.firstName} ${user.secondName}",
-                    workerId: user.id!,
-                    bakeryId: bakeryId,
-                    branchId: "",
-                  ).toJson(),
-                );
-            return SuccessResponse(true);
-          } else {
-            return FailureResponse("Couldn't fetch user id");
-          }
-        } else {
-          return FailureResponse("Bakery not found!");
-        }
-      } else {
-        return FailureResponse("Scan failed!");
-      }
-    } catch (error) {
-      return FailureResponse(error.toString());
-    }
-  }
-
-  Future<ResponseResult<PayrollModel?>> fetchPayroll(String id,String branchId) async {
+  Future<ResponseResult<PayrollModel?>> fetchPayroll(
+    String id,
+    String branchId,
+  ) async {
     try {
       final Map<String, dynamic>? payrollResponse = await _supabase
           .from(Tables.payrolls)
@@ -256,7 +214,10 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<ProductModel>?>> fetchProducts(String id,String branchId) async {
+  Future<ResponseResult<List<ProductModel>?>> fetchProducts(
+    String id,
+    String branchId,
+  ) async {
     try {
       final List<Map<String, dynamic>> productsResponse = await _supabase
           .from(Tables.products)
@@ -276,7 +237,10 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<StaffModel>?>> fetchStaff(String id,String branchId) async {
+  Future<ResponseResult<List<StaffModel>?>> fetchStaff(
+    String id,
+    String branchId,
+  ) async {
     try {
       final List<Map<String, dynamic>> staffResponse = await _supabase
           .from(Tables.staffs)
@@ -296,7 +260,10 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<ShiftModel>?>> fetchShifts(String id,String branchId) async {
+  Future<ResponseResult<List<ShiftModel>?>> fetchShifts(
+    String id,
+    String branchId,
+  ) async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T').first;
@@ -345,7 +312,10 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<List<FinanceModel>?>> fetchFinance(String id,String branchId) async {
+  Future<ResponseResult<List<FinanceModel>?>> fetchFinance(
+    String id,
+    String branchId,
+  ) async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T').first;
@@ -359,6 +329,7 @@ class WorkerRepo {
           .from(Tables.finances)
           .select()
           .eq(FinanceTableColumns.bakeryId, id)
+          .eq(FinanceTableColumns.branchId, branchId)
           .gte(FinanceTableColumns.date, fourDaysAgoStr)
           .lte(FinanceTableColumns.date, todayStr);
 
@@ -372,12 +343,16 @@ class WorkerRepo {
     }
   }
 
-  Future<ResponseResult<StorageModel?>> fetchStorage(String id,String branchId) async {
+  Future<ResponseResult<StorageModel?>> fetchStorage(
+    String id,
+    String branchId,
+  ) async {
     try {
       final Map<String, dynamic>? storageResponse = await _supabase
           .from(Tables.storages)
           .select()
           .eq(StoragesTableColumns.bakeryId, id)
+          .eq(StoragesTableColumns.branchId, branchId)
           .maybeSingle();
       if (storageResponse != null) {
         final storage = StorageModel.fromJson(storageResponse);
@@ -506,17 +481,21 @@ class WorkerRepo {
   Future<ResponseResult<bool>> upsertFinancerecord({
     required FinanceModel financeRecord,
     required String bakeryId,
+    required String branchId,
   }) async {
     try {
       if (financeRecord.bakeryId.isEmpty) {
-        financeRecord = financeRecord.copyWith(bakeryId: bakeryId);
+        financeRecord = financeRecord.copyWith(
+          bakeryId: bakeryId,
+          branchId: branchId,
+        );
       }
       await _supabase
           .from(Tables.finances)
           .upsert(
             financeRecord.toJson(),
             onConflict:
-                '${FinanceTableColumns.bakeryId},${FinanceTableColumns.date}',
+                '${FinanceTableColumns.branchId},${FinanceTableColumns.date}',
           );
       return SuccessResponse(true);
     } catch (error) {
@@ -544,7 +523,7 @@ class WorkerRepo {
           .upsert(
             updatedFinanceRecord.toJson(),
             onConflict:
-                '${FinanceTableColumns.bakeryId},${FinanceTableColumns.date}',
+                '${FinanceTableColumns.branchId},${FinanceTableColumns.date}',
           );
 
       return SuccessResponse(true);
@@ -566,6 +545,7 @@ class WorkerRepo {
           .from(Tables.finances)
           .select()
           .eq(FinanceTableColumns.bakeryId, bakeryId)
+          .eq(FinanceTableColumns.branchId, branchId)
           .eq(FinanceTableColumns.date, formattedDate)
           .maybeSingle();
 
@@ -574,6 +554,7 @@ class WorkerRepo {
             .from(Tables.finances)
             .update({FinanceTableColumns.payrollExpenses: payrollExpenses})
             .eq(FinanceTableColumns.bakeryId, bakeryId)
+            .eq(FinanceTableColumns.branchId, branchId)
             .eq(FinanceTableColumns.date, formattedDate);
       } else {
         final freshFinance = FinanceModel(
@@ -613,6 +594,7 @@ class WorkerRepo {
             .from(Tables.sales)
             .select()
             .eq(SalesTableColumns.bakeryId, product.bakeryId)
+            .eq(SalesTableColumns.branchId, product.branchId)
             .eq(SalesTableColumns.productId, product.productId!)
             .eq(SalesTableColumns.date, todayStr)
             .maybeSingle();
@@ -625,6 +607,7 @@ class WorkerRepo {
               .from(Tables.sales)
               .update({SalesTableColumns.sold: updatedSoldValue})
               .eq(SalesTableColumns.bakeryId, product.bakeryId)
+              .eq(SalesTableColumns.branchId, product.branchId)
               .eq(SalesTableColumns.productId, product.productId!)
               .eq(SalesTableColumns.date, todayStr);
         } else {
@@ -650,11 +633,13 @@ class WorkerRepo {
               ProductsTableColumns.totalSold: totalSoldUpdated,
             })
             .eq(ProductsTableColumns.productId, product.productId!)
-            .eq(ProductsTableColumns.bakeryId, product.bakeryId);
+            .eq(ProductsTableColumns.bakeryId, product.bakeryId)
+            .eq(ProductsTableColumns.branchId, product.branchId);
         final Map<String, dynamic>? financeResponse = await _supabase
             .from(Tables.finances)
             .select()
             .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+            .eq(FinanceTableColumns.branchId, product.branchId)
             .eq(FinanceTableColumns.date, todayStr)
             .maybeSingle();
 
@@ -668,6 +653,7 @@ class WorkerRepo {
               .from(Tables.finances)
               .update({FinanceTableColumns.profit: updatedProfit})
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+              .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
@@ -695,12 +681,14 @@ class WorkerRepo {
               ProductsTableColumns.notSoldWaste: notSoldWasteUpdated,
             })
             .eq(ProductsTableColumns.productId, product.productId!)
-            .eq(ProductsTableColumns.bakeryId, product.bakeryId);
+            .eq(ProductsTableColumns.bakeryId, product.bakeryId)
+            .eq(ProductsTableColumns.branchId, product.branchId);
 
         final Map<String, dynamic>? financeResponse = await _supabase
             .from(Tables.finances)
             .select()
             .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+            .eq(FinanceTableColumns.branchId, product.branchId)
             .eq(FinanceTableColumns.date, todayStr)
             .maybeSingle();
 
@@ -746,6 +734,7 @@ class WorkerRepo {
                     .toJson()[FinanceTableColumns.wastes],
               })
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+              .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
@@ -782,12 +771,14 @@ class WorkerRepo {
               ProductsTableColumns.mealsWaste: wastesWasteUpdated,
             })
             .eq(ProductsTableColumns.productId, product.productId!)
-            .eq(ProductsTableColumns.bakeryId, product.bakeryId);
+            .eq(ProductsTableColumns.bakeryId, product.bakeryId)
+            .eq(ProductsTableColumns.branchId, product.branchId);
 
         final Map<String, dynamic>? financeResponse = await _supabase
             .from(Tables.finances)
             .select()
             .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+            .eq(FinanceTableColumns.branchId, product.branchId)
             .eq(FinanceTableColumns.date, todayStr)
             .maybeSingle();
 
@@ -833,6 +824,7 @@ class WorkerRepo {
                     .toJson()[FinanceTableColumns.wastes],
               })
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+              .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
@@ -888,11 +880,13 @@ class WorkerRepo {
             ProductsTableColumns.totalProduced: totalProducedUpdated,
           })
           .eq(ProductsTableColumns.productId, product.productId!)
-          .eq(ProductsTableColumns.bakeryId, product.bakeryId);
+          .eq(ProductsTableColumns.bakeryId, product.bakeryId)
+          .eq(ProductsTableColumns.branchId, product.branchId);
       final Map<String, dynamic>? existingRecord = await _supabase
           .from(Tables.sales)
           .select()
           .eq(SalesTableColumns.bakeryId, product.bakeryId)
+          .eq(SalesTableColumns.branchId, product.branchId)
           .eq(SalesTableColumns.productId, product.productId!)
           .eq(
             SalesTableColumns.date,
@@ -909,6 +903,7 @@ class WorkerRepo {
             .from(Tables.sales)
             .update({SalesTableColumns.produced: updatedProducedValue})
             .eq(SalesTableColumns.bakeryId, product.bakeryId)
+            .eq(SalesTableColumns.branchId, product.branchId)
             .eq(SalesTableColumns.productId, product.productId!)
             .eq(
               SalesTableColumns.date,
@@ -952,6 +947,7 @@ class WorkerRepo {
             .from(Tables.finances)
             .select()
             .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+            .eq(FinanceTableColumns.branchId, product.branchId)
             .eq(FinanceTableColumns.date, todayStr)
             .maybeSingle();
 
@@ -997,6 +993,7 @@ class WorkerRepo {
                     .toJson()[FinanceTableColumns.wastes],
               })
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
+              .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(
@@ -1194,7 +1191,7 @@ class WorkerRepo {
   }) async {
     try {
       final int bakeryIndex = order.bakeries.indexWhere(
-        (bakery) => bakery.bakeryId == bakeryId,
+        (bakery) => bakery.bakeryId == bakeryId && bakery.branchId == branchId,
       );
       if (bakeryIndex == -1) return FailureResponse('Bakery not found');
 
@@ -1246,13 +1243,15 @@ class WorkerRepo {
               ProductsTableColumns.totalSold: newTotalSold,
             })
             .eq(ProductsTableColumns.productId, product.productId!)
-            .eq(ProductsTableColumns.bakeryId, bakeryId);
+            .eq(ProductsTableColumns.bakeryId, bakeryId)
+            .eq(ProductsTableColumns.branchId, branchId);
 
         // --- sales table: today's row for this product ---
         final Map<String, dynamic>? existingSalesRecord = await _supabase
             .from(Tables.sales)
             .select()
             .eq(SalesTableColumns.bakeryId, bakeryId)
+            .eq(SalesTableColumns.branchId, branchId)
             .eq(SalesTableColumns.productId, product.productId!)
             .eq(SalesTableColumns.date, todayStr)
             .maybeSingle();
@@ -1267,6 +1266,7 @@ class WorkerRepo {
               .from(Tables.sales)
               .update({SalesTableColumns.sold: updatedSoldValue})
               .eq(SalesTableColumns.bakeryId, bakeryId)
+              .eq(SalesTableColumns.branchId, branchId)
               .eq(SalesTableColumns.productId, product.productId!)
               .eq(SalesTableColumns.date, todayStr);
         } else {
@@ -1291,6 +1291,7 @@ class WorkerRepo {
             .from(Tables.finances)
             .select()
             .eq(FinanceTableColumns.bakeryId, bakeryId)
+            .eq(FinanceTableColumns.branchId, branchId)
             .eq(FinanceTableColumns.date, todayStr)
             .maybeSingle();
 
@@ -1304,6 +1305,7 @@ class WorkerRepo {
               .from(Tables.finances)
               .update({FinanceTableColumns.profit: updatedProfit})
               .eq(FinanceTableColumns.bakeryId, bakeryId)
+              .eq(FinanceTableColumns.branchId, branchId)
               .eq(FinanceTableColumns.date, todayStr);
         } else {
           final FinanceModel newFinanceRecord = FinanceModel(

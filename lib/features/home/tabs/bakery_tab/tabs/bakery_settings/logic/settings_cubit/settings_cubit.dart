@@ -59,9 +59,19 @@ class SettingsCubit extends Cubit<SettingsState> {
   bool isOneProductChanged = false;
   bool isProductDataChanged = false;
   bool newBranchFormValidity = false;
+  bool isCreatingBranch = false;
+  bool isDeletingBranch = false;
+  bool branchNameExists=false;
   double newBranchLat = 0;
   double newBranchLng = 0;
 
+  List<String> getBranchNames() {
+    return bakeries.map((bakery) => bakery.branchName).toList();
+  }
+  void setbranchNameExists(bool status){
+    branchNameExists=status;
+    _emitSuccess();
+  }
   void setNewBranchLocation({required double lat, required double lng}) {
     newBranchLat = lat;
     newBranchLng = lng;
@@ -324,6 +334,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required PayrollModel payroll,
     required StorageModel storage,
   }) async {
+    isCreatingBranch = true;
+    _emitSuccess();
     final result = await _repo.createNewBranch(
       bakeryData: bakeryData,
       products: products,
@@ -334,11 +346,41 @@ class SettingsCubit extends Cubit<SettingsState> {
       await _bakeryTabCubit.loadBakeryData(withEmit: false);
       await _bakeryTabCubit.loadAll();
       await getSettings();
+      isCreatingBranch = false;
       newBranchFormValidity = false;
       _emitSuccess();
       return true;
     }
+    isCreatingBranch = false;
+    _emitSuccess();
     return false;
+  }
+
+  Future<bool> deleteBranch({required String branchId}) async {
+    if (isDeletingBranch) return false;
+    final BakeryModel? branch = bakeries.firstWhereOrNull(
+          (item) => item.branchId == branchId,
+    );
+    if (branch == null || bakeries.length <= 1) return false;
+    final bool wasEditing = isBranchesEditing;
+    isDeletingBranch = true;
+    _emitSuccess();
+    final result = await _repo.deleteBranch(
+      bakeryId: branch.bakeryId,
+      branchId: branchId,
+    );
+    if (result is! SuccessResponse<bool>) {
+      isDeletingBranch = false;
+      _emitSuccess();
+      return false;
+    }
+    await _bakeryTabCubit.loadBakeryData(withEmit: false);
+    await _bakeryTabCubit.loadAll();
+    await getSettings();
+    isBranchesEditing = wasEditing;
+    isDeletingBranch = false;
+    _emitSuccess();
+    return true;
   }
 
   Future<void> changeBranchLocation({

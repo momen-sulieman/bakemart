@@ -24,30 +24,32 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final TextEditingController? otherController;
   final void Function(String)? onChanged;
+  final String? errorText;
 
   const CustomTextFormField(
-      this.title, {
-        required this.controller,
-        this.hint,
-        this.prefixIcon,
-        this.suffixIcon,
-        this.validate = false,
-        this.auth = false,
-        this.emailValidation = false,
-        this.passwordValidation = false,
-        this.passwordMatch = false,
-        this.isPhone = false,
-        this.selectedCountryCode = '+20',
-        this.availableCountryCodes = const ['+20', '+966', '+971', '+1', '+44'],
-        this.onCountryChanged,
-        this.otherController,
-        this.keyBoardType = TextInputType.text,
-        this.obscurity = false,
-        this.validationText = "cannotBeEmpty",
-        this.capitalization = TextCapitalization.none,
-        this.onChanged,
-        super.key,
-      });
+    this.title, {
+    required this.controller,
+    this.hint,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.validate = false,
+    this.auth = false,
+    this.emailValidation = false,
+    this.passwordValidation = false,
+    this.passwordMatch = false,
+    this.isPhone = false,
+    this.selectedCountryCode = '+20',
+    this.availableCountryCodes = const ['+20', '+966', '+971', '+1', '+44'],
+    this.onCountryChanged,
+    this.otherController,
+    this.keyBoardType = TextInputType.text,
+    this.obscurity = false,
+    this.validationText = "cannotBeEmpty",
+    this.capitalization = TextCapitalization.none,
+    this.onChanged,
+    this.errorText,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +62,7 @@ class CustomTextFormField extends StatelessWidget {
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             value: selectedCountryCode,
-            icon: Icon(
-              Icons.arrow_drop_down,
-              size: 18,
-              color: iconColor,
-            ),
+            icon: Icon(Icons.arrow_drop_down, size: 18, color: iconColor),
             borderRadius: .circular(20),
             elevation: 0,
             dropdownColor: context.isDark
@@ -73,27 +71,18 @@ class CustomTextFormField extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: context.isDark
-                  ? ThemingColors.white
-                  : ThemingColors.black,
+              color: context.isDark ? ThemingColors.white : ThemingColors.black,
             ),
             menuWidth: 65,
             items: availableCountryCodes.map((code) {
-              return DropdownMenuItem<String>(
-                value: code,
-                child: Text(code),
-              );
+              return DropdownMenuItem<String>(value: code, child: Text(code));
             }).toList(),
             onChanged: onCountryChanged,
           ),
         ),
       );
     } else if (prefixIcon != null) {
-      leadingPrefix = Icon(
-        prefixIcon,
-        size: 18,
-        color: iconColor,
-      );
+      leadingPrefix = Icon(prefixIcon, size: 18, color: iconColor);
     }
 
     return TextFormField(
@@ -102,32 +91,32 @@ class CustomTextFormField extends StatelessWidget {
 
       validator: validate
           ? (value) {
-        if (value == null || value.trim().isEmpty) {
-          return validationText.tr();
-        }
-        if (isPhone) {
-          if (value.length < 8 || value.length > 11) {
-            return 'phoneValidation'.tr();
-          }
-        }
-        if (emailValidation) {
-          final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-          if (!emailRegex.hasMatch(value)) {
-            return 'emailValidation'.tr();
-          }
-        }
-        if (passwordValidation) {
-          if (value.length < 8) {
-            return 'passwordValidation'.tr();
-          }
-        }
-        if (passwordMatch && otherController != null) {
-          if (value != otherController!.text) {
-            return 'passwordMissmatch'.tr();
-          }
-        }
-        return null;
-      }
+              if (value == null || value.trim().isEmpty) {
+                return validationText.tr();
+              }
+              if (isPhone) {
+                if (value.length < 8 || value.length > 11) {
+                  return 'phoneValidation'.tr();
+                }
+              }
+              if (emailValidation) {
+                final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                if (!emailRegex.hasMatch(value)) {
+                  return 'emailValidation'.tr();
+                }
+              }
+              if (passwordValidation) {
+                if (value.length < 8) {
+                  return 'passwordValidation'.tr();
+                }
+              }
+              if (passwordMatch && otherController != null) {
+                if (value != otherController!.text) {
+                  return 'passwordMissmatch'.tr();
+                }
+              }
+              return null;
+            }
           : null,
       obscureText: obscurity,
       cursorColor: context.isDark
@@ -138,14 +127,15 @@ class CustomTextFormField extends StatelessWidget {
       style: const TextStyle(fontSize: 12),
       decoration: InputDecoration(
         hintText: hint,
+        errorText: errorText,
         hintStyle: TextStyle(
           fontSize: 12,
           color: context.isDark
               ? auth
-              ? ThemingColors.white.withAlpha((0.3*255).toInt())
-              : ThemingColors.white
+                    ? ThemingColors.white.withAlpha((0.3 * 255).toInt())
+                    : ThemingColors.white
               : auth
-              ? Colors.blueGrey.withAlpha((0.5*255).toInt())
+              ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
               : ThemingColors.black,
         ),
         filled: true,
@@ -157,8 +147,8 @@ class CustomTextFormField extends StatelessWidget {
           fontSize: 12,
           color: context.isDark
               ? auth
-              ? Colors.blueGrey
-              : ThemingColors.white
+                    ? Colors.blueGrey
+                    : ThemingColors.white
               : auth
               ? Colors.blueGrey
               : ThemingColors.black,
@@ -177,8 +167,8 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: context.isDark
                 ? auth
-                ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-                : ThemingColors.white.withAlpha((0.4 * 255).toInt())
+                      ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
+                      : ThemingColors.white.withAlpha((0.4 * 255).toInt())
                 : auth
                 ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
                 : ThemingColors.black.withAlpha((0.4 * 255).toInt()),
@@ -194,8 +184,8 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: context.isDark
                 ? auth
-                ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-                : ThemingColors.white.withAlpha((0.4 * 255).toInt())
+                      ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
+                      : ThemingColors.white.withAlpha((0.4 * 255).toInt())
                 : auth
                 ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
                 : ThemingColors.black.withAlpha((0.4 * 255).toInt()),
@@ -207,8 +197,8 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: context.isDark
                 ? auth
-                ? Colors.blueGrey
-                : ThemingColors.white
+                      ? Colors.blueGrey
+                      : ThemingColors.white
                 : auth
                 ? Colors.blueGrey
                 : ThemingColors.black,

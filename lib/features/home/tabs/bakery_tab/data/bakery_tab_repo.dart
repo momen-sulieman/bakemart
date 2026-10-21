@@ -35,7 +35,8 @@ class BakeryTabRepo {
       final List<Map<String, dynamic>> bakeriesResponse = await _supabase
           .from(Tables.bakeries)
           .select()
-          .eq(BakeriesTableColumns.bakeryId, id);
+          .eq(BakeriesTableColumns.bakeryId, id)
+          .order(BakeriesTableColumns.branchNumber, ascending: true);
 
       final List<BakeryModel> bakeries = bakeriesResponse
           .map((json) => BakeryModel.fromJson(json))

@@ -4,10 +4,12 @@ import 'package:bakemart/core/shared/models/product_model.dart';
 import 'package:bakemart/core/shared/models/storage_model.dart';
 import 'package:bakemart/core/shared/widgets/glass_card/glass_card.dart';
 import 'package:bakemart/core/shared/widgets/transparent_button/transparent_button.dart';
+import 'package:bakemart/core/utils/extensions/string_extension.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../../../../../core/shared/cubits/location_cubit/location_cubit.dart';
 import '../../../../../../../../core/shared/cubits/location_cubit/location_state.dart';
@@ -166,13 +168,20 @@ class BranchesSettingsTile extends StatelessWidget {
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () {
+                            if (cubit.isDeletingBranch) return;
                             cubit.branchesEditingMode(!cubit.isBranchesEditing);
                           },
-                          child: Icon(
-                            Icons.done,
-                            size: 18,
-                            color: Colors.green,
-                          ),
+                          child: cubit.isDeletingBranch
+                              ? SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child:
+                                      LoadingAnimationWidget.staggeredDotsWave(
+                                        size: 14,
+                                        color: Colors.green,
+                                      ),
+                                )
+                              : Icon(Icons.done, size: 18, color: Colors.green),
                         ),
                       )
                     : cubit.isBranchesExpanded
@@ -220,6 +229,192 @@ class BranchesSettingsTile extends StatelessWidget {
                           Expanded(
                             child: Row(
                               children: [
+                                SizedBox(
+                                  width: 15,
+                                  child: Center(
+                                    child:
+                                        cubit.isBranchesEditing &&
+                                            branches.length > 1
+                                        ? InkWell(
+                                            hoverColor: Colors.transparent,
+                                            splashColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () {
+                                              if (branches.length <= 1) {
+                                                return;
+                                              }
+                                              showDialog(
+                                                context: context,
+                                                barrierColor:
+                                                    Colors.transparent,
+                                                builder: (dialogContext) {
+                                                  return BackdropFilter(
+                                                    filter: ImageFilter.blur(
+                                                      sigmaX: 5,
+                                                      sigmaY: 5,
+                                                    ),
+                                                    child: AlertDialog(
+                                                      titlePadding: .only(
+                                                        left: 15,
+                                                        right: 15,
+                                                        top: 15,
+                                                      ),
+                                                      contentPadding:
+                                                          .symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 50,
+                                                          ),
+                                                      actionsPadding: .only(
+                                                        left: 20,
+                                                        right: 20,
+                                                        bottom: 20,
+                                                      ),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: .circular(
+                                                          20,
+                                                        ),
+                                                        side: BorderSide(
+                                                          width: 0.3,
+                                                          color: context.isDark
+                                                              ? ThemingColors
+                                                                    .white
+                                                                    .withAlpha(
+                                                                      (0.4 * 255)
+                                                                          .toInt(),
+                                                                    )
+                                                              : ThemingColors
+                                                                    .black
+                                                                    .withAlpha(
+                                                                      (0.2 * 255)
+                                                                          .toInt(),
+                                                                    ),
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          context.isDark
+                                                          ? ThemingColors.black
+                                                                .withAlpha(
+                                                                  (0.4 * 255)
+                                                                      .toInt(),
+                                                                )
+                                                          : ThemingColors.white
+                                                                .withAlpha(
+                                                                  (0.4 * 255)
+                                                                      .toInt(),
+                                                                ),
+                                                      title: Text(
+                                                        "confirmDeleteBranch"
+                                                            .tr(),
+                                                        textAlign: .center,
+                                                        style: TextStyle(
+                                                          fontWeight: .bold,
+                                                          fontSize: 20,
+                                                          color:
+                                                              Colors.redAccent,
+                                                        ),
+                                                      ),
+                                                      content: Text(
+                                                        "deleteBranchWarning"
+                                                            .tr(),
+                                                        textAlign: .center,
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                      actions: [
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: InkWell(
+                                                                hoverColor: Colors
+                                                                    .transparent,
+                                                                splashColor: Colors
+                                                                    .transparent,
+                                                                highlightColor:
+                                                                    Colors
+                                                                        .transparent,
+                                                                onTap: () =>
+                                                                    Navigator.pop(
+                                                                      dialogContext,
+                                                                    ),
+                                                                child: GlassCard(
+                                                                  margin: .zero,
+                                                                  padding:
+                                                                      .symmetric(
+                                                                        vertical:
+                                                                            2,
+                                                                      ),
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .arrow_back,
+                                                                    size: 18,
+                                                                    color: ThemingColors
+                                                                        .primaryColor,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 20),
+                                                            InkWell(
+                                                              hoverColor: Colors
+                                                                  .transparent,
+                                                              splashColor: Colors
+                                                                  .transparent,
+                                                              highlightColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              onTap: () {
+                                                                Navigator.pop(
+                                                                  dialogContext,
+                                                                );
+                                                                cubit.deleteBranch(
+                                                                  branchId: branch
+                                                                      .branchId,
+                                                                );
+                                                              },
+                                                              child: GlassCard(
+                                                                margin: .zero,
+                                                                padding:
+                                                                    .symmetric(
+                                                                      vertical:
+                                                                          2,
+                                                                      horizontal:
+                                                                          15,
+                                                                    ),
+                                                                green: true,
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .delete_sweep_outlined,
+                                                                  size: 18,
+                                                                  color: Colors
+                                                                      .redAccent,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.delete_sweep_outlined,
+                                              size: 18,
+                                              color: Colors.redAccent,
+                                            ),
+                                          )
+                                        : Text(
+                                            branch.branchNumber.toString(),
+                                            style: TextStyle(
+                                              fontWeight: .bold,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                                SizedBox(width: 15),
                                 Text(
                                   branch.branchName,
                                   maxLines: 1,
@@ -293,6 +488,8 @@ class BranchesSettingsTile extends StatelessWidget {
                       padding: .only(top: 20, bottom: 10),
                       child: TransparentButton(
                         onTap: () {
+                          final List<String> existingBranches = cubit
+                              .getBranchNames();
                           final locationState = context
                               .read<LocationCubit>()
                               .state;
@@ -308,8 +505,9 @@ class BranchesSettingsTile extends StatelessWidget {
                             lat: liveLat ?? cubit.bakeries[0].bakeryLat,
                             lng: liveLng ?? cubit.bakeries[0].bakeryLng,
                           );
+                          cubit.setbranchNameExists(false);
                           showDialog(
-                            barrierColor: Colors.transparent,
+                            barrierColor:Colors.transparent,
                             context: context,
                             builder: (dialogContext) {
                               final TextEditingController branchNameController =
@@ -351,10 +549,10 @@ class BranchesSettingsTile extends StatelessWidget {
                                         ),
                                         backgroundColor: context.isDark
                                             ? ThemingColors.black.withAlpha(
-                                                (0.2 * 255).toInt(),
+                                                (0.9 * 255).toInt(),
                                               )
-                                            : ThemingColors.black.withAlpha(
-                                                (0.05 * 255).toInt(),
+                                            : ThemingColors.white.withAlpha(
+                                                (0.7 * 255).toInt(),
                                               ),
                                         title: Text(
                                           "addBranch".tr(),
@@ -368,18 +566,36 @@ class BranchesSettingsTile extends StatelessWidget {
                                               children: [
                                                 Expanded(
                                                   child: SizedBox(
-                                                    height: 40,
+                                                    height: 65,
                                                     child: CustomTextFormField(
                                                       "branchName".tr(),
                                                       controller:
                                                           branchNameController,
                                                       keyBoardType:
                                                           TextInputType.text,
+                                                      errorText:
+                                                          cubit.branchNameExists
+                                                          ? "branchExists".tr()
+                                                          : null,
                                                       onChanged: (text) {
+                                                        final bool exists =
+                                                            existingBranches
+                                                                .contains(
+                                                                  text,
+                                                                ) ||
+                                                            existingBranches
+                                                                .contains(
+                                                                  text.capitalize(),
+                                                                );
                                                         cubit.setValidity(
                                                           newBranchFormValidityState:
-                                                              text.isNotEmpty,
+                                                              text.isNotEmpty &&
+                                                              !exists,
                                                         );
+                                                        cubit
+                                                            .setbranchNameExists(
+                                                              exists,
+                                                            );
                                                       },
                                                     ),
                                                   ),
@@ -459,6 +675,10 @@ class BranchesSettingsTile extends StatelessWidget {
                                                       highlightColor:
                                                           Colors.transparent,
                                                       onTap: () {
+                                                        if (cubit
+                                                            .isCreatingBranch) {
+                                                          return;
+                                                        }
                                                         Navigator.pop(
                                                           dialogContext,
                                                         );
@@ -491,10 +711,15 @@ class BranchesSettingsTile extends StatelessWidget {
                                                             Colors.transparent,
                                                         highlightColor:
                                                             Colors.transparent,
-                                                        onTap: () =>
-                                                            Navigator.pop(
-                                                              dialogContext,
-                                                            ),
+                                                        onTap: () {
+                                                          if (cubit
+                                                              .isCreatingBranch) {
+                                                            return;
+                                                          }
+                                                          Navigator.pop(
+                                                            dialogContext,
+                                                          );
+                                                        },
                                                         child: GlassCard(
                                                           margin: .symmetric(
                                                             horizontal: 6,
@@ -521,6 +746,10 @@ class BranchesSettingsTile extends StatelessWidget {
                                                     highlightColor:
                                                         Colors.transparent,
                                                     onTap: () async {
+                                                      if (cubit
+                                                          .isCreatingBranch) {
+                                                        return;
+                                                      }
                                                       final BakeryModel
                                                       newBranchBakeryModel =
                                                           BakeryModel(
@@ -544,12 +773,33 @@ class BranchesSettingsTile extends StatelessWidget {
                                                                     .bakeries
                                                                     .length +
                                                                 1,
-                                                            verified: true
+                                                            verified: true,
+                                                          );
+                                                      final BakeryModel
+                                                      mainBranch = cubit
+                                                          .bakeries
+                                                          .firstWhere(
+                                                            (item) =>
+                                                                item.branchNumber ==
+                                                                1,
+                                                            orElse: () => cubit
+                                                                .bakeries
+                                                                .first,
                                                           );
                                                       final String
-                                                      mainBranchId = cubit
-                                                          .bakeries[0]
-                                                          .branchId;
+                                                      mainBranchId =
+                                                          mainBranch.branchId;
+                                                      final PayrollModel
+                                                      newBranchPayroll = cubit
+                                                          .payrolls
+                                                          .firstWhere(
+                                                            (item) =>
+                                                                item.branchId ==
+                                                                mainBranchId,
+                                                            orElse: () => cubit
+                                                                .payrolls
+                                                                .first,
+                                                          );
                                                       final List<ProductModel>
                                                       newBranchProducts = cubit
                                                           .products
@@ -560,9 +810,6 @@ class BranchesSettingsTile extends StatelessWidget {
                                                                 mainBranchId,
                                                           )
                                                           .toList();
-                                                      final PayrollModel
-                                                      newBranchPayroll =
-                                                          cubit.payrolls[0];
                                                       final StorageModel
                                                       newBranchStorage =
                                                           StorageModel(
@@ -598,11 +845,29 @@ class BranchesSettingsTile extends StatelessWidget {
                                                       padding: .symmetric(
                                                         vertical: 2,
                                                       ),
-                                                      child: Icon(
-                                                        Icons.done,
-                                                        size: 18,
-                                                        color: Colors.green,
-                                                      ),
+                                                      child:
+                                                          cubit.isCreatingBranch
+                                                          ? SizedBox(
+                                                              height: 18,
+                                                              width: 18,
+                                                              child: Center(
+                                                                child: SizedBox(
+                                                                  height: 14,
+                                                                  width: 14,
+                                                                  child: LoadingAnimationWidget.staggeredDotsWave(
+                                                                    size: 18,
+                                                                    color: Colors
+                                                                        .green,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : Icon(
+                                                              Icons.done,
+                                                              size: 18,
+                                                              color:
+                                                                  Colors.green,
+                                                            ),
                                                     ),
                                                   ),
                                                 ),

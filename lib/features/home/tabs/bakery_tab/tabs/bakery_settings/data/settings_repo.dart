@@ -108,6 +108,28 @@ class SettingsRepo {
     }
   }
 
+  Future<ResponseResult<bool>> deleteBranch({
+    required String bakeryId,
+    required String branchId,
+  }) async {
+    try {
+      await _supabase.rpc(
+        'delete_branch',
+        params: {'p_bakery_id': bakeryId, 'p_branch_id': branchId},
+      );
+      return SuccessResponse(true);
+    } on PostgrestException catch (error) {
+      debugPrint(
+        'deleteBranch postgrest: ${error.message} | ${error.details} | ${error.hint}',
+      );
+      return FailureResponse(error.message);
+    } catch (error) {
+      debugPrint('deleteBranch error: $error');
+      return FailureResponse(error.toString());
+    }
+  }
+
+
   Future<ResponseResult<bool>> changeBranchLocation({
     required String branchId,
     required double lat,

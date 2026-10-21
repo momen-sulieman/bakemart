@@ -31,6 +31,8 @@ class SalesStatusTile extends StatelessWidget {
           branches: cubit.branches,
           selectedBranchId: cubit.selectedBranchId,
           onBranchChanged: cubit.changeBranch,
+          showIndicator: cubit.isExpanded,
+          enabled: cubit.isExpanded,
           child: ExpansionTile(
             splashColor: Colors.transparent,
             initiallyExpanded: true,

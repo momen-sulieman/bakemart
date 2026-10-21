@@ -427,18 +427,20 @@ class BranchesSettingsTile extends StatelessWidget {
                                                 children: [
                                                   TextSpan(
                                                     text: "${"note".tr()}: ",
-                                                    style:TextStyle(
+                                                    style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 13,
-                                                      color:context.isDark? Colors.amber:Colors.orange,
+                                                      color: context.isDark
+                                                          ? Colors.amber
+                                                          : Colors.orange,
                                                     ),
                                                   ),
                                                   TextSpan(
                                                     text: "newBranchNote".tr(),
                                                     style: TextStyle(
-                                                      fontSize: 13
-                                                    )
+                                                      fontSize: 13,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -518,7 +520,7 @@ class BranchesSettingsTile extends StatelessWidget {
                                                         Colors.transparent,
                                                     highlightColor:
                                                         Colors.transparent,
-                                                    onTap: () {
+                                                    onTap: () async {
                                                       final BakeryModel
                                                       newBranchBakeryModel =
                                                           BakeryModel(
@@ -568,7 +570,7 @@ class BranchesSettingsTile extends StatelessWidget {
                                                                 .bakeryId,
                                                             branchId: "",
                                                           );
-                                                      cubit.createNewBranch(
+                                                      await cubit.createNewBranch(
                                                         bakeryData:
                                                             newBranchBakeryModel,
                                                         products:
@@ -578,6 +580,12 @@ class BranchesSettingsTile extends StatelessWidget {
                                                         storage:
                                                             newBranchStorage,
                                                       );
+                                                      if (dialogContext
+                                                          .mounted) {
+                                                        Navigator.pop(
+                                                          dialogContext,
+                                                        );
+                                                      }
                                                     },
                                                     child: GlassCard(
                                                       margin: .symmetric(

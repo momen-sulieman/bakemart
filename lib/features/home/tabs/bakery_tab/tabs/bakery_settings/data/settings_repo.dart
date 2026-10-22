@@ -129,7 +129,6 @@ class SettingsRepo {
     }
   }
 
-
   Future<ResponseResult<bool>> changeBranchLocation({
     required String branchId,
     required double lat,
@@ -248,6 +247,14 @@ class SettingsRepo {
       if (workerId != null) {
         final worker = await getUserData(workerId);
         if (worker is SuccessResponse<UserModel> && bakeryId != null) {
+          final existing = await _supabase
+              .from(Tables.staffs)
+              .select(StaffsTableColumns.workerId)
+              .eq(StaffsTableColumns.workerId, workerId)
+              .maybeSingle();
+          if (existing != null) {
+            return FailureResponse("already connected to a bakery");
+          }
           newWorker = newWorker.copyWith(
             workerName: "${worker.data.firstName} ${worker.data.secondName}",
             workerId: workerId,

@@ -242,7 +242,7 @@
   "addYourProductsHere": "Add your products here",
   "bakeryName": "Bakery name",
   "branchName": "Branch name",
-  "branchNameNote": "Write the neighbourhood name or the city or the street name (this name will represent the branch name to make it easier for you to differ between your branches data if you have more than one branch)",
+  "branchNameNote": "Write the neighbourhood name or the city or the street name (the purpose of this name as a simple reference is to make it easier for you to differ between the data of your branches if you have more than one branch)",
   "payrollNote1": "Select your payroll method",
   "payrollNote2": " (whether workers get paid daily based or per batch '50 kg of flour'), ",
   "payrollNote3": "and set the wages for each role",

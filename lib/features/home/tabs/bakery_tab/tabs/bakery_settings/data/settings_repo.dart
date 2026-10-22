@@ -3,7 +3,6 @@ import 'package:bakemart/core/shared/models/bakery_model.dart';
 import 'package:bakemart/core/shared/models/payroll_model.dart';
 import 'package:bakemart/core/shared/models/product_model.dart';
 import 'package:bakemart/core/utils/enums/staffs_table_columns.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -98,12 +97,8 @@ class SettingsRepo {
 
       return SuccessResponse(true);
     } on PostgrestException catch (error) {
-      debugPrint(
-        'createNewBranch postgrest: ${error.message} | ${error.details} | ${error.hint}',
-      );
       return FailureResponse(error.message);
     } catch (error) {
-      debugPrint('createNewBranch error: $error');
       return FailureResponse(error.toString());
     }
   }
@@ -119,12 +114,8 @@ class SettingsRepo {
       );
       return SuccessResponse(true);
     } on PostgrestException catch (error) {
-      debugPrint(
-        'deleteBranch postgrest: ${error.message} | ${error.details} | ${error.hint}',
-      );
       return FailureResponse(error.message);
     } catch (error) {
-      debugPrint('deleteBranch error: $error');
       return FailureResponse(error.toString());
     }
   }

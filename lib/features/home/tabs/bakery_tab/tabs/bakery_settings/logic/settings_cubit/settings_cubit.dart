@@ -6,7 +6,6 @@ import 'package:bakemart/core/shared/models/payroll_model.dart';
 import 'package:bakemart/core/shared/models/product_model.dart';
 import 'package:bakemart/core/shared/models/staff_model.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../../../core/shared/models/storage_model.dart';
@@ -403,18 +402,6 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> getSettings() async {
-    debugPrint(
-      'bakeries: ${_bakeryTabCubit.bakeries.map((b) => "${b.branchId}|${b.branchName}").toList()}',
-    );
-    debugPrint(
-      'payrolls: ${_bakeryTabCubit.payrolls.map((p) => p.branchId).toList()}',
-    );
-    debugPrint(
-      'products: ${_bakeryTabCubit.products.map((p) => p.branchId).toSet()}',
-    );
-    debugPrint(
-      'staff: ${_bakeryTabCubit.staff.map((s) => s.branchId).toSet()}',
-    );
     bakeries = _bakeryTabCubit.bakeries;
     payrolls = _bakeryTabCubit.payrolls;
     editablePayrolls = _bakeryTabCubit.payrolls;

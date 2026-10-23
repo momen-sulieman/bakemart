@@ -151,7 +151,11 @@ class HomeRepo {
         return HomeDataBakeriesModel(
           bakeryModel: bakery,
           productModelList: allProducts
-              .where((product) => product.bakeryId == bakery.bakeryId)
+              .where(
+                (product) =>
+                    product.bakeryId == bakery.bakeryId &&
+                    product.branchId == bakery.branchId,
+              )
               .toList(),
         );
       }).toList();

@@ -415,9 +415,9 @@ class ProductsSettingsTile extends StatelessWidget {
                               final ProductModel product = entry.value;
                               final List<ProductModel> oldProducts =
                                   cubit.products;
-                              final ProductModel? oldProduct = oldProducts
-                                  .firstWhereOrNull(
-                                    (p) => p.productId == product.productId,
+                              final ProductModel? oldProduct = oldProducts.firstWhereOrNull(
+                                    (p) =>
+                                p.productId == product.productId && p.branchId == product.branchId,
                               );
                               final bool changed =
                                   oldProduct == null ||

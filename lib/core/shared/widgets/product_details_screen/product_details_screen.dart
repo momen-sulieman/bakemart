@@ -9,7 +9,6 @@ import 'product_pending_edit_view.dart';
 import 'product_recipe_edit_view.dart';
 import 'product_view_only.dart';
 
-
 class ProductDetailsScreen extends StatelessWidget {
   final ProductModel product;
   final int? productIndex;
@@ -30,15 +29,26 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (creation && cubit != null && productIndex != null) {
-      return ProductCreationView(product: product, cubit: cubit!, productIndex: productIndex!);
+      return ProductCreationView(
+        product: product,
+        cubit: cubit!,
+        productIndex: productIndex!,
+      );
     }
     if (recipe) {
       final settingsCubit = context.read<SettingsCubit>();
-      final isPersisted = settingsCubit.products.any((p) => p.productId == product.productId);
+      final isPersisted = settingsCubit.products.any(
+        (p) =>
+            p.productId == product.productId && p.branchId == product.branchId,
+      );
       return isPersisted
           ? ProductRecipeEditView(product: product)
           : ProductPendingEditView(product: product, cubit: settingsCubit);
     }
-    return ProductViewOnly(product: product, statistict: statistict, nutrition: nutrition);
+    return ProductViewOnly(
+      product: product,
+      statistict: statistict,
+      nutrition: nutrition,
+    );
   }
 }

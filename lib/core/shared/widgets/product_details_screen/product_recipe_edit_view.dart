@@ -31,7 +31,10 @@ class ProductRecipeEditView extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final productEditingController = TextEditingController();
     final cubit = context.read<SettingsCubit>();
-    Future<void> confirmDeleteProduct({required String productId,required String branchId,}) async {
+    Future<void> confirmDeleteProduct({
+      required String productId,
+      required String branchId,
+    }) async {
       final isConfirmed = await showDialog<bool>(
         context: context,
         barrierColor: Colors.transparent,
@@ -51,8 +54,8 @@ class ProductRecipeEditView extends StatelessWidget {
               ),
             ),
             backgroundColor:
-            (context.isDark ? ThemingColors.black : ThemingColors.white)
-                .withAlpha((0.8 * 255).toInt()),
+                (context.isDark ? ThemingColors.black : ThemingColors.white)
+                    .withAlpha((0.8 * 255).toInt()),
             title: Text(
               "deleteProduct".tr(),
               textAlign: TextAlign.center,
@@ -107,7 +110,7 @@ class ProductRecipeEditView extends StatelessWidget {
       );
 
       if (isConfirmed == true && context.mounted) {
-        await cubit.deleteProduct(productId: productId,branchId: branchId);
+        await cubit.deleteProduct(productId: productId, branchId: branchId);
         if (!context.mounted) return;
         Navigator.pop(context);
       }
@@ -117,7 +120,9 @@ class ProductRecipeEditView extends StatelessWidget {
       builder: (context, state) {
         final currentProduct = state is SettingsSuccess
             ? state.products.firstWhereOrNull(
-                    (p) => p.productId == product.productId,
+                    (p) =>
+                        p.productId == product.productId &&
+                        p.branchId == product.branchId,
                   ) ??
                   product
             : product;

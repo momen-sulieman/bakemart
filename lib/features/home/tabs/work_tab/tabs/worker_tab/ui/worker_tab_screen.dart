@@ -614,6 +614,9 @@ class WorkerTabScreen extends StatelessWidget {
                                                             bakeryId: cubit
                                                                 .bakery!
                                                                 .bakeryId,
+                                                            branchId: cubit
+                                                                .bakery!
+                                                                .branchId,
                                                           ),
                                                   ),
                                                   BlocProvider.value(

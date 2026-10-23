@@ -156,8 +156,8 @@ class ActiveOrdersWidget extends StatelessWidget {
                                   children: [
                                     TextSpan(
                                       text:
-                                          (order.deliveryFee + order.orderPrice)
-                                              .toStringAsFixed(2),
+                                      (order.deliveryFee + order.orderPrice)
+                                          .toStringAsFixed(2),
                                       style: TextStyle(fontSize: 12),
                                     ),
                                     TextSpan(
@@ -185,7 +185,9 @@ class ActiveOrdersWidget extends StatelessWidget {
                         shrinkWrap: true,
                         itemBuilder: (_, bakeryIndex) {
                           final bakery = order.bakeries[bakeryIndex];
-                          final received = order.received[bakeryIndex];
+                          final bool received =
+                              bakeryIndex < order.received.length &&
+                                  order.received[bakeryIndex];
                           return GlassCard(
                             margin: .zero,
                             padding: .symmetric(horizontal: 5, vertical: 5),
@@ -205,22 +207,21 @@ class ActiveOrdersWidget extends StatelessWidget {
                                         : .only(right: 10),
                                     decoration: BoxDecoration(
                                       borderRadius:
-                                          context.locale.languageCode == "ar"
+                                      context.locale.languageCode == "ar"
                                           ? .only(
-                                              bottomRight: .circular(10),
-                                              topRight: .circular(10),
-                                            )
+                                        bottomRight: .circular(10),
+                                        topRight: .circular(10),
+                                      )
                                           : .only(
-                                              bottomLeft: .circular(10),
-                                              topLeft: .circular(10),
-                                            ),
+                                        bottomLeft: .circular(10),
+                                        topLeft: .circular(10),
+                                      ),
                                       color: ThemingColors.primaryColor
                                           .withAlpha((0.3 * 255).toInt()),
                                     ),
                                     child: SupabaseImageProvider(
                                       filePath: Buckets.bakeriesImages,
-                                      fileName:
-                                          order.bakeries[bakeryIndex].bakeryId,
+                                      fileName: bakery.bakeryId,
                                       iconSize: 12,
                                       loadingIconSize: 12,
                                       addIconSize: 12,
@@ -230,7 +231,7 @@ class ActiveOrdersWidget extends StatelessWidget {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      bakery.bakeryName,
+                                      "${bakery.bakeryName} - ${bakery.branchName}",
                                       maxLines: 1,
                                       overflow: .ellipsis,
                                       style: TextStyle(fontSize: 12),
@@ -247,8 +248,8 @@ class ActiveOrdersWidget extends StatelessWidget {
                                         size: 16,
                                         color: received
                                             ? context.isDark
-                                                  ? Colors.greenAccent
-                                                  : Colors.green
+                                            ? Colors.greenAccent
+                                            : Colors.green
                                             : Colors.blueGrey,
                                         fontWeight: .bold,
                                       ),
@@ -270,69 +271,69 @@ class ActiveOrdersWidget extends StatelessWidget {
                       children: [
                         order.orderStatus == OrderStatuses.pending
                             ? StreamBuilder<Set<String>>(
-                                stream: cubit.cancellingOrderIdsStream,
-                                initialData: cubit.cancellingOrderIds,
-                                builder: (context, cancelSnapshot) {
-                                  final isCancelling =
-                                      (cancelSnapshot.data ?? const {})
-                                          .contains(order.orderId);
-                                  return InkWell(
-                                    hoverColor: Colors.transparent,
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onTap: isCancelling
-                                        ? null
-                                        : () => cubit.cancelOrder(
-                                            orderId: order.orderId!,
-                                          ),
-                                    child: SizedBox(
-                                      width: 120,
-                                      child: GlassCard(
-                                        margin: .zero,
-                                        padding: .symmetric(
-                                          horizontal: 15,
-                                          vertical: 3,
-                                        ),
-                                        orange: true,
-                                        otherRadius: 30,
-                                        child: isCancelling
-                                            ? Center(
-                                                child:
-                                                    LoadingAnimationWidget.staggeredDotsWave(
-                                                      color: context.isDark
-                                                          ? ThemingColors.white
-                                                          : ThemingColors.black,
-                                                      size: 14,
-                                                    ),
-                                              )
-                                            : Text(
-                                                "cancelOrder".tr(),
-                                                textAlign: .center,
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: .bold,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : Row(
-                                children: [
-                                  Padding(
-                                    padding: .only(right: 10),
-                                    child: Icon(
-                                      Icons.delivery_dining_outlined,
-                                      size: 16,
-                                    ),
-                                  ),
-                                  Text(
-                                    order.deliveryManName ?? "!!",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
+                          stream: cubit.cancellingOrderIdsStream,
+                          initialData: cubit.cancellingOrderIds,
+                          builder: (context, cancelSnapshot) {
+                            final isCancelling =
+                            (cancelSnapshot.data ?? const {})
+                                .contains(order.orderId);
+                            return InkWell(
+                              hoverColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: isCancelling
+                                  ? null
+                                  : () => cubit.cancelOrder(
+                                orderId: order.orderId!,
                               ),
+                              child: SizedBox(
+                                width: 120,
+                                child: GlassCard(
+                                  margin: .zero,
+                                  padding: .symmetric(
+                                    horizontal: 15,
+                                    vertical: 3,
+                                  ),
+                                  orange: true,
+                                  otherRadius: 30,
+                                  child: isCancelling
+                                      ? Center(
+                                    child:
+                                    LoadingAnimationWidget.staggeredDotsWave(
+                                      color: context.isDark
+                                          ? ThemingColors.white
+                                          : ThemingColors.black,
+                                      size: 14,
+                                    ),
+                                  )
+                                      : Text(
+                                    "cancelOrder".tr(),
+                                    textAlign: .center,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: .bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                            : Row(
+                          children: [
+                            Padding(
+                              padding: .only(right: 10),
+                              child: Icon(
+                                Icons.delivery_dining_outlined,
+                                size: 16,
+                              ),
+                            ),
+                            Text(
+                              order.deliveryManName ?? "!!",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
                         Spacer(),
                         Padding(
                           padding: .only(right: 10),

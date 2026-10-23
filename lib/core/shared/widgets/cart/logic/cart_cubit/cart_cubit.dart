@@ -97,27 +97,33 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  void updateQuantity({required String productId, required int quantity}) {
+  void updateQuantity({
+    required String productId,
+    required String branchId,
+    required int quantity,
+  }) {
     if (quantity <= 0) {
-      removeFromCart(productId: productId);
+      removeFromCart(productId: productId, branchId: branchId);
       return;
     }
-    cart = cart.copyWith(quantities: {...cart.quantities, productId: quantity});
+    final key = Cart.itemKey(productId, branchId);
+    cart = cart.copyWith(quantities: {...cart.quantities, key: quantity});
     _recalculate();
     emit(CartUpdated(cart));
   }
 
-  void removeFromCart({required String productId}) {
+  void removeFromCart({required String productId, required String branchId}) {
+    final key = Cart.itemKey(productId, branchId);
     final updatedProducts = Map<String, ProductModel>.from(cart.products)
-      ..remove(productId);
+      ..remove(key);
     final updatedQuantities = Map<String, int>.from(cart.quantities)
-      ..remove(productId);
+      ..remove(key);
 
     final updatedBakeries = Map<String, BakeryModel>.from(cart.bakeries);
-    final remainingBakeryIds = updatedProducts.values
-        .map((p) => p.bakeryId)
+    final remainingBranchIds = updatedProducts.values
+        .map((p) => p.branchId)
         .toSet();
-    updatedBakeries.removeWhere((id, _) => !remainingBakeryIds.contains(id));
+    updatedBakeries.removeWhere((id, _) => !remainingBranchIds.contains(id));
     if (updatedBakeries.isEmpty) {
       cart = Cart();
       emit(CartInitial());
@@ -179,10 +185,14 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  bool isInCart(String productId) {
-    if (state is CartUpdated) {
-      return (state as CartUpdated).cart.quantities.containsKey(productId) &&
-          (state as CartUpdated).cart.quantities[productId]! > 0;
+  String cartKey(String productId, String branchId) =>
+      Cart.itemKey(productId, branchId);
+
+  bool isInCart(String productId, String branchId) {
+    final current = state;
+    if (current is CartUpdated) {
+      return (current.cart.quantities[Cart.itemKey(productId, branchId)] ?? 0) >
+          0;
     }
     return false;
   }

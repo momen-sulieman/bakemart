@@ -86,9 +86,41 @@ class OrderTile extends StatelessWidget {
           ),
         ),
       ),
-      title: Text(
-        bakery.bakeryName,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      title: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Text(
+            bakery.bakeryName,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          Row(
+            children: [
+              Text(
+                "branch".tr(),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.isDark
+                      ? ThemingColors.white.withAlpha((0.4 * 255).toInt())
+                      : ThemingColors.black.withAlpha((0.4 * 255).toInt()),
+                ),
+              ),
+              Text(
+                ":",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.isDark
+                      ? ThemingColors.white.withAlpha((0.4 * 255).toInt())
+                      : ThemingColors.black.withAlpha((0.4 * 255).toInt()),
+                ),
+              ),
+              SizedBox(width: 5,),
+              Text(
+                bakery.branchName,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ],
+          ),
+        ],
       ),
       subtitle: Row(
         children: [
@@ -119,7 +151,12 @@ class OrderTile extends StatelessWidget {
       children: bakeryProducts.asMap().entries.map((entry) {
         final int productIndex = entry.key;
         final ProductModel product = entry.value;
-        final int quantity = cart.quantities[product.productId] ?? 0;
+        final int quantity =
+            cart.quantities[Cart.itemKey(
+              product.productId!,
+              product.branchId,
+            )] ??
+            0;
         final double productTotal = product.productPrice * quantity;
 
         return Column(
@@ -213,6 +250,7 @@ class OrderTile extends StatelessWidget {
                         onTap: () {
                           context.read<CartCubit>().updateQuantity(
                             productId: product.productId!,
+                            branchId: product.branchId,
                             quantity: quantity - 1,
                           );
                         },
@@ -243,6 +281,7 @@ class OrderTile extends StatelessWidget {
                           onTap: () {
                             context.read<CartCubit>().updateQuantity(
                               productId: product.productId!,
+                              branchId: product.branchId,
                               quantity: quantity + 1,
                             );
                           },

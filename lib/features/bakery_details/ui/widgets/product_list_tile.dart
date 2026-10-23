@@ -176,6 +176,7 @@ class ProductListTile extends StatelessWidget {
                 onPressed: () {
                   final isAdded = context.read<CartCubit>().isInCart(
                     bakery.productModelList[index].productId!,
+                    bakery.productModelList[index].branchId,
                   );
                   if (isAdded) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -233,8 +234,8 @@ class ProductListTile extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
                                 color:
-                                    (context.isDark ? Colors.white : Colors.black)
-                                        .withAlpha((0.1 * 255).toInt()),
+                                (context.isDark ? Colors.white : Colors.black)
+                                    .withAlpha((0.1 * 255).toInt()),
                                 width: 2,
                               ),
                             ),
@@ -249,6 +250,7 @@ class ProductListTile extends StatelessWidget {
                   builder: (context, state) {
                     final isAdded = context.read<CartCubit>().isInCart(
                       bakery.productModelList[index].productId!,
+                      bakery.productModelList[index].branchId,
                     );
                     return Icon(
                       Icons.shopping_cart_outlined,

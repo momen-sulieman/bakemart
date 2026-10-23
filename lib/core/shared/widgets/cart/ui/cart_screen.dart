@@ -13,6 +13,7 @@ import '../../../../utils/extensions/context_extensions.dart';
 import '../../../cubits/location_cubit/location_cubit.dart';
 import '../../../cubits/location_cubit/location_state.dart';
 import '../../../models/bakery_model.dart';
+import '../../../models/cart.dart';
 import '../../../models/product_model.dart';
 import '../../location_picker_map/location_picker_map.dart';
 import '../../text_form_field/text_form_field.dart';
@@ -736,51 +737,26 @@ class CartScreen extends StatelessWidget {
                                             child: ListView.separated(
                                               shrinkWrap: true,
                                               itemBuilder: (_, index) {
-                                                final String bakeryId = cubit
-                                                    .cart
-                                                    .bakeries
-                                                    .keys
-                                                    .elementAt(index);
-                                                final BakeryModel bakery = cubit
-                                                    .cart
-                                                    .bakeries[bakeryId]!;
+                                                final String branchId = cubit.cart.bakeries.keys.elementAt(index);
+                                                final BakeryModel bakery = cubit.cart.bakeries[branchId]!;
 
-                                                final List<ProductModel>
-                                                bakeryProducts = cubit
-                                                    .cart
-                                                    .products
-                                                    .values
-                                                    .where(
-                                                      (product) =>
-                                                          product.bakeryId ==
-                                                          bakeryId,
-                                                    )
+                                                final List<ProductModel> bakeryProducts = cubit.cart.products.values
+                                                    .where((product) => product.branchId == branchId)
                                                     .toList();
 
-                                                final double
-                                                bakeryTotal = bakeryProducts.fold(
-                                                  0.0,
-                                                  (sum, p) {
-                                                    return sum +
-                                                        (p.productPrice *
-                                                            (cubit
-                                                                    .cart
-                                                                    .quantities[p
-                                                                    .productId] ??
-                                                                0));
-                                                  },
-                                                );
+                                                final double bakeryTotal = bakeryProducts.fold(0.0, (sum, p) {
+                                                  return sum +
+                                                      (p.productPrice *
+                                                          (cubit.cart.quantities[Cart.itemKey(p.productId!, p.branchId)] ??
+                                                              0));
+                                                });
                                                 return Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        vertical: 5,
-                                                      ),
+                                                  padding: const EdgeInsets.symmetric(vertical: 5),
                                                   child: OrderTile(
                                                     initiallyExpanded: false,
                                                     bakery: bakery,
                                                     bakeryTotal: bakeryTotal,
-                                                    bakeryProducts:
-                                                        bakeryProducts,
+                                                    bakeryProducts: bakeryProducts,
                                                     cart: cubit.cart,
                                                   ),
                                                 );

@@ -5,6 +5,7 @@ import 'package:bakemart/core/shared/widgets/glass_card/glass_card.dart';
 import 'package:bakemart/core/shared/widgets/supabase_image/ui/supabase_image.dart';
 import 'package:bakemart/core/shared/widgets/transparent_button/transparent_button.dart';
 import 'package:bakemart/core/utils/extensions/context_extensions.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/routing/app_routes.dart';
@@ -73,7 +74,7 @@ class BakeryListTile extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "Branch: ",
+                          "branch".tr(),
                           style: TextStyle(
                             fontSize: 11,
                             color: context.isDark
@@ -85,6 +86,20 @@ class BakeryListTile extends StatelessWidget {
                                   ),
                           ),
                         ),
+                        Text(
+                          ":",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.isDark
+                                ? ThemingColors.white.withAlpha(
+                                    (0.5 * 255).toInt(),
+                                  )
+                                : ThemingColors.white.withAlpha(
+                                    (0.5 * 255).toInt(),
+                                  ),
+                          ),
+                        ),
+                        SizedBox(width: 5,),
                         Flexible(
                           child: Padding(
                             padding: .only(right: 10),

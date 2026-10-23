@@ -30,7 +30,9 @@ class Cart {
         products = Map.unmodifiable(products ?? {}),
         quantities = Map.unmodifiable(quantities ?? {});
 
-  /// Helper getter to quickly check if the cart is empty
+  static String itemKey(String productId, String branchId) =>
+      '$productId::$branchId';
+
   bool get isEmpty => products.isEmpty;
 
   Cart copyWith({
@@ -47,7 +49,6 @@ class Cart {
     String? apartment,
   }) {
     return Cart(
-      // Ensure defensive copies of maps so state changes trigger proper re-renders
       bakeries: bakeries != null ? Map.from(bakeries) : this.bakeries,
       products: products != null ? Map.from(products) : this.products,
       quantities: quantities != null ? Map.from(quantities) : this.quantities,

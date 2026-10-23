@@ -16,6 +16,7 @@ class CartRepo {
 
   CartRepo({SupabaseClient? supabase})
       : _supabase = supabase ?? Supabase.instance.client;
+
   Cart addItemToCart({
     required Cart currentCart,
     required BakeryModel bakery,
@@ -25,32 +26,29 @@ class CartRepo {
     if (selectedQuantity <= 0) return currentCart;
 
     final String? productId = product.productId;
-    final String bakeryId = bakery.bakeryId;
 
     if (productId == null) {
-      assert(false, 'productId and bakeryId must not be null');
+      assert(false, 'productId must not be null');
       return currentCart;
     }
 
+    final String key = Cart.itemKey(productId, product.branchId);
+
     return currentCart.copyWith(
-      bakeries: {...currentCart.bakeries, bakeryId: bakery},
-      products: {...currentCart.products, productId: product},
+      bakeries: {...currentCart.bakeries, product.branchId: bakery},
+      products: {...currentCart.products, key: product},
       quantities: {
         ...currentCart.quantities,
-        productId: (currentCart.quantities[productId] ?? 0) + selectedQuantity,
+        key: (currentCart.quantities[key] ?? 0) + selectedQuantity,
       },
     );
   }
 
-  // each bakery counted once regardless of how many products it has
-// each bakery counted once regardless of how many products it has
   double calculateDeliveryFee(Cart cart, double userLat, double userLng) {
     if (cart.bakeries.isEmpty) return 0.0;
 
-    // 1. Convert map values to a modifiable list
     final List<BakeryModel> unvisitedBakeries = List.from(cart.bakeries.values);
 
-    // 2. Find the absolute furthest bakery from the user to use as the starting point
     int furthestIndex = 0;
     double maxDistanceToUser = -1.0;
 
@@ -67,7 +65,6 @@ class CartRepo {
       }
     }
 
-    // Pick our starting bakery and remove it from the unvisited group
     final BakeryModel startingBakery = unvisitedBakeries.removeAt(
       furthestIndex,
     );
@@ -76,7 +73,6 @@ class CartRepo {
     double currentLat = startingBakery.bakeryLat;
     double currentLng = startingBakery.bakeryLng;
 
-    // 3. Nearest Neighbor routing through the remaining bakeries
     while (unvisitedBakeries.isNotEmpty) {
       int closestIndex = 0;
       double minDistance = double.infinity;
@@ -94,16 +90,13 @@ class CartRepo {
         }
       }
 
-      // Add distance to the next closest bakery node
       totalDistanceMeters += minDistance;
 
-      // Advance our pointer coordinates
       final BakeryModel nextBakery = unvisitedBakeries.removeAt(closestIndex);
       currentLat = nextBakery.bakeryLat;
       currentLng = nextBakery.bakeryLng;
     }
 
-    // 4. Final leg: from the last bakery visited to the user's house
     totalDistanceMeters += distanceBetweenUserAndBakery(
       currentLat,
       currentLng,
@@ -111,10 +104,8 @@ class CartRepo {
       userLng,
     );
 
-    // 5. Apply formula: Base fee (10) + 0.005 per meter
     double rawFee = 10.0 + (totalDistanceMeters * 0.005);
 
-    // 6. Truncate (floor) to whole number and convert back to double ending in .0
     return rawFee.roundToDouble();
   }
 
@@ -128,7 +119,7 @@ class CartRepo {
   OrderModel cartToOrder(Cart cart) {
     final List<ProductModel> orderedProducts = cart.products.values.toList();
     final List<int> orderedQuantities = cart.products.keys
-        .map((id) => cart.quantities[id] ?? 0)
+        .map((key) => cart.quantities[key] ?? 0)
         .toList();
 
     return OrderModel(

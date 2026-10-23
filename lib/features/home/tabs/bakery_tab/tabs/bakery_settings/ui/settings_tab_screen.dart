@@ -131,7 +131,7 @@ class SettingsTabScreen extends StatelessWidget {
                                               ),
                                               width: screenWidth * 0.32,
                                               height: screenWidth * 0.32,
-                                              child: SupabaseImage(),
+                                              child: SupabaseImage(addIconSize: 30),
                                             ),
                                           ),
                                           Positioned(

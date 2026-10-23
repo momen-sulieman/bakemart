@@ -27,8 +27,6 @@ class SupabaseImageCubit extends Cubit<SupabaseImageState> {
         fileName == null
             ? ImageEmpty()
             : (skipInitialFetch ? ImageEmpty() :
-        //Todo replace
-        // ImageEmpty()
         ImageLoading()
         ),
       ) {

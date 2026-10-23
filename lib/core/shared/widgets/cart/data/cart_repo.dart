@@ -43,6 +43,7 @@ class CartRepo {
   }
 
   // each bakery counted once regardless of how many products it has
+// each bakery counted once regardless of how many products it has
   double calculateDeliveryFee(Cart cart, double userLat, double userLng) {
     if (cart.bakeries.isEmpty) return 0.0;
 
@@ -110,9 +111,11 @@ class CartRepo {
       userLng,
     );
 
-    // 5. Convert total meters to kilometers and apply your multiplier rate of 5
-    double totalKm = totalDistanceMeters / 1000;
-    return totalKm * 5;
+    // 5. Apply formula: Base fee (10) + 0.005 per meter
+    double rawFee = 10.0 + (totalDistanceMeters * 0.005);
+
+    // 6. Truncate (floor) to whole number and convert back to double ending in .0
+    return rawFee.roundToDouble();
   }
 
   double calculateOrderPrice(Cart cart) {

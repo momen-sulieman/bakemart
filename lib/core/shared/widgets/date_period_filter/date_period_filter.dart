@@ -19,7 +19,7 @@ mixin DatePeriodFilterMixin {
       final count = DateTime(selectedDate.year, selectedDate.month + 1, 0).day;
       return List.generate(
         count,
-            (i) => DateTime(selectedDate.year, selectedDate.month, i + 1),
+        (i) => DateTime(selectedDate.year, selectedDate.month, i + 1),
       );
     }
     final dates = <DateTime>[];
@@ -31,6 +31,7 @@ mixin DatePeriodFilterMixin {
     }
     return dates;
   }
+
   void togglePendingDay() {
     if (!pendingUseMonth) {
       pendingUseMonth = true;
@@ -228,7 +229,8 @@ class DatePeriodFilterButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         side: BorderSide(
           width: 1,
-          color: ThemingColors.white.withAlpha((0.2 * 255).toInt()),
+          color: (context.isDark ? ThemingColors.white : ThemingColors.black)
+              .withAlpha((0.2 * 255).toInt()),
         ),
         borderRadius: BorderRadius.circular(15),
       ),

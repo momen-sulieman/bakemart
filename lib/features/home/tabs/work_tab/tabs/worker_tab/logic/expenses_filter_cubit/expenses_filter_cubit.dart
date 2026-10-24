@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bakemart/core/network/response_result.dart';
+import 'package:bakemart/core/shared/models/expenses_model.dart';
 import 'package:bakemart/core/shared/models/finance_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,7 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
   late final StreamSubscription _workerSubscription;
 
   ExpensesFilterCubit(this._repo, this._workerCubit)
-      : super(ExpensesFilterInitial()) {
+    : super(ExpensesFilterInitial()) {
     filter();
     _workerSubscription = _workerCubit.stream.listen((state) {
       if (!editMode) {
@@ -30,13 +31,13 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
   FinanceModel currentFilteredExpenses = FinanceModel(
     bakeryId: "",
     branchId: "",
-    cleaningExpenses: 0,
+    expenses: [],
     wastes: [],
   );
   FinanceModel editableCurrentFilteredExpenses = FinanceModel(
     bakeryId: "",
     branchId: "",
-    cleaningExpenses: 0,
+    expenses: [],
     wastes: [],
   );
   DateTime selectedDate = DateTime.now();
@@ -47,9 +48,64 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
   bool editMode = false;
   bool updated = false;
   bool inputValidity = false;
+  List<ExpensesModel> currentExpenses = [];
+  List<ExpensesModel> editableExpenses = [];
+  bool expenseStringValidity = false;
+  bool expenseValueValidity = false;
+  bool expenseUpdated = false;
+  int expensesCounter = 0;
 
-  void setMealDeleted(bool status){
-    mealDeleted=status;
+  void setExpensesUpdated(bool status) {
+    expenseUpdated = status;
+    emit(ExpensesFilterSuccess());
+  }
+  void setExpensesRowCount(int rows) {
+    expensesCounter = rows > 0 ? rows - 1 : 0;
+    emit(ExpensesFilterSuccess());
+  }
+
+  void addExpense({required ExpensesModel expense}) {
+    editableExpenses.add(expense);
+    expensesCounter = expensesCounter + 1;
+    expenseUpdated = true;
+    emit(ExpensesFilterSuccess());
+  }
+
+  void removeExpense({required int index}) {
+    if (index >= 0 && index < editableExpenses.length) {
+      editableExpenses.removeAt(index);
+      expensesCounter = expensesCounter - 1;
+      expenseUpdated = true;
+      emit(ExpensesFilterSuccess());
+    }
+  }
+
+  void textfieldMechanism({
+    bool? expenseStringValidityStatus,
+    bool? expenseValueValidityStatus,
+  }) {
+    if (expenseStringValidityStatus != null) {
+      expenseStringValidity = expenseStringValidityStatus;
+      if (expenseStringValidity && expenseValueValidity) {
+        expenseStringValidity = false;
+        expenseValueValidity = false;
+        expensesCounter = expensesCounter + 1;
+        emit(ExpensesFilterSuccess());
+      }
+    }
+    if (expenseValueValidityStatus != null) {
+      expenseValueValidity = expenseValueValidityStatus;
+      if (expenseStringValidity && expenseValueValidity) {
+        expenseStringValidity = false;
+        expenseValueValidity = false;
+        expensesCounter = expensesCounter + 1;
+        emit(ExpensesFilterSuccess());
+      }
+    }
+  }
+
+  void setMealDeleted(bool status) {
+    mealDeleted = status;
     emit(ExpensesFilterSuccess());
   }
 
@@ -68,7 +124,6 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
     selectedMonth = month;
     filter(selectedDate: _clampedDate(selectedDate.year, month, selectedDay));
   }
-
   void filter({DateTime? selectedDate}) {
     emit(ExpensesFilterLoading());
     this.selectedDate = selectedDate ?? this.selectedDate;
@@ -84,41 +139,75 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
       currentFilteredExpenses = FinanceModel(
         bakeryId: currentFilteredExpenses.bakeryId,
         branchId: currentFilteredExpenses.branchId,
-        cleaningExpenses: 0,
+        expenses: [],
         wastes: [],
         date: this.selectedDate,
       );
       editableCurrentFilteredExpenses = currentFilteredExpenses;
     }
-    emit(ExpensesFilterSuccess());
-  }
-
-  void checkUpdate() {
-    updated =
-        currentFilteredExpenses.cleaningExpenses !=
-            editableCurrentFilteredExpenses.cleaningExpenses ||
-            !ListEquality().equals(
-              currentFilteredExpenses.wastes,
-              editableCurrentFilteredExpenses.wastes,
-            );
+    currentExpenses = currentFilteredExpenses.expenses;
+    editableExpenses = List.of(currentExpenses);
+    expensesCounter = editableExpenses.length;
+    expenseStringValidity = false;
+    expenseValueValidity = false;
+    expenseUpdated = false;
     emit(ExpensesFilterSuccess());
   }
 
   void changeEditMode() {
     editableCurrentFilteredExpenses = currentFilteredExpenses;
+    editableExpenses = List.of(currentFilteredExpenses.expenses);
+    expensesCounter = editableExpenses.length;
     editMode = !editMode;
     inputValidity = false;
     updated = false;
-    mealDeleted=false;
+    mealDeleted = false;
     emit(ExpensesFilterSuccess());
   }
 
   void cancelChanges() {
     editableCurrentFilteredExpenses = currentFilteredExpenses;
+    editableExpenses = List.of(currentFilteredExpenses.expenses);
+    expensesCounter = editableExpenses.length;
     updated = false;
     editMode = false;
     inputValidity = false;
-    mealDeleted=false;
+    mealDeleted = false;
+    emit(ExpensesFilterSuccess());
+  }
+
+  void resetExpensesDraft() {
+    editableExpenses = List.of(editableCurrentFilteredExpenses.expenses);
+    expensesCounter = editableExpenses.length;
+    expenseStringValidity = false;
+    expenseValueValidity = false;
+    expenseUpdated = false;
+    emit(ExpensesFilterSuccess());
+  }
+
+  void applyExpensesDraft(List<ExpensesModel> items) {
+    editableExpenses = List.of(items);
+    expensesCounter = editableExpenses.length;
+    expenseStringValidity = false;
+    expenseValueValidity = false;
+    expenseUpdated = false;
+    editableCurrentFilteredExpenses = editableCurrentFilteredExpenses.copyWith(
+      expenses: editableExpenses,
+    );
+    checkUpdate();
+  }
+
+
+  void checkUpdate() {
+    updated =
+        !ListEquality().equals(
+          currentFilteredExpenses.expenses,
+          editableCurrentFilteredExpenses.expenses,
+        ) ||
+        !ListEquality().equals(
+          currentFilteredExpenses.wastes,
+          editableCurrentFilteredExpenses.wastes,
+        );
     emit(ExpensesFilterSuccess());
   }
 
@@ -132,9 +221,9 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
     emit(ExpensesFilterSuccess());
   }
 
-  void changeSideExpenses(double newValue) {
+  void changeSideExpenses(List<ExpensesModel> newExpenses) {
     editableCurrentFilteredExpenses = editableCurrentFilteredExpenses.copyWith(
-      cleaningExpenses: newValue,
+      expenses: newExpenses,
     );
     inputValidity = false;
     checkUpdate();
@@ -180,7 +269,7 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
 
   void editMealQuantity({required String productId, required int newQuantity}) {
     final int productIndex = editableCurrentFilteredExpenses.wastes.indexWhere(
-          (meal) => meal.productId == productId,
+      (meal) => meal.productId == productId,
     );
 
     if (productIndex == -1) return;
@@ -204,7 +293,7 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
     required int newQuantity,
   }) {
     final int productIndex = editableCurrentFilteredExpenses.wastes.indexWhere(
-          (meal) => meal.productId == productId,
+      (meal) => meal.productId == productId,
     );
 
     if (productIndex == -1) return;
@@ -228,7 +317,7 @@ class ExpensesFilterCubit extends Cubit<ExpensesFilterState> {
     required int newQuantity,
   }) {
     final int productIndex = editableCurrentFilteredExpenses.wastes.indexWhere(
-          (meal) => meal.productId == productId,
+      (meal) => meal.productId == productId,
     );
 
     if (productIndex == -1) return;

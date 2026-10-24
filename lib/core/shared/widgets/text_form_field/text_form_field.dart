@@ -7,6 +7,7 @@ import '../../../theming/theming_colors.dart';
 class CustomTextFormField extends StatelessWidget {
   final String title, validationText;
   final String? hint;
+  final double? labelSize;
   final IconData? prefixIcon;
   final Widget? suffixIcon;
   final bool obscurity,
@@ -30,6 +31,7 @@ class CustomTextFormField extends StatelessWidget {
     this.title, {
     required this.controller,
     this.hint,
+    this.labelSize=12,
     this.prefixIcon,
     this.suffixIcon,
     this.validate = false,
@@ -124,7 +126,7 @@ class CustomTextFormField extends StatelessWidget {
           : ThemingColors.black.withAlpha((0.6 * 255).toInt()),
       textCapitalization: capitalization,
       keyboardType: isPhone ? TextInputType.phone : keyBoardType,
-      style: const TextStyle(fontSize: 12),
+      style: const TextStyle(fontSize: 13),
       decoration: InputDecoration(
         hintText: hint,
         errorText: errorText,
@@ -154,6 +156,7 @@ class CustomTextFormField extends StatelessWidget {
               : ThemingColors.black,
         ),
         floatingLabelStyle: TextStyle(
+          fontSize: labelSize,
           color: auth
               ? Colors.blueGrey
               : context.isDark

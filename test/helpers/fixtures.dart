@@ -1,4 +1,5 @@
 import 'package:bakemart/core/shared/models/bakery_model.dart';
+import 'package:bakemart/core/shared/models/expenses_model.dart';
 import 'package:bakemart/core/shared/models/order_model.dart';
 import 'package:bakemart/core/shared/models/product_model.dart';
 import 'package:bakemart/core/utils/enums/order_statuses.dart';
@@ -158,7 +159,7 @@ WasteModel fakeWaste({
 FinanceModel fakeFinance({
   String bakeryId = 'b1',
   DateTime? date,
-  double cleaningExpenses = 0,
+  List<ExpensesModel> sideExpenses = const[],
   List<WasteModel> wastes = const [],
   double payrollExpenses = 0,
   double profit = 0,
@@ -166,7 +167,7 @@ FinanceModel fakeFinance({
   return FinanceModel(
     bakeryId: bakeryId,
     date: date,
-    cleaningExpenses: cleaningExpenses,
+    expenses: sideExpenses,
     wastes: wastes,
     payrollExpenses: payrollExpenses,
     profit: profit, branchId: '',

@@ -47,7 +47,7 @@ class StatusMealsFilterCubit extends Cubit<StatusMealsFilterState>
   FinanceModel filteredMealsRecord = FinanceModel(
     bakeryId: "",
     branchId: "",
-    cleaningExpenses: 0,
+    expenses: [],
     wastes: [],
   );
 

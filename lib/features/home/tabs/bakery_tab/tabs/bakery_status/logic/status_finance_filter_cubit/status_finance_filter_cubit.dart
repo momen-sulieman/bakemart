@@ -30,7 +30,7 @@ class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState>
   FinanceModel filteredFinanceRecord = FinanceModel(
     bakeryId: "",
     branchId: "",
-    cleaningExpenses: 0,
+    expenses: [],
     wastes: [],
   );
 
@@ -114,11 +114,16 @@ class StatusFinanceFilterCubit extends Cubit<StatusFinanceFilterState>
     return FinanceModel(
       bakeryId: list.first.bakeryId,
       branchId: list.first.branchId,
-      cleaningExpenses: list.fold(
-        0,
-        (sum, record) => sum + record.cleaningExpenses,
-      ),
+      expenses: list.expand((record) => record.expenses).toList(),
       wastes: list.expand((record) => record.wastes).toList(),
+      payrollExpenses: list.fold<double>(
+        0.0,
+            (sum, record) => sum + record.payrollExpenses,
+      ),
+      profit: list.fold<double>(
+        0.0,
+            (sum, record) => sum + record.profit,
+      ),
     );
   }
 

@@ -31,7 +31,7 @@ class WorkerRepo {
   final SupabaseClient _supabase;
 
   WorkerRepo({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   Future<ResponseResult<UserModel>> getUserData() async {
     try {
@@ -92,9 +92,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<BakeryModel>> getBakeryData(
-      String employerId,
-      String branchId,
-      ) async {
+    String employerId,
+    String branchId,
+  ) async {
     try {
       final response = await _supabase
           .from(Tables.bakeries)
@@ -110,8 +110,8 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<UserModel>> checkDeliveryManQrCode(
-      String scannedId,
-      ) async {
+    String scannedId,
+  ) async {
     try {
       final userResponse = await _supabase
           .from(Tables.users)
@@ -148,13 +148,13 @@ class WorkerRepo {
         final List<OrderModel> filteredOrders = [];
         for (final order in allOrders) {
           final int bakeryIndex = order.bakeries.indexWhere(
-                (b) => b.bakeryId == bakeryId && b.branchId == branchId,
+            (b) => b.bakeryId == bakeryId && b.branchId == branchId,
           );
           if (bakeryIndex == -1) continue;
 
           final bool alreadyReceived =
               bakeryIndex < order.received.length &&
-                  order.received[bakeryIndex];
+              order.received[bakeryIndex];
           if (alreadyReceived) continue;
 
           final List<ProductModel> branchProducts = [];
@@ -192,9 +192,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<PayrollModel?>> fetchPayroll(
-      String id,
-      String branchId,
-      ) async {
+    String id,
+    String branchId,
+  ) async {
     try {
       final Map<String, dynamic>? payrollResponse = await _supabase
           .from(Tables.payrolls)
@@ -214,9 +214,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<List<ProductModel>?>> fetchProducts(
-      String id,
-      String branchId,
-      ) async {
+    String id,
+    String branchId,
+  ) async {
     try {
       final List<Map<String, dynamic>> productsResponse = await _supabase
           .from(Tables.products)
@@ -237,9 +237,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<List<StaffModel>?>> fetchStaff(
-      String id,
-      String branchId,
-      ) async {
+    String id,
+    String branchId,
+  ) async {
     try {
       final List<Map<String, dynamic>> staffResponse = await _supabase
           .from(Tables.staffs)
@@ -260,9 +260,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<List<ShiftModel>?>> fetchShifts(
-      String id,
-      String branchId,
-      ) async {
+    String id,
+    String branchId,
+  ) async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T').first;
@@ -312,9 +312,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<List<FinanceModel>?>> fetchFinance(
-      String id,
-      String branchId,
-      ) async {
+    String id,
+    String branchId,
+  ) async {
     try {
       final today = DateTime.now();
       final todayStr = today.toIso8601String().split('T').first;
@@ -343,9 +343,9 @@ class WorkerRepo {
   }
 
   Future<ResponseResult<StorageModel?>> fetchStorage(
-      String id,
-      String branchId,
-      ) async {
+    String id,
+    String branchId,
+  ) async {
     try {
       final Map<String, dynamic>? storageResponse = await _supabase
           .from(Tables.storages)
@@ -385,11 +385,11 @@ class WorkerRepo {
       await _supabase
           .from(Tables.products)
           .update({
-        ProductsTableColumns.yesterdayProduced:
-        (yesterdaySales?.produced ?? 0).toDouble(),
-        ProductsTableColumns.yesterdaySold: (yesterdaySales?.sold ?? 0)
-            .toDouble(),
-      })
+            ProductsTableColumns.yesterdayProduced:
+                (yesterdaySales?.produced ?? 0).toDouble(),
+            ProductsTableColumns.yesterdaySold: (yesterdaySales?.sold ?? 0)
+                .toDouble(),
+          })
           .eq(ProductsTableColumns.productId, product.productId!)
           .eq(ProductsTableColumns.bakeryId, product.bakeryId)
           .eq(ProductsTableColumns.branchId, product.branchId);
@@ -408,10 +408,10 @@ class WorkerRepo {
       await _supabase
           .from(Tables.shifts)
           .upsert(
-        shiftRows,
-        onConflict:
-        '${ShiftsTableColumns.workerId},${ShiftsTableColumns.date}',
-      );
+            shiftRows,
+            onConflict:
+                '${ShiftsTableColumns.workerId},${ShiftsTableColumns.date}',
+          );
       return SuccessResponse(true);
     } catch (error) {
       return FailureResponse(error.toString());
@@ -427,7 +427,7 @@ class WorkerRepo {
     try {
       for (final newWaste in newWastes) {
         final WasteModel? oldWaste = oldWastes.firstWhereOrNull(
-              (w) => w.productId == newWaste.productId,
+          (w) => w.productId == newWaste.productId,
         );
         final int oldMeal = oldWaste?.meal ?? 0;
         final int oldNotSold = oldWaste?.notSold ?? 0;
@@ -441,7 +441,7 @@ class WorkerRepo {
         if (totalDiff == 0) continue;
 
         final ProductModel? product = products.firstWhereOrNull(
-              (p) => p.productId == newWaste.productId,
+          (p) => p.productId == newWaste.productId,
         );
         if (product == null) continue;
 
@@ -495,15 +495,18 @@ class WorkerRepo {
       await _supabase
           .from(Tables.finances)
           .upsert(
-        financeRecord.toJson(),
-        onConflict:
-        '${FinanceTableColumns.branchId},${FinanceTableColumns.date}',
-      );
+            financeRecord.toJson(),
+            onConflict:
+                '${FinanceTableColumns.branchId},${FinanceTableColumns.date}',
+          );
       return SuccessResponse(true);
+    } on PostgrestException catch (error) {
+      return FailureResponse(error.message);
     } catch (error) {
       return FailureResponse(error.toString());
     }
   }
+
 
   Future<ResponseResult<bool>> deleteMealFromDatabase({
     required FinanceModel financeRecord,
@@ -523,10 +526,10 @@ class WorkerRepo {
       await _supabase
           .from(Tables.finances)
           .upsert(
-        updatedFinanceRecord.toJson(),
-        onConflict:
-        '${FinanceTableColumns.branchId},${FinanceTableColumns.date}',
-      );
+            updatedFinanceRecord.toJson(),
+            onConflict:
+                '${FinanceTableColumns.branchId},${FinanceTableColumns.date}',
+          );
 
       return SuccessResponse(true);
     } catch (error) {
@@ -563,7 +566,7 @@ class WorkerRepo {
           bakeryId: bakeryId,
           branchId: branchId,
           date: date,
-          cleaningExpenses: 0.0,
+          expenses: [],
           wastes: [],
           payrollExpenses: payrollExpenses,
           profit: 0.0,
@@ -631,9 +634,9 @@ class WorkerRepo {
         await _supabase
             .from(Tables.products)
             .update({
-          ProductsTableColumns.available: availableUpdate,
-          ProductsTableColumns.totalSold: totalSoldUpdated,
-        })
+              ProductsTableColumns.available: availableUpdate,
+              ProductsTableColumns.totalSold: totalSoldUpdated,
+            })
             .eq(ProductsTableColumns.productId, product.productId!)
             .eq(ProductsTableColumns.bakeryId, product.bakeryId)
             .eq(ProductsTableColumns.branchId, product.branchId);
@@ -662,7 +665,7 @@ class WorkerRepo {
             bakeryId: product.bakeryId,
             branchId: product.branchId,
             date: today,
-            cleaningExpenses: 0.0,
+            expenses: [],
             wastes: [],
             profit: addedProfit,
           );
@@ -679,9 +682,9 @@ class WorkerRepo {
         await _supabase
             .from(Tables.products)
             .update({
-          ProductsTableColumns.available: availableUpdate,
-          ProductsTableColumns.notSoldWaste: notSoldWasteUpdated,
-        })
+              ProductsTableColumns.available: availableUpdate,
+              ProductsTableColumns.notSoldWaste: notSoldWasteUpdated,
+            })
             .eq(ProductsTableColumns.productId, product.productId!)
             .eq(ProductsTableColumns.bakeryId, product.bakeryId)
             .eq(ProductsTableColumns.branchId, product.branchId);
@@ -708,7 +711,7 @@ class WorkerRepo {
 
           if (existingNotSoldIndex != -1) {
             final WasteModel existingWaste =
-            updatedwastes[existingNotSoldIndex];
+                updatedwastes[existingNotSoldIndex];
             updatedwastes[existingNotSoldIndex] = existingWaste.copyWith(
               notSold: existingWaste.notSold + notSoldQuantity,
             );
@@ -732,9 +735,9 @@ class WorkerRepo {
           await _supabase
               .from(Tables.finances)
               .update({
-            FinanceTableColumns.wastes: updatedFinanceRecord
-                .toJson()[FinanceTableColumns.wastes],
-          })
+                FinanceTableColumns.wastes: updatedFinanceRecord
+                    .toJson()[FinanceTableColumns.wastes],
+              })
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
               .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
@@ -743,7 +746,7 @@ class WorkerRepo {
             bakeryId: product.bakeryId,
             branchId: product.branchId,
             date: today,
-            cleaningExpenses: 0.0,
+            expenses: [],
             wastes: [
               WasteModel(
                 productId: product.productId!,
@@ -769,9 +772,9 @@ class WorkerRepo {
         await _supabase
             .from(Tables.products)
             .update({
-          ProductsTableColumns.available: availableUpdate,
-          ProductsTableColumns.mealsWaste: wastesWasteUpdated,
-        })
+              ProductsTableColumns.available: availableUpdate,
+              ProductsTableColumns.mealsWaste: wastesWasteUpdated,
+            })
             .eq(ProductsTableColumns.productId, product.productId!)
             .eq(ProductsTableColumns.bakeryId, product.bakeryId)
             .eq(ProductsTableColumns.branchId, product.branchId);
@@ -790,7 +793,7 @@ class WorkerRepo {
           );
 
           final int existingMealIndex = existingFinanceRecord.wastes.indexWhere(
-                (w) => w.productId == product.productId,
+            (w) => w.productId == product.productId,
           );
 
           List<WasteModel> updatedwastes = List.from(
@@ -822,9 +825,9 @@ class WorkerRepo {
           await _supabase
               .from(Tables.finances)
               .update({
-            FinanceTableColumns.wastes: updatedFinanceRecord
-                .toJson()[FinanceTableColumns.wastes],
-          })
+                FinanceTableColumns.wastes: updatedFinanceRecord
+                    .toJson()[FinanceTableColumns.wastes],
+              })
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
               .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
@@ -833,7 +836,7 @@ class WorkerRepo {
             bakeryId: product.bakeryId,
             branchId: product.branchId,
             date: today,
-            cleaningExpenses: 0.0,
+            expenses: [],
             wastes: [
               WasteModel(
                 productId: product.productId!,
@@ -877,10 +880,10 @@ class WorkerRepo {
       await _supabase
           .from(Tables.products)
           .update({
-        ProductsTableColumns.manufacturingWaste: manufacturingWasteUpdated,
-        ProductsTableColumns.available: availableUpdate,
-        ProductsTableColumns.totalProduced: totalProducedUpdated,
-      })
+            ProductsTableColumns.manufacturingWaste: manufacturingWasteUpdated,
+            ProductsTableColumns.available: availableUpdate,
+            ProductsTableColumns.totalProduced: totalProducedUpdated,
+          })
           .eq(ProductsTableColumns.productId, product.productId!)
           .eq(ProductsTableColumns.bakeryId, product.bakeryId)
           .eq(ProductsTableColumns.branchId, product.branchId);
@@ -891,9 +894,9 @@ class WorkerRepo {
           .eq(SalesTableColumns.branchId, product.branchId)
           .eq(SalesTableColumns.productId, product.productId!)
           .eq(
-        SalesTableColumns.date,
-        DateTime.now().toIso8601String().split('T').first,
-      )
+            SalesTableColumns.date,
+            DateTime.now().toIso8601String().split('T').first,
+          )
           .maybeSingle();
 
       if (existingRecord != null) {
@@ -908,9 +911,9 @@ class WorkerRepo {
             .eq(SalesTableColumns.branchId, product.branchId)
             .eq(SalesTableColumns.productId, product.productId!)
             .eq(
-          SalesTableColumns.date,
-          DateTime.now().toIso8601String().split('T').first,
-        );
+              SalesTableColumns.date,
+              DateTime.now().toIso8601String().split('T').first,
+            );
       } else {
         await _rolloverYesterdayStats(product: product);
         final SalesModel newSalesRecord = SalesModel(
@@ -935,10 +938,10 @@ class WorkerRepo {
       await _supabase
           .from(Tables.storages)
           .upsert(
-        updatedStorage.toJson(),
-        onConflict:
-        '${StoragesTableColumns.bakeryId},${StoragesTableColumns.branchId}',
-      );
+            updatedStorage.toJson(),
+            onConflict:
+                '${StoragesTableColumns.bakeryId},${StoragesTableColumns.branchId}',
+          );
 
       if (manufacturingWasteCounter > 0) {
         final String todayStr = DateTime.now()
@@ -970,7 +973,7 @@ class WorkerRepo {
             final WasteModel existingWaste = updatedwastes[existingManufIndex];
             updatedwastes[existingManufIndex] = existingWaste.copyWith(
               manufacturing:
-              existingWaste.manufacturing + manufacturingWasteCounter,
+                  existingWaste.manufacturing + manufacturingWasteCounter,
             );
           } else {
             updatedwastes.add(
@@ -992,9 +995,9 @@ class WorkerRepo {
           await _supabase
               .from(Tables.finances)
               .update({
-            FinanceTableColumns.wastes: updatedFinanceRecord
-                .toJson()[FinanceTableColumns.wastes],
-          })
+                FinanceTableColumns.wastes: updatedFinanceRecord
+                    .toJson()[FinanceTableColumns.wastes],
+              })
               .eq(FinanceTableColumns.bakeryId, product.bakeryId)
               .eq(FinanceTableColumns.branchId, product.branchId)
               .eq(FinanceTableColumns.date, todayStr);
@@ -1003,7 +1006,7 @@ class WorkerRepo {
             bakeryId: product.bakeryId,
             branchId: product.branchId,
             date: DateTime.now(),
-            cleaningExpenses: 0.0,
+            expenses: [],
             wastes: [
               WasteModel(
                 productId: product.productId!,
@@ -1083,13 +1086,13 @@ class WorkerRepo {
       return newBatchShift
           .map(
             (s) => s.copyWith(
-          wage: calculateWage(
-            roles: s.role,
-            numberOfBatches: s.numberOfBatches,
-            payroll: payroll,
-          ),
-        ),
-      )
+              wage: calculateWage(
+                roles: s.role,
+                numberOfBatches: s.numberOfBatches,
+                payroll: payroll,
+              ),
+            ),
+          )
           .toList();
     }
 
@@ -1154,10 +1157,10 @@ class WorkerRepo {
       List<ShiftModel> filteredShifts = allShifts
           .where(
             (shift) =>
-        shift.date?.year == selectedDate.year &&
-            shift.date?.month == selectedDate.month &&
-            shift.date?.day == selectedDate.day,
-      )
+                shift.date?.year == selectedDate.year &&
+                shift.date?.month == selectedDate.month &&
+                shift.date?.day == selectedDate.day,
+          )
           .toList();
       return SuccessResponse(filteredShifts);
     } catch (error) {
@@ -1171,8 +1174,8 @@ class WorkerRepo {
   }) {
     try {
       final FinanceModel? filteredExpenses = allExpenses.firstWhereOrNull(
-            (row) =>
-        row.date?.year == selectedDate.year &&
+        (row) =>
+            row.date?.year == selectedDate.year &&
             row.date?.month == selectedDate.month &&
             row.date?.day == selectedDate.day,
       );
@@ -1192,7 +1195,7 @@ class WorkerRepo {
   }) async {
     try {
       final int bakeryIndex = order.bakeries.indexWhere(
-            (bakery) => bakery.bakeryId == bakeryId && bakery.branchId == branchId,
+        (bakery) => bakery.bakeryId == bakeryId && bakery.branchId == branchId,
       );
       if (bakeryIndex == -1) return FailureResponse('Bakery not found');
 
@@ -1203,13 +1206,13 @@ class WorkerRepo {
       updatedReceived[bakeryIndex] = true;
 
       final List<ProductModel> updatedReceivedProducts =
-      order.receivedProducts != null
+          order.receivedProducts != null
           ? List<ProductModel>.from(order.receivedProducts!)
           : [];
       updatedReceivedProducts.addAll(order.orderedProducts);
 
       final List<int> updatedReceivedQuantities =
-      order.receivedQuantities != null
+          order.receivedQuantities != null
           ? List<int>.from(order.receivedQuantities!)
           : [];
       updatedReceivedQuantities.addAll(order.orderedQuantities);
@@ -1217,11 +1220,11 @@ class WorkerRepo {
       await _supabase
           .from(Tables.orders)
           .update({
-        OrdersTableColumns.received: updatedReceived,
-        OrdersTableColumns.receivedProducts: updatedReceivedProducts,
-        OrdersTableColumns.receivedQuantities: updatedReceivedQuantities,
-        OrdersTableColumns.orderPrice: order.orderPrice,
-      })
+            OrdersTableColumns.received: updatedReceived,
+            OrdersTableColumns.receivedProducts: updatedReceivedProducts,
+            OrdersTableColumns.receivedQuantities: updatedReceivedQuantities,
+            OrdersTableColumns.orderPrice: order.orderPrice,
+          })
           .eq(OrdersTableColumns.orderId, order.orderId!);
 
       final today = DateTime.now();
@@ -1240,11 +1243,11 @@ class WorkerRepo {
         await _supabase
             .from(Tables.products)
             .update({
-          ProductsTableColumns.available: newAvailable < 0
-              ? 0
-              : newAvailable,
-          ProductsTableColumns.totalSold: newTotalSold,
-        })
+              ProductsTableColumns.available: newAvailable < 0
+                  ? 0
+                  : newAvailable,
+              ProductsTableColumns.totalSold: newTotalSold,
+            })
             .eq(ProductsTableColumns.productId, product.productId!)
             .eq(ProductsTableColumns.bakeryId, bakeryId)
             .eq(ProductsTableColumns.branchId, branchId);
@@ -1313,7 +1316,7 @@ class WorkerRepo {
             bakeryId: bakeryId,
             branchId: branchId,
             date: today,
-            cleaningExpenses: 0.0,
+            expenses: [],
             wastes: [],
             profit: addedProfit,
           );
@@ -1332,7 +1335,7 @@ class WorkerRepo {
 
   bool isBakeryReceived(OrderModel order, String bakeryId, String branchId) {
     final int index = order.bakeries.indexWhere(
-          (b) => b.bakeryId == bakeryId && b.branchId == branchId,
+      (b) => b.bakeryId == bakeryId && b.branchId == branchId,
     );
     if (index == -1) return false;
     return index < order.received.length && order.received[index];

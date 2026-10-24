@@ -1,11 +1,12 @@
 import '../../../../../../../core/shared/models/waste_model.dart';
 import '../../utils/enums/finance_table_columns.dart';
+import 'expenses_model.dart';
 
 class FinanceModel {
   final String bakeryId;
   final String branchId;
   final DateTime? date;
-  final double cleaningExpenses;
+  final List<ExpensesModel> expenses;
   final List<WasteModel> wastes;
   final double payrollExpenses;
   final double profit;
@@ -14,14 +15,20 @@ class FinanceModel {
     required this.bakeryId,
     required this.branchId,
     this.date,
-    required this.cleaningExpenses,
+    required this.expenses,
     required this.wastes,
     this.payrollExpenses = 0.0,
     this.profit = 0.0,
   });
 
+  // Getter for the sum of all expenses in the list
+  double get sideExpenses {
+    if (expenses.isEmpty) return 0.0;
+    return expenses.fold(0.0, (sum, item) => sum + item.value);
+  }
+
   double get totalExpenses {
-    return cleaningExpenses + payrollExpenses;
+    return sideExpenses + payrollExpenses;
   }
 
   double get netProfit {
@@ -29,19 +36,20 @@ class FinanceModel {
   }
 
   factory FinanceModel.fromJson(Map<String, dynamic> json) {
-    // Check 'wastes' key first, fallback to legacy 'meals' key if 'wastes' is null
-    final rawWastes = json[FinanceTableColumns.wastes] as List? ??
-        json['meals'] as List?;
+    final rawWastes = json[FinanceTableColumns.wastes] as List?;
+
+    final rawExpenses = json[FinanceTableColumns.expenses] as List?;
 
     return FinanceModel(
-      bakeryId: json[FinanceTableColumns.bakeryId] as String? ?? "",
-      branchId: json[FinanceTableColumns.branchId] as String? ?? "",
+      bakeryId: json[FinanceTableColumns.bakeryId] as String,
+      branchId: json[FinanceTableColumns.branchId] as String,
       date: json[FinanceTableColumns.date] != null
           ? DateTime.parse(json[FinanceTableColumns.date] as String).toLocal()
           : null,
-      cleaningExpenses:
-      (json[FinanceTableColumns.cleaningExpenses] as num?)?.toDouble() ??
-          0.0,
+      expenses: rawExpenses
+          ?.map((item) => ExpensesModel.fromJson(item as Map<String, dynamic>))
+          .toList() ??
+          const [],
       wastes: rawWastes
           ?.map((item) => WasteModel.fromJson(item as Map<String, dynamic>))
           .toList() ??
@@ -59,7 +67,8 @@ class FinanceModel {
       FinanceTableColumns.branchId: branchId,
       if (date != null)
         FinanceTableColumns.date: date!.toIso8601String().split('T').first,
-      FinanceTableColumns.cleaningExpenses: cleaningExpenses,
+      FinanceTableColumns.expenses:
+      expenses.map((expense) => expense.toJson()).toList(),
       FinanceTableColumns.wastes:
       wastes.map((waste) => waste.toJson()).toList(),
       FinanceTableColumns.payrollExpenses: payrollExpenses,
@@ -71,7 +80,7 @@ class FinanceModel {
     String? bakeryId,
     String? branchId,
     DateTime? date,
-    double? cleaningExpenses,
+    List<ExpensesModel>? expenses,
     List<WasteModel>? wastes,
     double? payrollExpenses,
     double? profit,
@@ -80,7 +89,7 @@ class FinanceModel {
       bakeryId: bakeryId ?? this.bakeryId,
       branchId: branchId ?? this.branchId,
       date: date ?? this.date,
-      cleaningExpenses: cleaningExpenses ?? this.cleaningExpenses,
+      expenses: expenses ?? this.expenses,
       wastes: wastes ?? this.wastes,
       payrollExpenses: payrollExpenses ?? this.payrollExpenses,
       profit: profit ?? this.profit,
@@ -94,7 +103,7 @@ class FinanceModel {
         other.bakeryId == bakeryId &&
         other.branchId == branchId &&
         other.date == date &&
-        other.cleaningExpenses == cleaningExpenses &&
+        other.expenses == expenses &&
         other.payrollExpenses == payrollExpenses &&
         other.profit == profit;
   }
@@ -104,7 +113,7 @@ class FinanceModel {
     bakeryId,
     branchId,
     date,
-    cleaningExpenses,
+    expenses,
     payrollExpenses,
     profit,
   );

@@ -33,177 +33,228 @@ class ShiftsStatusTile extends StatelessWidget {
           onBranchChanged: cubit.changeBranch,
           showIndicator: cubit.isExpanded,
           enabled: cubit.isExpanded,
-          child: ExpansionTile(
-            splashColor: Colors.transparent,
-            initiallyExpanded: true,
-            iconColor: ThemingColors.primaryColor,
-            collapsedIconColor: ThemingColors.primaryColor,
-            shape: RoundedRectangleBorder(side: .none),
-            controlAffinity: ListTileControlAffinity.leading,
-            onExpansionChanged: (expanded) {
-              cubit.updateTileExpansion(expanded);
-            },
-            title: SizedBox(
-              height: 53,
-              child: Row(
-                mainAxisAlignment: .start,
-                children: [
-                  Text(
-                    "shifts".tr(),
-                    style: TextStyle(fontWeight: .bold, fontSize: 18),
-                  ),
-                  Spacer(),
-                  if (cubit.isExpanded) ...[
-                    Padding(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: DatePeriodWheels(
-                        selectedDate: cubit.selectedDate,
-                        showDay: cubit.useDay,
-                        showMonth: cubit.useMonth,
-                        onChanged: ({year, month, day}) =>
-                            cubit.changeSelectedDate(
-                              year: year,
-                              month: month,
-                              day: day,
-                            ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    DatePeriodFilterButton(
-                      filter: cubit,
-                      onApply: cubit.applyDateFilter,
-                    ),
-                  ],
-                ],
-              ),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              splashFactory: NoSplash.splashFactory,
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
             ),
-            children: [
-              Padding(
-                padding: .only(right: 25, left: 25),
-                child: (financeFilterState is StatusShiftsFilterSuccess)
-                    ? GlassCard(
-                  margin: .zero,
-                  padding: .symmetric(horizontal: 10, vertical: 5),
-                  radius: 20,
-                  otherRadius: 20,
-                  child: Table(
-                    border: TableBorder(
-                      horizontalInside: BorderSide(
-                        width: 0.5,
-                        color: ThemingColors.primaryColor.withAlpha(
-                          (0.2 * 255).toInt(),
-                        ),
-                      ),
-                      verticalInside: BorderSide(
-                        width: 2,
-                        color: ThemingColors.primaryColor.withAlpha(
-                          (0.2 * 255).toInt(),
-                        ),
-                      ),
+            child: ExpansionTile(
+              splashColor: Colors.transparent,
+              initiallyExpanded: true,
+              iconColor: ThemingColors.primaryColor,
+              collapsedIconColor: ThemingColors.primaryColor,
+              shape: RoundedRectangleBorder(side: .none),
+              controlAffinity: ListTileControlAffinity.leading,
+              onExpansionChanged: (expanded) {
+                cubit.updateTileExpansion(expanded);
+              },
+              title: SizedBox(
+                height: 53,
+                child: Row(
+                  mainAxisAlignment: .start,
+                  children: [
+                    Text(
+                      "shifts".tr(),
+                      style: TextStyle(fontWeight: .bold, fontSize: 18),
                     ),
-                    columnWidths: {
-                      0: FlexColumnWidth(2.0),
-                      1: FlexColumnWidth(0.7),
-                      2: FlexColumnWidth(0.7),
-                    },
-                    children: [
-                      TableRow(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 2,
-                              color: ThemingColors.primaryColor.withAlpha(
-                                (0.4 * 255).toInt(),
+                    Spacer(),
+                    if (cubit.isExpanded) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 5),
+                        child: DatePeriodWheels(
+                          selectedDate: cubit.selectedDate,
+                          showDay: cubit.useDay,
+                          showMonth: cubit.useMonth,
+                          onChanged: ({year, month, day}) =>
+                              cubit.changeSelectedDate(
+                                year: year,
+                                month: month,
+                                day: day,
                               ),
-                            ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      DatePeriodFilterButton(
+                        filter: cubit,
+                        onApply: cubit.applyDateFilter,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              children: [
+                Padding(
+                  padding: .only(right: 25, left: 25),
+                  child: (financeFilterState is StatusShiftsFilterSuccess)
+                      ? GlassCard(
+                    margin: .zero,
+                    padding: .symmetric(horizontal: 10, vertical: 5),
+                    radius: 20,
+                    otherRadius: 20,
+                    child: Table(
+                      border: TableBorder(
+                        horizontalInside: BorderSide(
+                          width: 0.5,
+                          color: ThemingColors.primaryColor.withAlpha(
+                            (0.2 * 255).toInt(),
                           ),
                         ),
-                        children: [
-                          Padding(
-                            padding: .symmetric(
-                              vertical: 7,
-                              horizontal: 10,
-                            ),
-                            child: TextCell(
-                              string: Text(
-                                "worker".tr(),
-                                textAlign: .center,
-                                style: TextStyle(
-                                  fontWeight: .bold,
-                                  color: context.isDark
-                                      ? ThemingColors.white.withAlpha(
-                                    (0.3 * 255).toInt(),
-                                  )
-                                      : ThemingColors.black.withAlpha(
-                                    (0.3 * 255).toInt(),
-                                  ),
-                                ),
-                              ),
-                            ),
+                        verticalInside: BorderSide(
+                          width: 2,
+                          color: ThemingColors.primaryColor.withAlpha(
+                            (0.2 * 255).toInt(),
                           ),
-                          Row(
-                            mainAxisAlignment: .center,
-                            children: [
-                              Padding(
-                                padding: .symmetric(vertical: 7),
-                                child: TextCell(
-                                  string: Text(
-                                    payrollMethod
-                                        ? "hours".tr()
-                                        : "batches".tr(),
-                                    style: TextStyle(
-                                      fontWeight: .bold,
-                                      color: context.isDark
-                                          ? ThemingColors.white.withAlpha(
-                                        (0.3 * 255).toInt(),
-                                      )
-                                          : ThemingColors.black.withAlpha(
-                                        (0.3 * 255).toInt(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: .center,
-                            children: [
-                              Padding(
-                                padding: .symmetric(vertical: 7),
-                                child: TextCell(
-                                  string: Text(
-                                    "wage".tr(),
-                                    style: TextStyle(
-                                      fontWeight: .bold,
-                                      color: context.isDark
-                                          ? ThemingColors.white.withAlpha(
-                                        (0.3 * 255).toInt(),
-                                      )
-                                          : ThemingColors.black.withAlpha(
-                                        (0.3 * 255).toInt(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                      if (summaries.isEmpty)
+                      columnWidths: {
+                        0: FlexColumnWidth(2.0),
+                        1: FlexColumnWidth(0.7),
+                        2: FlexColumnWidth(0.7),
+                      },
+                      children: [
                         TableRow(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 2,
+                                color: ThemingColors.primaryColor.withAlpha(
+                                  (0.4 * 255).toInt(),
+                                ),
+                              ),
+                            ),
+                          ),
                           children: [
-                            TableCell(
-                              verticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                              child: Align(
-                                alignment:
-                                context.locale.languageCode == 'ar'
-                                    ? .centerRight
-                                    : .centerLeft,
+                            Padding(
+                              padding: .symmetric(
+                                vertical: 7,
+                                horizontal: 10,
+                              ),
+                              child: TextCell(
+                                string: Text(
+                                  "worker".tr(),
+                                  textAlign: .center,
+                                  style: TextStyle(
+                                    fontWeight: .bold,
+                                    color: context.isDark
+                                        ? ThemingColors.white.withAlpha(
+                                      (0.3 * 255).toInt(),
+                                    )
+                                        : ThemingColors.black.withAlpha(
+                                      (0.3 * 255).toInt(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: .center,
+                              children: [
+                                Padding(
+                                  padding: .symmetric(vertical: 7),
+                                  child: TextCell(
+                                    string: Text(
+                                      payrollMethod
+                                          ? "hours".tr()
+                                          : "batches".tr(),
+                                      style: TextStyle(
+                                        fontWeight: .bold,
+                                        color: context.isDark
+                                            ? ThemingColors.white.withAlpha(
+                                          (0.3 * 255).toInt(),
+                                        )
+                                            : ThemingColors.black.withAlpha(
+                                          (0.3 * 255).toInt(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: .center,
+                              children: [
+                                Padding(
+                                  padding: .symmetric(vertical: 7),
+                                  child: TextCell(
+                                    string: Text(
+                                      "wage".tr(),
+                                      style: TextStyle(
+                                        fontWeight: .bold,
+                                        color: context.isDark
+                                            ? ThemingColors.white.withAlpha(
+                                          (0.3 * 255).toInt(),
+                                        )
+                                            : ThemingColors.black.withAlpha(
+                                          (0.3 * 255).toInt(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        if (summaries.isEmpty)
+                          TableRow(
+                            children: [
+                              TableCell(
+                                verticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                                child: Align(
+                                  alignment:
+                                  context.locale.languageCode == 'ar'
+                                      ? .centerRight
+                                      : .centerLeft,
+                                  child: Padding(
+                                    padding: .all(10),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.assignment_late_outlined,
+                                          size: 16,
+                                          color: context.isDark
+                                              ? ThemingColors.white
+                                              .withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          )
+                                              : ThemingColors.black
+                                              .withAlpha(
+                                            (0.2 * 255).toInt(),
+                                          ),
+                                        ),
+                                        Text(
+                                          "noData".tr(),
+                                          style: TextStyle(
+                                            color: context.isDark
+                                                ? ThemingColors.white
+                                                .withAlpha(
+                                              (0.3 * 255).toInt(),
+                                            )
+                                                : ThemingColors.black
+                                                .withAlpha(
+                                              (0.5 * 255).toInt(),
+                                            ),
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                verticalAlignment:
+                                TableCellVerticalAlignment.middle,
                                 child: Padding(
-                                  padding: .all(10),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
                                   child: Column(
                                     mainAxisAlignment:
                                     MainAxisAlignment.center,
@@ -212,12 +263,10 @@ class ShiftsStatusTile extends StatelessWidget {
                                         Icons.assignment_late_outlined,
                                         size: 16,
                                         color: context.isDark
-                                            ? ThemingColors.white
-                                            .withAlpha(
+                                            ? ThemingColors.white.withAlpha(
                                           (0.3 * 255).toInt(),
                                         )
-                                            : ThemingColors.black
-                                            .withAlpha(
+                                            : ThemingColors.black.withAlpha(
                                           (0.2 * 255).toInt(),
                                         ),
                                       ),
@@ -240,273 +289,423 @@ class ShiftsStatusTile extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.assignment_late_outlined,
-                                      size: 16,
-                                      color: context.isDark
-                                          ? ThemingColors.white.withAlpha(
-                                        (0.3 * 255).toInt(),
-                                      )
-                                          : ThemingColors.black.withAlpha(
-                                        (0.2 * 255).toInt(),
-                                      ),
-                                    ),
-                                    Text(
-                                      "noData".tr(),
-                                      style: TextStyle(
+                              TableCell(
+                                verticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.assignment_late_outlined,
+                                        size: 16,
                                         color: context.isDark
-                                            ? ThemingColors.white
-                                            .withAlpha(
+                                            ? ThemingColors.white.withAlpha(
                                           (0.3 * 255).toInt(),
                                         )
-                                            : ThemingColors.black
-                                            .withAlpha(
-                                          (0.5 * 255).toInt(),
+                                            : ThemingColors.black.withAlpha(
+                                          (0.2 * 255).toInt(),
                                         ),
-                                        fontSize: 11,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.assignment_late_outlined,
-                                      size: 16,
-                                      color: context.isDark
-                                          ? ThemingColors.white.withAlpha(
-                                        (0.3 * 255).toInt(),
-                                      )
-                                          : ThemingColors.black.withAlpha(
-                                        (0.2 * 255).toInt(),
-                                      ),
-                                    ),
-                                    Text(
-                                      "noData".tr(),
-                                      style: TextStyle(
-                                        color: context.isDark
-                                            ? ThemingColors.white
-                                            .withAlpha(
-                                          (0.3 * 255).toInt(),
-                                        )
-                                            : ThemingColors.black
-                                            .withAlpha(
-                                          (0.5 * 255).toInt(),
-                                        ),
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        ...summaries.asMap().entries.map((entry) {
-                          final ShiftSummary shift = entry.value;
-                          final int totalBatches = shift.numberOfBatches
-                              .fold(0, (sum, element) => sum + element);
-                          final rateString = shift.rateLabel;
-                          return TableRow(
-                            children: [
-                              InkWell(
-                                highlightColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Colors.transparent,
-                                    builder: (dialogContext) {
-                                      return BackdropFilter(
-                                        filter: .blur(
-                                          sigmaX: context.isDark ? 2 : 5,
-                                          sigmaY: context.isDark ? 2 : 5,
-                                        ),
-                                        child: AlertDialog(
-                                          titlePadding: .only(
-                                            top: 20,
-                                            right: 20,
-                                            left: 20,
-                                          ),
-                                          contentPadding: .all(20),
-                                          actionsPadding: .only(
-                                            bottom: 20,
-                                            right: 20,
-                                            left: 20,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: .circular(20),
-                                            side: BorderSide(
-                                              width: 0.2,
-                                              color: context.isDark
-                                                  ? ThemingColors.white
-                                                  : ThemingColors.black,
-                                            ),
-                                          ),
-                                          backgroundColor: context.isDark
-                                              ? ThemingColors.black
+                                      Text(
+                                        "noData".tr(),
+                                        style: TextStyle(
+                                          color: context.isDark
+                                              ? ThemingColors.white
                                               .withAlpha(
-                                            (0.4 * 255).toInt(),
+                                            (0.3 * 255).toInt(),
                                           )
                                               : ThemingColors.black
                                               .withAlpha(
-                                            (0.05 * 255)
-                                                .toInt(),
+                                            (0.5 * 255).toInt(),
                                           ),
-                                          title: Container(
-                                            padding: .all(15),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                              BorderRadius.circular(
-                                                12,
-                                              ),
-                                              color: context.isDark
-                                                  ? ThemingColors.black
-                                                  .withAlpha(
-                                                (0.4 * 255)
-                                                    .toInt(),
-                                              )
-                                                  : ThemingColors.white
-                                                  .withAlpha(
-                                                (0.4 * 255)
-                                                    .toInt(),
-                                              ),
-                                              border: .all(
-                                                width: 0.3,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          ...summaries.asMap().entries.map((entry) {
+                            final ShiftSummary shift = entry.value;
+                            final int totalBatches = shift.numberOfBatches
+                                .fold(0, (sum, element) => sum + element);
+                            final rateString = shift.rateLabel;
+                            return TableRow(
+                              children: [
+                                InkWell(
+                                  highlightColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      barrierColor: Colors.transparent,
+                                      builder: (dialogContext) {
+                                        return BackdropFilter(
+                                          filter: .blur(
+                                            sigmaX: context.isDark ? 2 : 5,
+                                            sigmaY: context.isDark ? 2 : 5,
+                                          ),
+                                          child: AlertDialog(
+                                            titlePadding: .only(
+                                              top: 20,
+                                              right: 20,
+                                              left: 20,
+                                            ),
+                                            contentPadding: .all(20),
+                                            actionsPadding: .only(
+                                              bottom: 20,
+                                              right: 20,
+                                              left: 20,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: .circular(20),
+                                              side: BorderSide(
+                                                width: 0.2,
                                                 color: context.isDark
                                                     ? ThemingColors.white
+                                                    : ThemingColors.black,
+                                              ),
+                                            ),
+                                            backgroundColor: context.isDark
+                                                ? ThemingColors.black
+                                                .withAlpha(
+                                              (0.4 * 255).toInt(),
+                                            )
+                                                : ThemingColors.black
+                                                .withAlpha(
+                                              (0.05 * 255)
+                                                  .toInt(),
+                                            ),
+                                            title: Container(
+                                              padding: .all(15),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                  12,
+                                                ),
+                                                color: context.isDark
+                                                    ? ThemingColors.black
                                                     .withAlpha(
                                                   (0.4 * 255)
                                                       .toInt(),
                                                 )
-                                                    : ThemingColors.black
+                                                    : ThemingColors.white
                                                     .withAlpha(
-                                                  (0.5 * 255)
+                                                  (0.4 * 255)
                                                       .toInt(),
                                                 ),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: WorkerCell(
-                                                    workerName:
-                                                    shift.workerName,
-                                                    workerId:
-                                                    shift.workerId,
-                                                    noPadding: true,
+                                                border: .all(
+                                                  width: 0.3,
+                                                  color: context.isDark
+                                                      ? ThemingColors.white
+                                                      .withAlpha(
+                                                    (0.4 * 255)
+                                                        .toInt(),
+                                                  )
+                                                      : ThemingColors.black
+                                                      .withAlpha(
+                                                    (0.5 * 255)
+                                                        .toInt(),
                                                   ),
                                                 ),
-                                                GlassCard(
-                                                  margin: .zero,
-                                                  padding: .symmetric(
-                                                    vertical: 3,
-                                                    horizontal: 15,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: WorkerCell(
+                                                      workerName:
+                                                      shift.workerName,
+                                                      workerId:
+                                                      shift.workerId,
+                                                      noPadding: true,
+                                                    ),
                                                   ),
-                                                  otherRadius: 30,
-                                                  child: Text.rich(
-                                                    TextSpan(
-                                                      children: [
-                                                        TextSpan(
-                                                          text:
-                                                          shift
-                                                              .numberOfBatches
-                                                              .isEmpty
-                                                              ? shift
-                                                              .role[0]
-                                                              : "$totalBatches",
-                                                        ),
-                                                        if (shift
-                                                            .numberOfBatches
-                                                            .isNotEmpty)
+                                                  GlassCard(
+                                                    margin: .zero,
+                                                    padding: .symmetric(
+                                                      vertical: 3,
+                                                      horizontal: 15,
+                                                    ),
+                                                    otherRadius: 30,
+                                                    child: Text.rich(
+                                                      TextSpan(
+                                                        children: [
                                                           TextSpan(
-                                                            text: "  ",
+                                                            text:
+                                                            shift
+                                                                .numberOfBatches
+                                                                .isEmpty
+                                                                ? shift
+                                                                .role[0]
+                                                                : "$totalBatches",
                                                           ),
-                                                        if (shift
-                                                            .numberOfBatches
-                                                            .isNotEmpty)
-                                                          TextSpan(
-                                                            text: "batch"
-                                                                .tr(),
-                                                            style: TextStyle(
-                                                              color:
-                                                              context
-                                                                  .isDark
-                                                                  ? ThemingColors.white.withAlpha(
-                                                                (0.4 *
-                                                                    255)
-                                                                    .toInt(),
-                                                              )
-                                                                  : ThemingColors.black.withAlpha(
-                                                                (0.4 *
-                                                                    255)
-                                                                    .toInt(),
+                                                          if (shift
+                                                              .numberOfBatches
+                                                              .isNotEmpty)
+                                                            TextSpan(
+                                                              text: "  ",
+                                                            ),
+                                                          if (shift
+                                                              .numberOfBatches
+                                                              .isNotEmpty)
+                                                            TextSpan(
+                                                              text: "batch"
+                                                                  .tr(),
+                                                              style: TextStyle(
+                                                                color:
+                                                                context
+                                                                    .isDark
+                                                                    ? ThemingColors.white.withAlpha(
+                                                                  (0.4 *
+                                                                      255)
+                                                                      .toInt(),
+                                                                )
+                                                                    : ThemingColors.black.withAlpha(
+                                                                  (0.4 *
+                                                                      255)
+                                                                      .toInt(),
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                      ],
-                                                    ),
-                                                    style: TextStyle(
-                                                      fontSize: 13,
+                                                        ],
+                                                      ),
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          content: SizedBox(
-                                            height:
-                                            shift
-                                                .numberOfBatches
-                                                .isEmpty
-                                                ? 50
-                                                : 220,
-                                            width: double.maxFinite,
-                                            child: Column(
-                                              mainAxisSize: .min,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .stretch,
-                                              children: [
-                                                if (shift
-                                                    .numberOfBatches
-                                                    .isNotEmpty)
+                                            content: SizedBox(
+                                              height:
+                                              shift
+                                                  .numberOfBatches
+                                                  .isEmpty
+                                                  ? 50
+                                                  : 220,
+                                              width: double.maxFinite,
+                                              child: Column(
+                                                mainAxisSize: .min,
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .stretch,
+                                                children: [
+                                                  if (shift
+                                                      .numberOfBatches
+                                                      .isNotEmpty)
+                                                    Container(
+                                                      padding: .symmetric(
+                                                        horizontal: 15,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                        color:
+                                                        context.isDark
+                                                            ? ThemingColors
+                                                            .black
+                                                            .withAlpha(
+                                                          (0.4 * 255)
+                                                              .toInt(),
+                                                        )
+                                                            : ThemingColors
+                                                            .white
+                                                            .withAlpha(
+                                                          (0.4 * 255)
+                                                              .toInt(),
+                                                        ),
+                                                        border: .all(
+                                                          width: 0.3,
+                                                          color:
+                                                          context.isDark
+                                                              ? ThemingColors
+                                                              .white
+                                                              .withAlpha(
+                                                            (0.4 *
+                                                                255)
+                                                                .toInt(),
+                                                          )
+                                                              : ThemingColors
+                                                              .black
+                                                              .withAlpha(
+                                                            (0.5 *
+                                                                255)
+                                                                .toInt(),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      child: ListView.separated(
+                                                        shrinkWrap: true,
+                                                        padding: .symmetric(
+                                                          vertical: 10,
+                                                        ),
+                                                        itemCount: shift
+                                                            .numberOfBatches
+                                                            .length,
+                                                        separatorBuilder: (context, index) => Divider(
+                                                          color:
+                                                          context.isDark
+                                                              ? ThemingColors
+                                                              .white
+                                                              .withAlpha(
+                                                            (0.1 *
+                                                                255)
+                                                                .toInt(),
+                                                          )
+                                                              : ThemingColors
+                                                              .black
+                                                              .withAlpha(
+                                                            (0.1 *
+                                                                255)
+                                                                .toInt(),
+                                                          ),
+                                                          height: 25,
+                                                          thickness: 0.5,
+                                                        ),
+                                                        itemBuilder: (context, index) {
+                                                          final role = shift
+                                                              .role[index];
+                                                          double rate = 0;
+                                                          final payroll =
+                                                          bakeryCubit
+                                                              .payrollFor(
+                                                            shift
+                                                                .branchId,
+                                                          );
+                                                          switch (role) {
+                                                            case PayrollsTableColumns
+                                                                .ajan:
+                                                              rate =
+                                                                  payroll
+                                                                      .ajan ??
+                                                                      0;
+                                                              break;
+                                                            case PayrollsTableColumns
+                                                                .faran:
+                                                              rate =
+                                                                  payroll
+                                                                      .faran ??
+                                                                      0;
+                                                              break;
+                                                            case PayrollsTableColumns
+                                                                .tawlaji:
+                                                              rate =
+                                                                  payroll
+                                                                      .tawlaji ??
+                                                                      0;
+                                                              break;
+                                                            case PayrollsTableColumns
+                                                                .chef:
+                                                              rate =
+                                                                  payroll
+                                                                      .chef ??
+                                                                      0;
+                                                              break;
+                                                            case PayrollsTableColumns
+                                                                .coChef:
+                                                              rate =
+                                                                  payroll
+                                                                      .coChef ??
+                                                                      0;
+                                                              break;
+                                                            case PayrollsTableColumns
+                                                                .bagger:
+                                                              rate =
+                                                                  payroll
+                                                                      .bagger ??
+                                                                      0;
+                                                              break;
+                                                            case PayrollsTableColumns
+                                                                .supervisor:
+                                                              rate =
+                                                                  payroll
+                                                                      .supervisor ??
+                                                                      0;
+                                                              break;
+                                                          }
+                                                          final wage =
+                                                              shift
+                                                                  .numberOfBatches[index] *
+                                                                  rate;
+                                                          return Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width:
+                                                                    30,
+                                                                    child: Text(
+                                                                      "${shift.numberOfBatches[index]}",
+                                                                      textAlign:
+                                                                          .center,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    "as ",
+                                                                    style: TextStyle(
+                                                                      color:
+                                                                      context.isDark
+                                                                          ? Colors.amber.withAlpha(
+                                                                        (0.7 *
+                                                                            255)
+                                                                            .toInt(),
+                                                                      )
+                                                                          : Colors.orange.withAlpha(
+                                                                        (0.7 *
+                                                                            255)
+                                                                            .toInt(),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    role.isNotEmpty
+                                                                        ? '${role[0].toUpperCase()}${role.substring(1)}'
+                                                                        : '',
+                                                                    style:
+                                                                    TextStyle(),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Spacer(),
+                                                              Text(
+                                                                "$wage",
+                                                                style: TextStyle(
+                                                                  color: Colors
+                                                                      .green,
+                                                                ),
+                                                              ),
+                                                              Text(" \$"),
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
                                                   Container(
                                                     padding: .symmetric(
                                                       horizontal: 15,
+                                                      vertical: 10,
                                                     ),
                                                     decoration: BoxDecoration(
                                                       borderRadius:
                                                       BorderRadius.circular(
                                                         12,
                                                       ),
-                                                      color:
-                                                      context.isDark
+                                                      color: context.isDark
                                                           ? ThemingColors
                                                           .black
                                                           .withAlpha(
@@ -526,470 +725,279 @@ class ShiftsStatusTile extends StatelessWidget {
                                                             ? ThemingColors
                                                             .white
                                                             .withAlpha(
-                                                          (0.4 *
-                                                              255)
+                                                          (0.4 * 255)
                                                               .toInt(),
                                                         )
                                                             : ThemingColors
                                                             .black
                                                             .withAlpha(
-                                                          (0.5 *
-                                                              255)
+                                                          (0.5 * 255)
                                                               .toInt(),
                                                         ),
                                                       ),
                                                     ),
-                                                    child: ListView.separated(
-                                                      shrinkWrap: true,
-                                                      padding: .symmetric(
-                                                        vertical: 10,
-                                                      ),
-                                                      itemCount: shift
-                                                          .numberOfBatches
-                                                          .length,
-                                                      separatorBuilder: (context, index) => Divider(
-                                                        color:
-                                                        context.isDark
-                                                            ? ThemingColors
-                                                            .white
-                                                            .withAlpha(
-                                                          (0.1 *
-                                                              255)
-                                                              .toInt(),
-                                                        )
-                                                            : ThemingColors
-                                                            .black
-                                                            .withAlpha(
-                                                          (0.1 *
-                                                              255)
-                                                              .toInt(),
-                                                        ),
-                                                        height: 25,
-                                                        thickness: 0.5,
-                                                      ),
-                                                      itemBuilder: (context, index) {
-                                                        final role = shift
-                                                            .role[index];
-                                                        double rate = 0;
-                                                        final payroll =
-                                                        bakeryCubit
-                                                            .payrollFor(
-                                                          shift
-                                                              .branchId,
-                                                        );
-                                                        switch (role) {
-                                                          case PayrollsTableColumns
-                                                              .ajan:
-                                                            rate =
-                                                                payroll
-                                                                    .ajan ??
-                                                                    0;
-                                                            break;
-                                                          case PayrollsTableColumns
-                                                              .faran:
-                                                            rate =
-                                                                payroll
-                                                                    .faran ??
-                                                                    0;
-                                                            break;
-                                                          case PayrollsTableColumns
-                                                              .tawlaji:
-                                                            rate =
-                                                                payroll
-                                                                    .tawlaji ??
-                                                                    0;
-                                                            break;
-                                                          case PayrollsTableColumns
-                                                              .chef:
-                                                            rate =
-                                                                payroll
-                                                                    .chef ??
-                                                                    0;
-                                                            break;
-                                                          case PayrollsTableColumns
-                                                              .coChef:
-                                                            rate =
-                                                                payroll
-                                                                    .coChef ??
-                                                                    0;
-                                                            break;
-                                                          case PayrollsTableColumns
-                                                              .bagger:
-                                                            rate =
-                                                                payroll
-                                                                    .bagger ??
-                                                                    0;
-                                                            break;
-                                                          case PayrollsTableColumns
-                                                              .supervisor:
-                                                            rate =
-                                                                payroll
-                                                                    .supervisor ??
-                                                                    0;
-                                                            break;
-                                                        }
-                                                        final wage =
-                                                            shift
-                                                                .numberOfBatches[index] *
-                                                                rate;
-                                                        return Row(
-                                                          mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                SizedBox(
-                                                                  width:
-                                                                  30,
-                                                                  child: Text(
-                                                                    "${shift.numberOfBatches[index]}",
-                                                                    textAlign:
-                                                                        .center,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  "as ",
-                                                                  style: TextStyle(
-                                                                    color:
-                                                                    context.isDark
-                                                                        ? Colors.amber.withAlpha(
-                                                                      (0.7 *
-                                                                          255)
-                                                                          .toInt(),
-                                                                    )
-                                                                        : Colors.orange.withAlpha(
-                                                                      (0.7 *
-                                                                          255)
-                                                                          .toInt(),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  role.isNotEmpty
-                                                                      ? '${role[0].toUpperCase()}${role.substring(1)}'
-                                                                      : '',
-                                                                  style:
-                                                                  TextStyle(),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            Spacer(),
-                                                            Text(
-                                                              "$wage",
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .green,
-                                                              ),
-                                                            ),
-                                                            Text(" \$"),
-                                                          ],
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                Container(
-                                                  padding: .symmetric(
-                                                    horizontal: 15,
-                                                    vertical: 10,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                    BorderRadius.circular(
-                                                      12,
-                                                    ),
-                                                    color: context.isDark
-                                                        ? ThemingColors
-                                                        .black
-                                                        .withAlpha(
-                                                      (0.4 * 255)
-                                                          .toInt(),
-                                                    )
-                                                        : ThemingColors
-                                                        .white
-                                                        .withAlpha(
-                                                      (0.4 * 255)
-                                                          .toInt(),
-                                                    ),
-                                                    border: .all(
-                                                      width: 0.3,
-                                                      color:
-                                                      context.isDark
-                                                          ? ThemingColors
-                                                          .white
-                                                          .withAlpha(
-                                                        (0.4 * 255)
-                                                            .toInt(),
-                                                      )
-                                                          : ThemingColors
-                                                          .black
-                                                          .withAlpha(
-                                                        (0.5 * 255)
-                                                            .toInt(),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        shift
-                                                            .numberOfBatches
-                                                            .isEmpty
-                                                            ? "hours".tr()
-                                                            : "batches"
-                                                            .tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color:
-                                                          context
-                                                              .isDark
-                                                              ? ThemingColors
-                                                              .white
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          )
-                                                              : ThemingColors
-                                                              .black
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        ":",
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color:
-                                                          context
-                                                              .isDark
-                                                              ? ThemingColors
-                                                              .white
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          )
-                                                              : ThemingColors
-                                                              .black
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            .symmetric(
-                                                          horizontal:
-                                                          7,
-                                                        ),
-                                                        child: Text(
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
                                                           shift
                                                               .numberOfBatches
                                                               .isEmpty
-                                                              ? rateString
-                                                              : "$totalBatches",
-                                                        ),
-                                                      ),
-                                                      Spacer(),
-                                                      Text(
-                                                        "wage".tr(),
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color:
-                                                          context
-                                                              .isDark
-                                                              ? ThemingColors
-                                                              .white
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          )
-                                                              : ThemingColors
-                                                              .black
-                                                              .withAlpha(
-                                                            (0.5 *
-                                                                255)
-                                                                .toInt(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        ":",
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color:
-                                                          context
-                                                              .isDark
-                                                              ? ThemingColors
-                                                              .white
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          )
-                                                              : ThemingColors
-                                                              .black
-                                                              .withAlpha(
-                                                            (0.4 *
-                                                                255)
-                                                                .toInt(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                        context
-                                                            .locale
-                                                            .languageCode ==
-                                                            'ar'
-                                                            ? .only(
-                                                          right: 7,
-                                                        )
-                                                            : .only(
-                                                          left: 7,
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            Text(
-                                                              "${shift.wage}",
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .green,
-                                                              ),
+                                                              ? "hours".tr()
+                                                              : "batches"
+                                                              .tr(),
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                            context
+                                                                .isDark
+                                                                ? ThemingColors
+                                                                .white
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            )
+                                                                : ThemingColors
+                                                                .black
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
                                                             ),
-                                                            Text(" \$"),
-                                                          ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                        Text(
+                                                          ":",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                            context
+                                                                .isDark
+                                                                ? ThemingColors
+                                                                .white
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            )
+                                                                : ThemingColors
+                                                                .black
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              .symmetric(
+                                                            horizontal:
+                                                            7,
+                                                          ),
+                                                          child: Text(
+                                                            shift
+                                                                .numberOfBatches
+                                                                .isEmpty
+                                                                ? rateString
+                                                                : "$totalBatches",
+                                                          ),
+                                                        ),
+                                                        Spacer(),
+                                                        Text(
+                                                          "wage".tr(),
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                            context
+                                                                .isDark
+                                                                ? ThemingColors
+                                                                .white
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            )
+                                                                : ThemingColors
+                                                                .black
+                                                                .withAlpha(
+                                                              (0.5 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          ":",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                            context
+                                                                .isDark
+                                                                ? ThemingColors
+                                                                .white
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            )
+                                                                : ThemingColors
+                                                                .black
+                                                                .withAlpha(
+                                                              (0.4 *
+                                                                  255)
+                                                                  .toInt(),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                          context
+                                                              .locale
+                                                              .languageCode ==
+                                                              'ar'
+                                                              ? .only(
+                                                            right: 7,
+                                                          )
+                                                              : .only(
+                                                            left: 7,
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                "${shift.wage}",
+                                                                style: TextStyle(
+                                                                  color: Colors
+                                                                      .green,
+                                                                ),
+                                                              ),
+                                                              Text(" \$"),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          actions: [
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: InkWell(
-                                                hoverColor:
-                                                Colors.transparent,
-                                                splashColor:
-                                                Colors.transparent,
-                                                highlightColor:
-                                                Colors.transparent,
-                                                onTap: () {
-                                                  Navigator.pop(
-                                                    dialogContext,
-                                                  );
-                                                },
-                                                child: GlassCard(
-                                                  margin: .zero,
-                                                  padding: .symmetric(
-                                                    vertical: 2,
-                                                    horizontal: 10,
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.arrow_back,
-                                                    size: 18,
-                                                    color: ThemingColors
-                                                        .primaryColor,
+                                            actions: [
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: InkWell(
+                                                  hoverColor:
+                                                  Colors.transparent,
+                                                  splashColor:
+                                                  Colors.transparent,
+                                                  highlightColor:
+                                                  Colors.transparent,
+                                                  onTap: () {
+                                                    Navigator.pop(
+                                                      dialogContext,
+                                                    );
+                                                  },
+                                                  child: GlassCard(
+                                                    margin: .zero,
+                                                    padding: .symmetric(
+                                                      vertical: 2,
+                                                      horizontal: 10,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.arrow_back,
+                                                      size: 18,
+                                                      color: ThemingColors
+                                                          .primaryColor,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                        context.locale.languageCode ==
+                                            'ar'
+                                            ? .only(left: 10)
+                                            : .only(right: 10),
+                                        child: Icon(
+                                          Icons.info_outline,
+                                          size: 13,
+                                          color: ThemingColors.primaryColor,
                                         ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                      context.locale.languageCode ==
-                                          'ar'
-                                          ? .only(left: 10)
-                                          : .only(right: 10),
-                                      child: Icon(
-                                        Icons.info_outline,
-                                        size: 13,
-                                        color: ThemingColors.primaryColor,
                                       ),
-                                    ),
-                                    Flexible(
-                                      fit: .tight,
-                                      child: WorkerCell(
-                                        workerName: shift.workerName,
-                                        workerId: shift.workerId,
+                                      Flexible(
+                                        fit: .tight,
+                                        child: WorkerCell(
+                                          workerName: shift.workerName,
+                                          workerId: shift.workerId,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: .center,
-                                children: [
-                                  Padding(
-                                    padding: .symmetric(vertical: 15),
-                                    child: TextCell(
-                                      string: Text(
-                                        payrollMethod
-                                            ? rateString
-                                            : "$totalBatches",
-                                        style: TextStyle(fontSize: 13),
-                                      ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              Padding(
-                                padding: .symmetric(vertical: 15),
-                                child: Row(
+                                ),
+                                Row(
                                   mainAxisAlignment: .center,
                                   children: [
-                                    Text(
-                                      shift.wage.toStringAsFixed(2),
-                                      textAlign: .center,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                    Text(
-                                      " \$",
-                                      style: TextStyle(
-                                        color: context.isDark
-                                            ? ThemingColors.white
-                                            : ThemingColors.black,
+                                    Padding(
+                                      padding: .symmetric(vertical: 15),
+                                      child: TextCell(
+                                        string: Text(
+                                          payrollMethod
+                                              ? rateString
+                                              : "$totalBatches",
+                                          style: TextStyle(fontSize: 13),
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          );
-                        }),
-                    ],
-                  ),
-                )
-                    : (financeFilterState is StatusShiftsFilterLoading)
-                    ? LoadingAnimationWidget.staggeredDotsWave(
-                  color: ThemingColors.primaryColor,
-                  size: 25,
-                )
-                    : (financeFilterState is StatusShiftsFilterFialure)
-                    ? SizedBox()
-                    : SizedBox(),
-              ),
-            ],
+                                Padding(
+                                  padding: .symmetric(vertical: 15),
+                                  child: Row(
+                                    mainAxisAlignment: .center,
+                                    children: [
+                                      Text(
+                                        shift.wage.toStringAsFixed(2),
+                                        textAlign: .center,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                      Text(
+                                        " \$",
+                                        style: TextStyle(
+                                          color: context.isDark
+                                              ? ThemingColors.white
+                                              : ThemingColors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                      ],
+                    ),
+                  )
+                      : (financeFilterState is StatusShiftsFilterLoading)
+                      ? LoadingAnimationWidget.staggeredDotsWave(
+                    color: ThemingColors.primaryColor,
+                    size: 25,
+                  )
+                      : (financeFilterState is StatusShiftsFilterFialure)
+                      ? SizedBox()
+                      : SizedBox(),
+                ),
+              ],
+            ),
           ),
         );
       },

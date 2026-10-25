@@ -198,244 +198,210 @@ class StaffSettingsTile extends StatelessWidget {
     final updateCubit = context.read<SettingsUpdateCubit>();
     return _ErrorSnackbarListener(
       cubit: updateCubit,
-      child: ExpansionTile(
-        splashColor: Colors.transparent,
-        initiallyExpanded: true,
-        iconColor: ThemingColors.primaryColor,
-        collapsedIconColor: ThemingColors.primaryColor,
-        shape: RoundedRectangleBorder(side: .none),
-        controlAffinity: ListTileControlAffinity.leading,
-        onExpansionChanged: (expanded) {
-          cubit.updateStaffTileExpansion(expanded);
-        },
-        title: SizedBox(
-          height: 53,
-          child: Row(
-            mainAxisAlignment: .start,
-            children: [
-              Text(
-                "staff".tr(),
-                style: TextStyle(fontWeight: .bold, fontSize: 18),
-              ),
-              SizedBox(width: 10),
-              Icon(Icons.star, size: 15, color: ThemingColors.primaryColor),
-              SizedBox(width: 5),
-              Text("supervisors".tr(), style: TextStyle(fontSize: 13)),
-              Spacer(),
-              cubit.isStaffEditing
-                  ? InkWell(
-                hoverColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  cubit.staffEditingMode(!cubit.isStaffEditing);
-                },
-                child: Container(
-                  margin: .only(right: 10),
-                  padding: .all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: .circular(50),
-                    border: Border.all(
-                      color: context.isDark
-                          ? Colors.white.withAlpha((0.2 * 255).toInt())
-                          : ThemingColors.black.withAlpha(
-                        (0.2 * 255).toInt(),
-                      ),
-                      width: 0.7,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.isDark
-                            ? Colors.white.withAlpha((0.1 * 255).toInt())
-                            : Colors.black.withAlpha((0.1 * 255).toInt()),
-                        blurRadius: 10,
-                        spreadRadius: -2,
-                        offset: Offset(5, -5),
-                      ),
-                      BoxShadow(
-                        color: context.isDark
-                            ? Colors.black.withAlpha((0.4 * 255).toInt())
-                            : Colors.white.withAlpha((0.4 * 255).toInt()),
-                        blurRadius: 20,
-                        spreadRadius: 2,
-                        offset: Offset(15, 8),
-                      ),
-                    ],
-                  ),
-                  child: Icon(Icons.done, size: 18, color: Colors.green),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          splashColor: Colors.transparent,
+          initiallyExpanded: true,
+          iconColor: ThemingColors.primaryColor,
+          collapsedIconColor: ThemingColors.primaryColor,
+          shape: RoundedRectangleBorder(side: .none),
+          controlAffinity: ListTileControlAffinity.leading,
+          onExpansionChanged: (expanded) {
+            cubit.updateStaffTileExpansion(expanded);
+          },
+          title: SizedBox(
+            height: 53,
+            child: Row(
+              mainAxisAlignment: .start,
+              children: [
+                Text(
+                  "staff".tr(),
+                  style: TextStyle(fontWeight: .bold, fontSize: 18),
                 ),
-              )
-                  : cubit.isStaffExpanded
-                  ? Padding(
-                padding: .only(right: 10),
-                child: InkWell(
+                SizedBox(width: 10),
+                Icon(Icons.star, size: 15, color: ThemingColors.primaryColor),
+                SizedBox(width: 5),
+                Text("supervisors".tr(), style: TextStyle(fontSize: 13)),
+                Spacer(),
+                cubit.isStaffEditing
+                    ? InkWell(
                   hoverColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onTap: () {
                     cubit.staffEditingMode(!cubit.isStaffEditing);
                   },
-                  child: Icon(Icons.delete_forever_outlined),
-                ),
-              )
-                  : SizedBox(),
-            ],
-          ),
-        ),
-        children: [
-          BranchPager(
-            branches: cubit.bakeries,
-            selectedBranchId: cubit.staffsViewedBranch,
-            onBranchChanged: cubit.staffBranchChanged,
-            child: Padding(
-              padding: .symmetric(horizontal: 25),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: .only(bottom: 20),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: Colors.redAccent,
+                  child: Container(
+                    margin: .only(right: 10),
+                    padding: .all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: .circular(50),
+                      border: Border.all(
+                        color: context.isDark
+                            ? Colors.white.withAlpha((0.2 * 255).toInt())
+                            : ThemingColors.black.withAlpha(
+                          (0.2 * 255).toInt(),
                         ),
-                        SizedBox(width: 10),
-                        Text(
-                          "twoSupervisors".tr(),
-                          style: TextStyle(fontSize: 13),
+                        width: 0.7,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.isDark
+                              ? Colors.white.withAlpha((0.1 * 255).toInt())
+                              : Colors.black.withAlpha((0.1 * 255).toInt()),
+                          blurRadius: 10,
+                          spreadRadius: -2,
+                          offset: Offset(5, -5),
+                        ),
+                        BoxShadow(
+                          color: context.isDark
+                              ? Colors.black.withAlpha((0.4 * 255).toInt())
+                              : Colors.white.withAlpha((0.4 * 255).toInt()),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                          offset: Offset(15, 8),
                         ),
                       ],
                     ),
+                    child: Icon(Icons.done, size: 18, color: Colors.green),
                   ),
-                  GlassCard(
-                    margin: .zero,
-                    padding: .symmetric(horizontal: 10, vertical: 5),
-                    radius: 20,
-                    otherRadius: 20,
-                    child: Column(
-                      children: [
-                        Table(
-                          border: TableBorder(
-                            horizontalInside: BorderSide(
-                              width: 0.5,
-                              color: ThemingColors.primaryColor.withAlpha(
-                                (0.2 * 255).toInt(),
-                              ),
-                            ),
-                            verticalInside: BorderSide(
-                              width: 2,
-                              color: ThemingColors.primaryColor.withAlpha(
-                                (0.2 * 255).toInt(),
-                              ),
-                            ),
+                )
+                    : cubit.isStaffExpanded
+                    ? Padding(
+                  padding: .only(right: 10),
+                  child: InkWell(
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      cubit.staffEditingMode(!cubit.isStaffEditing);
+                    },
+                    child: Icon(Icons.delete_forever_outlined),
+                  ),
+                )
+                    : SizedBox(),
+              ],
+            ),
+          ),
+          children: [
+            BranchPager(
+              branches: cubit.bakeries,
+              selectedBranchId: cubit.staffsViewedBranch,
+              onBranchChanged: cubit.staffBranchChanged,
+              child: Padding(
+                padding: .symmetric(horizontal: 25),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: .only(bottom: 20),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 16,
+                            color: Colors.redAccent,
                           ),
-                          columnWidths: {
-                            0: FlexColumnWidth(1),
-                            1: FlexColumnWidth(2.5),
-                          },
-                          children: [
-                            TableRow(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    width: 2,
-                                    color: ThemingColors.primaryColor.withAlpha(
-                                      (0.4 * 255).toInt(),
-                                    ),
-                                  ),
+                          SizedBox(width: 10),
+                          Text(
+                            "twoSupervisors".tr(),
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GlassCard(
+                      margin: .zero,
+                      padding: .symmetric(horizontal: 10, vertical: 5),
+                      radius: 20,
+                      otherRadius: 20,
+                      child: Column(
+                        children: [
+                          Table(
+                            border: TableBorder(
+                              horizontalInside: BorderSide(
+                                width: 0.5,
+                                color: ThemingColors.primaryColor.withAlpha(
+                                  (0.2 * 255).toInt(),
                                 ),
                               ),
-                              children: [
-                                Padding(
-                                  padding: .symmetric(vertical: 7),
-                                  child: Icon(
-                                    Icons.star,
-                                    size: 20,
-                                    color: context.isDark
-                                        ? ThemingColors.white.withAlpha(
-                                      (0.3 * 255).toInt(),
-                                    )
-                                        : ThemingColors.black.withAlpha(
-                                      (0.3 * 255).toInt(),
+                              verticalInside: BorderSide(
+                                width: 2,
+                                color: ThemingColors.primaryColor.withAlpha(
+                                  (0.2 * 255).toInt(),
+                                ),
+                              ),
+                            ),
+                            columnWidths: {
+                              0: FlexColumnWidth(1),
+                              1: FlexColumnWidth(2.5),
+                            },
+                            children: [
+                              TableRow(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      width: 2,
+                                      color: ThemingColors.primaryColor.withAlpha(
+                                        (0.4 * 255).toInt(),
+                                      ),
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: .symmetric(
-                                    vertical: 7,
-                                    horizontal: 10,
+                                children: [
+                                  Padding(
+                                    padding: .symmetric(vertical: 7),
+                                    child: Icon(
+                                      Icons.star,
+                                      size: 20,
+                                      color: context.isDark
+                                          ? ThemingColors.white.withAlpha(
+                                        (0.3 * 255).toInt(),
+                                      )
+                                          : ThemingColors.black.withAlpha(
+                                        (0.3 * 255).toInt(),
+                                      ),
+                                    ),
                                   ),
-                                  child: TextCell(
-                                    string: Text(
-                                      "worker".tr(),
-                                      style: TextStyle(
-                                        fontWeight: .bold,
-                                        color: context.isDark
-                                            ? ThemingColors.white.withAlpha(
-                                          (0.3 * 255).toInt(),
-                                        )
-                                            : ThemingColors.black.withAlpha(
-                                          (0.3 * 255).toInt(),
+                                  Padding(
+                                    padding: .symmetric(
+                                      vertical: 7,
+                                      horizontal: 10,
+                                    ),
+                                    child: TextCell(
+                                      string: Text(
+                                        "worker".tr(),
+                                        style: TextStyle(
+                                          fontWeight: .bold,
+                                          color: context.isDark
+                                              ? ThemingColors.white.withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          )
+                                              : ThemingColors.black.withAlpha(
+                                            (0.3 * 255).toInt(),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            if (staff.isEmpty)
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 10),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.assignment_late_outlined,
-                                            size: 16,
-                                            color: context.isDark
-                                                ? ThemingColors.white.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            )
-                                                : ThemingColors.black.withAlpha(
-                                              (0.2 * 255).toInt(),
-                                            ),
-                                          ),
-                                          Text(
-                                            "No data",
-                                            style: TextStyle(
-                                              color: context.isDark
-                                                  ? ThemingColors.white.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              )
-                                                  : ThemingColors.black.withAlpha(
-                                                (0.5 * 255).toInt(),
-                                              ),
-                                              fontSize: 11,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 10,
-                                        horizontal: 10,
-                                      ),
-                                      child: Align(
-                                        alignment: .centerLeft,
+                                ],
+                              ),
+                              if (staff.isEmpty)
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 10),
                                         child: Column(
-                                          crossAxisAlignment: .center,
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               Icons.assignment_late_outlined,
@@ -452,12 +418,10 @@ class StaffSettingsTile extends StatelessWidget {
                                               "No data",
                                               style: TextStyle(
                                                 color: context.isDark
-                                                    ? ThemingColors.white
-                                                    .withAlpha(
+                                                    ? ThemingColors.white.withAlpha(
                                                   (0.3 * 255).toInt(),
                                                 )
-                                                    : ThemingColors.black
-                                                    .withAlpha(
+                                                    : ThemingColors.black.withAlpha(
                                                   (0.5 * 255).toInt(),
                                                 ),
                                                 fontSize: 11,
@@ -467,278 +431,322 @@ class StaffSettingsTile extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              )
-                            else
-                              ...staff.asMap().entries.map((entry) {
-                                final StaffModel worker = entry.value;
-                                final BakeryModel? branch = cubit.bakeries
-                                    .firstWhereOrNull(
-                                      (item) => item.branchId == worker.branchId,
-                                );
-                                final bool supervisor =
-                                    branch?.supervisorId.contains(
-                                      worker.workerId,
-                                    ) ??
-                                        false;
-                                return TableRow(
-                                  children: [
                                     TableCell(
-                                      verticalAlignment: .middle,
-                                      child:
-                                      BlocBuilder<
-                                          SettingsUpdateCubit,
-                                          SettingsUpdateState
-                                      >(
-                                        builder: (context, updateState) {
-                                          final bool isThisLoading =
-                                              updateState
-                                              is SettingsUpdateLoading &&
-                                                  updateState.action ==
-                                                      SettingsUpdateAction
-                                                          .supervisor &&
-                                                  updateState.targetId ==
-                                                      worker.workerId;
-                                          if (isThisLoading) {
-                                            return SizedBox(
-                                              child: Center(
-                                                child:
-                                                LoadingAnimationWidget.staggeredDotsWave(
-                                                  color: ThemingColors
-                                                      .primaryColor,
-                                                  size: 16,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          return InkWell(
-                                            hoverColor: Colors.transparent,
-                                            splashColor: Colors.transparent,
-                                            highlightColor:
-                                            Colors.transparent,
-                                            onTap: () {
-                                              if (branch == null) return;
-                                              if (branch
-                                                  .supervisorId
-                                                  .length <
-                                                  2 &&
-                                                  !branch.supervisorId
-                                                      .contains(
-                                                    worker.workerId,
-                                                  )) {
-                                                final updatedBakery = branch
-                                                    .copyWith(
-                                                  supervisorId: [
-                                                    ...branch
-                                                        .supervisorId,
-                                                    worker.workerId,
-                                                  ],
-                                                );
-                                                updateCubit.changeBakerySupervisor(
-                                                  updatedBakery:
-                                                  updatedBakery,
-                                                  targetId: worker.workerId,
-                                                );
-                                              } else if (branch
-                                                  .supervisorId
-                                                  .contains(
-                                                worker.workerId,
-                                              )) {
-                                                final updatedBakery = branch
-                                                    .copyWith(
-                                                  supervisorId: branch
-                                                      .supervisorId
-                                                      .where(
-                                                        (id) =>
-                                                    id !=
-                                                        worker
-                                                            .workerId,
-                                                  )
-                                                      .toList(),
-                                                );
-                                                updateCubit.changeBakerySupervisor(
-                                                  updatedBakery:
-                                                  updatedBakery,
-                                                  targetId: worker.workerId,
-                                                );
-                                              } else {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    elevation: 0,
-                                                    backgroundColor:
-                                                    Colors.transparent,
-                                                    duration: Duration(
-                                                      seconds: 3,
-                                                    ),
-                                                    content: Center(
-                                                      child: GlassCard(
-                                                        margin: .zero,
-                                                        padding: .symmetric(
-                                                          vertical: 7,
-                                                          horizontal: 20,
-                                                        ),
-                                                        orange: true,
-                                                        otherRadius: 30,
-                                                        child: Text(
-                                                          'twoSupervisors'
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight: .bold,
-                                                            color:
-                                                            context.isDark
-                                                                ? ThemingColors
-                                                                .white
-                                                                : ThemingColors
-                                                                .black,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            child: Padding(
-                                              padding:
-                                              const EdgeInsets.symmetric(
-                                                vertical: 10,
-                                                horizontal: 10,
-                                              ),
-                                              child: Icon(
-                                                supervisor
-                                                    ? Icons.star
-                                                    : Icons.star_border,
-                                                size: 22,
-                                                color: supervisor
-                                                    ? ThemingColors
-                                                    .primaryColor
-                                                    : ThemingColors
-                                                    .primaryColor
-                                                    .withAlpha(
-                                                  (0.4 * 255)
-                                                      .toInt(),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    TableCell(
+                                      verticalAlignment:
+                                      TableCellVerticalAlignment.middle,
                                       child: Padding(
-                                        padding: .symmetric(
-                                          vertical: 1,
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 10,
                                           horizontal: 10,
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment: .spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: WorkerCell(
-                                                workerName: worker.workerName,
-                                                workerId: worker.workerId,
+                                        child: Align(
+                                          alignment: .centerLeft,
+                                          child: Column(
+                                            crossAxisAlignment: .center,
+                                            children: [
+                                              Icon(
+                                                Icons.assignment_late_outlined,
+                                                size: 16,
+                                                color: context.isDark
+                                                    ? ThemingColors.white.withAlpha(
+                                                  (0.3 * 255).toInt(),
+                                                )
+                                                    : ThemingColors.black.withAlpha(
+                                                  (0.2 * 255).toInt(),
+                                                ),
                                               ),
-                                            ),
-                                            if (cubit.isStaffEditing)
-                                              BlocBuilder<
-                                                  SettingsUpdateCubit,
-                                                  SettingsUpdateState
-                                              >(
-                                                builder: (context, updateState) {
-                                                  final bool isThisDeleting =
-                                                      updateState
-                                                      is SettingsUpdateLoading &&
-                                                          updateState.action ==
-                                                              SettingsUpdateAction
-                                                                  .deleteWorker &&
-                                                          updateState.targetId ==
-                                                              worker.workerId;
-                                                  if (isThisDeleting) {
-                                                    return SizedBox(
-                                                      child: Center(
-                                                        child:
-                                                        LoadingAnimationWidget.staggeredDotsWave(
-                                                          color: Colors
-                                                              .redAccent,
-                                                          size: 16,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                  return InkWell(
-                                                    hoverColor:
-                                                    Colors.transparent,
-                                                    splashColor:
-                                                    Colors.transparent,
-                                                    highlightColor:
-                                                    Colors.transparent,
-                                                    onTap: () {
-                                                      updateCubit.deleteWorker(
-                                                        worker: worker,
-                                                      );
-                                                    },
-                                                    child: Icon(
-                                                      Icons
-                                                          .delete_forever_outlined,
-                                                      size: 18,
-                                                      color: Colors.redAccent,
-                                                    ),
-                                                  );
-                                                },
+                                              Text(
+                                                "No data",
+                                                style: TextStyle(
+                                                  color: context.isDark
+                                                      ? ThemingColors.white
+                                                      .withAlpha(
+                                                    (0.3 * 255).toInt(),
+                                                  )
+                                                      : ThemingColors.black
+                                                      .withAlpha(
+                                                    (0.5 * 255).toInt(),
+                                                  ),
+                                                  fontSize: 11,
+                                                ),
                                               ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ],
-                                );
-                              }),
-                          ],
-                        ),
-                        Padding(
-                          padding: .only(top: 10, bottom: 10),
-                          child:
-                          BlocBuilder<
-                              SettingsUpdateCubit,
-                              SettingsUpdateState
-                          >(
-                            builder: (context, state) {
-                              final bool isAdding =
-                                  state is SettingsUpdateLoading &&
-                                      state.action ==
-                                          SettingsUpdateAction.addWorker;
-                              return TransparentButton(
-                                key: _addButtonKey,
-                                onTap: () => _showAddMenu(context),
-                                buttonWidget: isAdding
-                                    ? LoadingAnimationWidget.staggeredDotsWave(
-                                  color: ThemingColors.primaryColor,
-                                  size: 20,
                                 )
-                                    : Icon(
-                                  Icons.add,
-                                  size: 20,
-                                  color: ThemingColors.primaryColor,
-                                ),
-                                size: 18,
-                                verticalPadding: 2,
-                                buttonHorizontalPading: 0,
-                              );
-                            },
+                              else
+                                ...staff.asMap().entries.map((entry) {
+                                  final StaffModel worker = entry.value;
+                                  final BakeryModel? branch = cubit.bakeries
+                                      .firstWhereOrNull(
+                                        (item) => item.branchId == worker.branchId,
+                                  );
+                                  final bool supervisor =
+                                      branch?.supervisorId.contains(
+                                        worker.workerId,
+                                      ) ??
+                                          false;
+                                  return TableRow(
+                                    children: [
+                                      TableCell(
+                                        verticalAlignment: .middle,
+                                        child:
+                                        BlocBuilder<
+                                            SettingsUpdateCubit,
+                                            SettingsUpdateState
+                                        >(
+                                          builder: (context, updateState) {
+                                            final bool isThisLoading =
+                                                updateState
+                                                is SettingsUpdateLoading &&
+                                                    updateState.action ==
+                                                        SettingsUpdateAction
+                                                            .supervisor &&
+                                                    updateState.targetId ==
+                                                        worker.workerId;
+                                            if (isThisLoading) {
+                                              return SizedBox(
+                                                child: Center(
+                                                  child:
+                                                  LoadingAnimationWidget.staggeredDotsWave(
+                                                    color: ThemingColors
+                                                        .primaryColor,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                            return InkWell(
+                                              hoverColor: Colors.transparent,
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                              Colors.transparent,
+                                              onTap: () {
+                                                if (branch == null) return;
+                                                if (branch
+                                                    .supervisorId
+                                                    .length <
+                                                    2 &&
+                                                    !branch.supervisorId
+                                                        .contains(
+                                                      worker.workerId,
+                                                    )) {
+                                                  final updatedBakery = branch
+                                                      .copyWith(
+                                                    supervisorId: [
+                                                      ...branch
+                                                          .supervisorId,
+                                                      worker.workerId,
+                                                    ],
+                                                  );
+                                                  updateCubit.changeBakerySupervisor(
+                                                    updatedBakery:
+                                                    updatedBakery,
+                                                    targetId: worker.workerId,
+                                                  );
+                                                } else if (branch
+                                                    .supervisorId
+                                                    .contains(
+                                                  worker.workerId,
+                                                )) {
+                                                  final updatedBakery = branch
+                                                      .copyWith(
+                                                    supervisorId: branch
+                                                        .supervisorId
+                                                        .where(
+                                                          (id) =>
+                                                      id !=
+                                                          worker
+                                                              .workerId,
+                                                    )
+                                                        .toList(),
+                                                  );
+                                                  updateCubit.changeBakerySupervisor(
+                                                    updatedBakery:
+                                                    updatedBakery,
+                                                    targetId: worker.workerId,
+                                                  );
+                                                } else {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      elevation: 0,
+                                                      backgroundColor:
+                                                      Colors.transparent,
+                                                      duration: Duration(
+                                                        seconds: 3,
+                                                      ),
+                                                      content: Center(
+                                                        child: GlassCard(
+                                                          margin: .zero,
+                                                          padding: .symmetric(
+                                                            vertical: 7,
+                                                            horizontal: 20,
+                                                          ),
+                                                          orange: true,
+                                                          otherRadius: 30,
+                                                          child: Text(
+                                                            'twoSupervisors'
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight: .bold,
+                                                              color:
+                                                              context.isDark
+                                                                  ? ThemingColors
+                                                                  .white
+                                                                  : ThemingColors
+                                                                  .black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                const EdgeInsets.symmetric(
+                                                  vertical: 10,
+                                                  horizontal: 10,
+                                                ),
+                                                child: Icon(
+                                                  supervisor
+                                                      ? Icons.star
+                                                      : Icons.star_border,
+                                                  size: 22,
+                                                  color: supervisor
+                                                      ? ThemingColors
+                                                      .primaryColor
+                                                      : ThemingColors
+                                                      .primaryColor
+                                                      .withAlpha(
+                                                    (0.4 * 255)
+                                                        .toInt(),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      TableCell(
+                                        child: Padding(
+                                          padding: .symmetric(
+                                            vertical: 1,
+                                            horizontal: 10,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: .spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: WorkerCell(
+                                                  workerName: worker.workerName,
+                                                  workerId: worker.workerId,
+                                                ),
+                                              ),
+                                              if (cubit.isStaffEditing)
+                                                BlocBuilder<
+                                                    SettingsUpdateCubit,
+                                                    SettingsUpdateState
+                                                >(
+                                                  builder: (context, updateState) {
+                                                    final bool isThisDeleting =
+                                                        updateState
+                                                        is SettingsUpdateLoading &&
+                                                            updateState.action ==
+                                                                SettingsUpdateAction
+                                                                    .deleteWorker &&
+                                                            updateState.targetId ==
+                                                                worker.workerId;
+                                                    if (isThisDeleting) {
+                                                      return SizedBox(
+                                                        child: Center(
+                                                          child:
+                                                          LoadingAnimationWidget.staggeredDotsWave(
+                                                            color: Colors
+                                                                .redAccent,
+                                                            size: 16,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                    return InkWell(
+                                                      hoverColor:
+                                                      Colors.transparent,
+                                                      splashColor:
+                                                      Colors.transparent,
+                                                      highlightColor:
+                                                      Colors.transparent,
+                                                      onTap: () {
+                                                        updateCubit.deleteWorker(
+                                                          worker: worker,
+                                                        );
+                                                      },
+                                                      child: Icon(
+                                                        Icons
+                                                            .delete_forever_outlined,
+                                                        size: 18,
+                                                        color: Colors.redAccent,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                            ],
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: .only(top: 10, bottom: 10),
+                            child:
+                            BlocBuilder<
+                                SettingsUpdateCubit,
+                                SettingsUpdateState
+                            >(
+                              builder: (context, state) {
+                                final bool isAdding =
+                                    state is SettingsUpdateLoading &&
+                                        state.action ==
+                                            SettingsUpdateAction.addWorker;
+                                return TransparentButton(
+                                  key: _addButtonKey,
+                                  onTap: () => _showAddMenu(context),
+                                  buttonWidget: isAdding
+                                      ? LoadingAnimationWidget.staggeredDotsWave(
+                                    color: ThemingColors.primaryColor,
+                                    size: 20,
+                                  )
+                                      : Icon(
+                                    Icons.add,
+                                    size: 20,
+                                    color: ThemingColors.primaryColor,
+                                  ),
+                                  size: 18,
+                                  verticalPadding: 2,
+                                  buttonHorizontalPading: 0,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

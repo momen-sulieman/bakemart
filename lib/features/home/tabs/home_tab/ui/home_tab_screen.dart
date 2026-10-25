@@ -1296,48 +1296,43 @@ class HomeTabScreen extends StatelessWidget {
                   ),
                 );
               }
-              return RefreshIndicator(
-                edgeOffset: 180,
-                strokeWidth: 2,
-                displacement: 0,
-                elevation: 0,
-                color: ThemingColors.primaryColor,
-                backgroundColor: Colors.transparent,
-                onRefresh: () async {
-                  cubit.setRefresh(true);
-                  await cubit.getHomeData(isRefreshing: true);
-                  cubit.setRefresh(false);
-                },
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: .only(
-                    top: cubit.refreshStatus ? 230 : 200,
-                    bottom: 120,
-                  ),
-                  child: Column(
-                    mainAxisSize: .min,
-                    children: [
-                      //TODO stories
-                      BlocProvider.value(
-                        value: DependencyInjection.getIt<ActiveOrdersCubit>(),
-                        child: ActiveOrdersWidget(),
-                      ),
-                      ListView.separated(
-                        padding: .zero,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: cubit.bakeries.length,
-                        separatorBuilder: (_, index) {
-                          return SizedBox();
+              return Padding(
+                padding: .only(top: 200),
+                child: Column(
+                  children: [
+                    //Todo stories
+                    BlocProvider.value(
+                      value: DependencyInjection.getIt<ActiveOrdersCubit>(),
+                      child: ActiveOrdersWidget(),
+                    ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        edgeOffset: 0,
+                        strokeWidth: 2,
+                        displacement: 20,
+                        elevation: 0,
+                        color: ThemingColors.primaryColor,
+                        backgroundColor: Colors.transparent,
+                        onRefresh: () async {
+                          cubit.setRefresh(true);
+                          await cubit.getHomeData(isRefreshing: true);
+                          cubit.setRefresh(false);
                         },
-                        itemBuilder: (_, index) {
-                          final HomeDataBakeriesModel bakery =
-                              cubit.bakeries[index];
-                          return BakeryListTile(bakery: bakery);
-                        },
+                        child: ListView.builder(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          padding: .only(
+                            top: cubit.refreshStatus ? 30 : 0,
+                            bottom: 120,
+                          ),
+                          itemCount: cubit.bakeries.length,
+                          itemBuilder: (_, index) {
+                            final HomeDataBakeriesModel bakery = cubit.bakeries[index];
+                            return BakeryListTile(bakery: bakery);
+                          },
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             } else if (homeDataState is HomeDataInitial) {

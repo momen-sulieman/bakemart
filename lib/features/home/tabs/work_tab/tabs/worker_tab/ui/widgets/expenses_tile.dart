@@ -436,7 +436,7 @@ class ExpensesTile extends StatelessWidget {
               mainAxisAlignment: .start,
               children: [
                 Text(
-                  "wastes".tr(),
+                  "wastage".tr(),
                   style: TextStyle(fontWeight: .bold, fontSize: 18),
                 ),
                 Spacer(),

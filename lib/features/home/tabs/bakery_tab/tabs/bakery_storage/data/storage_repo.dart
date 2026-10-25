@@ -17,7 +17,8 @@ class StorageRepo {
       await _supabase
           .from(Tables.storages)
           .update(updatedStorage.toJson())
-          .eq(StoragesTableColumns.bakeryId, updatedStorage.bakeryId);
+          .eq(StoragesTableColumns.bakeryId, updatedStorage.bakeryId)
+          .eq(StoragesTableColumns.branchId, updatedStorage.branchId);
       return SuccessResponse(true);
     } catch (error) {
       return FailureResponse(error.toString());

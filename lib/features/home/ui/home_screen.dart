@@ -76,10 +76,10 @@ class HomeScreen extends StatelessWidget {
                     backgroundColor: context.isDark
                         ? ThemingColors.black.withAlpha((0.5 * 255).toInt())
                         : ThemingColors.white.withAlpha((0.5 * 255).toInt()),
-                    borderWidth: 0.25,
+                    borderWidth: 2,
                     borderColor: context.isDark
-                        ? ThemingColors.white.withAlpha((0.7 * 255).toInt())
-                        : ThemingColors.black,
+                        ? ThemingColors.white.withAlpha((0.1 * 255).toInt())
+                        : ThemingColors.black.withAlpha((0.15 * 255).toInt()),
                     selectedItemColor: Colors.transparent,
                     selectedLabelColor: ThemingColors.primaryColor,
                     splashColor: Colors.transparent,

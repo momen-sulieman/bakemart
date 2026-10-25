@@ -67,7 +67,7 @@ class StatusTabScreen extends StatelessWidget {
                 border: Border(
                   bottom: BorderSide(
                     color: ThemingColors.primaryColor.withAlpha(
-                      (0.15 * 255).toInt(),
+                      (0.3 * 255).toInt(),
                     ),
                     width: 5,
                   ),

@@ -81,8 +81,8 @@ class BakeryListTile extends StatelessWidget {
                                 ? ThemingColors.white.withAlpha(
                                     (0.5 * 255).toInt(),
                                   )
-                                : ThemingColors.white.withAlpha(
-                                    (0.5 * 255).toInt(),
+                                : ThemingColors.black.withAlpha(
+                                    (0.4 * 255).toInt(),
                                   ),
                           ),
                         ),
@@ -94,8 +94,8 @@ class BakeryListTile extends StatelessWidget {
                                 ? ThemingColors.white.withAlpha(
                                     (0.5 * 255).toInt(),
                                   )
-                                : ThemingColors.white.withAlpha(
-                                    (0.5 * 255).toInt(),
+                                : ThemingColors.black.withAlpha(
+                                    (0.4 * 255).toInt(),
                                   ),
                           ),
                         ),

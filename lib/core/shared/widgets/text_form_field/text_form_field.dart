@@ -10,7 +10,9 @@ class CustomTextFormField extends StatelessWidget {
   final double? labelSize;
   final IconData? prefixIcon;
   final Widget? suffixIcon;
+  final EdgeInsetsGeometry? contentPadding;
   final bool obscurity,
+      isDense,
       validate,
       emailValidation,
       passwordValidation,
@@ -31,7 +33,7 @@ class CustomTextFormField extends StatelessWidget {
     this.title, {
     required this.controller,
     this.hint,
-    this.labelSize=12,
+    this.labelSize = 12,
     this.prefixIcon,
     this.suffixIcon,
     this.validate = false,
@@ -50,6 +52,8 @@ class CustomTextFormField extends StatelessWidget {
     this.capitalization = TextCapitalization.none,
     this.onChanged,
     this.errorText,
+    this.isDense = false,
+    this.contentPadding,
     super.key,
   });
 
@@ -90,7 +94,7 @@ class CustomTextFormField extends StatelessWidget {
     return TextFormField(
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       controller: controller,
-
+      cursorHeight: 10,
       validator: validate
           ? (value) {
               if (value == null || value.trim().isEmpty) {
@@ -126,8 +130,10 @@ class CustomTextFormField extends StatelessWidget {
           : ThemingColors.black.withAlpha((0.6 * 255).toInt()),
       textCapitalization: capitalization,
       keyboardType: isPhone ? TextInputType.phone : keyBoardType,
-      style: const TextStyle(fontSize: 13),
+      style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
+        isDense: isDense,
+        contentPadding: contentPadding,
         hintText: hint,
         errorText: errorText,
         hintStyle: TextStyle(

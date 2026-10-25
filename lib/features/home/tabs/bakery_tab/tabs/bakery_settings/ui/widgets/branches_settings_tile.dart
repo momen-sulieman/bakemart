@@ -515,6 +515,7 @@ class BranchesSettingsTile extends StatelessWidget {
                             cubit.setbranchNameExists(false);
                             showDialog(
                               barrierColor:Colors.transparent,
+                              barrierDismissible: false,
                               context: context,
                               builder: (dialogContext) {
                                 final TextEditingController branchNameController =
@@ -609,39 +610,41 @@ class BranchesSettingsTile extends StatelessWidget {
                                                   ),
                                                 ],
                                               ),
-                                              SizedBox(
-                                                width: double.maxFinite,
-                                                child: Container(
-                                                  height: screenHeight * 0.4,
-                                                  width: double.infinity,
-                                                  margin: .only(
-                                                    top: 20,
-                                                    bottom: 20,
-                                                  ),
-                                                  clipBehavior: Clip.hardEdge,
-                                                  decoration: BoxDecoration(
-                                                    color: ThemingColors
-                                                        .primaryColor
-                                                        .withAlpha(
-                                                          (0.2 * 255).toInt(),
-                                                        ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(20),
-                                                  ),
-                                                  child: LocationPickerMap.setter(
-                                                    initialLat: initialLat,
-                                                    initialLng: initialLng,
-                                                    deviceLat: liveLat,
-                                                    deviceLng: liveLng,
-                                                    alwaysShow: false,
-                                                    alwaysShowPin: true,
-                                                    independentButtons: true,
-                                                    onSet: (lat, lng) {
-                                                      cubit.setNewBranchLocation(
-                                                        lat: lat,
-                                                        lng: lng,
-                                                      );
-                                                    },
+                                              Flexible(
+                                                child: SizedBox(
+                                                  width: double.maxFinite,
+                                                  child: Container(
+                                                    height: screenHeight * 0.4,
+                                                    width: double.infinity,
+                                                    margin: .only(
+                                                      top: 20,
+                                                      bottom: 20,
+                                                    ),
+                                                    clipBehavior: Clip.hardEdge,
+                                                    decoration: BoxDecoration(
+                                                      color: ThemingColors
+                                                          .primaryColor
+                                                          .withAlpha(
+                                                            (0.2 * 255).toInt(),
+                                                          ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(20),
+                                                    ),
+                                                    child: LocationPickerMap.setter(
+                                                      initialLat: initialLat,
+                                                      initialLng: initialLng,
+                                                      deviceLat: liveLat,
+                                                      deviceLng: liveLng,
+                                                      alwaysShow: false,
+                                                      alwaysShowPin: true,
+                                                      independentButtons: true,
+                                                      onSet: (lat, lng) {
+                                                        cubit.setNewBranchLocation(
+                                                          lat: lat,
+                                                          lng: lng,
+                                                        );
+                                                      },
+                                                    ),
                                                   ),
                                                 ),
                                               ),

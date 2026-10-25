@@ -201,10 +201,10 @@ class ExpensesTile extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: .circular(20),
                     side: BorderSide(
-                      width: 0.2,
+                      width: 1,
                       color: context.isDark
-                          ? ThemingColors.white
-                          : ThemingColors.black,
+                          ? ThemingColors.white.withAlpha((0.2*255).toInt())
+                          : ThemingColors.black.withAlpha((0.2*255).toInt()),
                     ),
                   ),
                   backgroundColor: context.isDark
@@ -212,17 +212,17 @@ class ExpensesTile extends StatelessWidget {
                       : ThemingColors.black.withAlpha((0.1 * 255).toInt()),
                   title: Container(
                     margin: .only(top: 15, right: 25, left: 25),
-                    padding: .symmetric(vertical: 5),
+                    padding: .symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: context.isDark
-                          ? ThemingColors.black.withAlpha((0.4 * 255).toInt())
+                          ? ThemingColors.black.withAlpha((0.7 * 255).toInt())
                           : ThemingColors.white.withAlpha((0.4 * 255).toInt()),
                       border: .all(
-                        width: 0.2,
+                        width: 1,
                         color: context.isDark
-                            ? ThemingColors.white
-                            : ThemingColors.black,
+                            ? ThemingColors.white.withAlpha((0.2*255).toInt())
+                            : ThemingColors.black.withAlpha((0.2*255).toInt()),
                       ),
                     ),
                     child: Text("sideExpenses".tr(), textAlign: .center),
@@ -234,13 +234,13 @@ class ExpensesTile extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: context.isDark
-                            ? ThemingColors.black.withAlpha((0.4 * 255).toInt())
+                            ? ThemingColors.black.withAlpha((0.7 * 255).toInt())
                             : ThemingColors.white.withAlpha((0.4 * 255).toInt()),
                         border: .all(
-                          width: 0.2,
+                          width: 1,
                           color: context.isDark
-                              ? ThemingColors.white
-                              : ThemingColors.black,
+                              ? ThemingColors.white.withAlpha((0.2*255).toInt())
+                              : ThemingColors.black.withAlpha((0.2*255).toInt()),
                         ),
                       ),
                       child: ConstrainedBox(
@@ -259,6 +259,8 @@ class ExpensesTile extends StatelessWidget {
                                       Expanded(
                                         child: CustomTextFormField(
                                           "item".tr(),
+                                          isDense: true,
+                                          contentPadding: .all(10),
                                           controller: itemControllers[index],
                                           keyBoardType: TextInputType.text,
                                           labelSize: 12,
@@ -277,6 +279,8 @@ class ExpensesTile extends StatelessWidget {
                                         width: 90,
                                         child: CustomTextFormField(
                                           "value".tr(),
+                                          isDense: true,
+                                          contentPadding: .all(10),
                                           controller: valueControllers[index],
                                           keyBoardType:
                                           TextInputType.numberWithOptions(

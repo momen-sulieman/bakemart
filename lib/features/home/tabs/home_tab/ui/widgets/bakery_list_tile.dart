@@ -11,45 +11,60 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/routing/app_routes.dart';
 import '../../../../../../core/shared/cubits/location_cubit/location_cubit.dart';
 import '../../../../../../core/shared/cubits/location_cubit/location_state.dart';
+import '../../../../../../core/shared/models/bakery_model.dart';
 import '../../../../../../core/shared/widgets/location_picker_map/location_picker_map.dart';
 import '../../../../../../core/theming/theming_colors.dart';
 import '../../../../../../core/utils/enums/buckts.dart';
 
 class BakeryListTile extends StatelessWidget {
+  final int? numberOfBranches;
   final HomeDataBakeriesModel bakery;
+  final VoidCallback? onTap;
+  final List<BakeryModel> branches;
 
-  const BakeryListTile({required this.bakery, super.key});
+  const BakeryListTile({
+    required this.bakery,
+    this.numberOfBranches,
+    this.onTap,
+    this.branches = const [],
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRoutes.bakeryDetails.route,
-          arguments: bakery,
-        );
-      },
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap:
+      onTap ??
+              () {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.bakeryDetails.route,
+              arguments: bakery,
+            );
+          },
       child: GlassCard(
         margin: .symmetric(horizontal: 25, vertical: 8),
         padding: .only(top: 10, bottom: 10, left: 15, right: 5),
         radius: 50,
-        otherRadius: 10,
+        otherRadius:numberOfBranches==null? 10:50,
         child: Directionality(
           textDirection: ui.TextDirection.ltr,
           child: Row(
             children: [
               Container(
-                width: 75,
-                height: 75,
+                width:75,
+                height:75,
                 margin: .only(right: 20),
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   borderRadius: .only(
                     topLeft: .circular(35),
-                    topRight: .circular(5),
+                    topRight: .circular(numberOfBranches==null?5:35),
                     bottomRight: .circular(35),
-                    bottomLeft: .circular(5),
+                    bottomLeft: .circular(numberOfBranches==null?5:35),
                   ),
                   color: ThemingColors.primaryColor.withAlpha(
                     (0.2 * 255).toInt(),
@@ -69,12 +84,14 @@ class BakeryListTile extends StatelessWidget {
                   children: [
                     Text(
                       bakery.bakeryModel.bakeryName,
-                      style: TextStyle(fontSize: 15,fontWeight: .bold),
+                      style: TextStyle(fontSize: 15, fontWeight: .bold),
                     ),
                     Row(
                       children: [
                         Text(
-                          "branch".tr(),
+                          numberOfBranches == null
+                              ? "branch".tr()
+                              : "branches".tr(),
                           style: TextStyle(
                             fontSize: 11,
                             color: context.isDark
@@ -99,21 +116,23 @@ class BakeryListTile extends StatelessWidget {
                                   ),
                           ),
                         ),
-                        SizedBox(width: 5,),
-                        Flexible(
-                          child: Padding(
-                            padding: .only(right: 10),
-                            child: Text(bakery.bakeryModel.branchName,
-                              overflow: .ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 11,
-                              ),),
-                          ),
-                        ),
+                        SizedBox(width: 5),
+                        numberOfBranches == null
+                            ? Flexible(
+                                child: Padding(
+                                  padding: .only(right: 10),
+                                  child: Text(
+                                    bakery.bakeryModel.branchName,
+                                    overflow: .ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(fontSize: 11),
+                                  ),
+                                ),
+                              )
+                            : Text("$numberOfBranches"),
                       ],
                     ),
-                    Padding(
+                    if(numberOfBranches==null)Padding(
                       padding: .symmetric(vertical: 7),
                       child: Row(
                         children: [
@@ -235,6 +254,26 @@ class BakeryListTile extends StatelessWidget {
                   highlightColor: Colors.transparent,
                   onTap: () {
                     final locationCubit = context.read<LocationCubit>();
+                    final bool isMulti = numberOfBranches != null && branches.isNotEmpty;
+                    final List<MapMarkerData> mapMarkers = isMulti
+                        ? branches
+                        .map(
+                          (branch) => MapMarkerData(
+                        lat: branch.bakeryLat,
+                        lng: branch.bakeryLng,
+                        icon: Icons.location_pin,
+                        color: ThemingColors.black,
+                      ),
+                    )
+                        .toList()
+                        : [
+                      MapMarkerData(
+                        lat: bakery.bakeryModel.bakeryLat,
+                        lng: bakery.bakeryModel.bakeryLng,
+                        icon: Icons.location_pin,
+                        color: ThemingColors.black,
+                      ),
+                    ];
                     showDialog(
                       context: context,
                       barrierColor: context.isDark
@@ -245,29 +284,26 @@ class BakeryListTile extends StatelessWidget {
                           value: locationCubit,
                           child: BlocBuilder<LocationCubit, LocationState>(
                             builder: (context, locationState) {
-                              final double? liveLat =
-                                  locationState is LocationUpdated
+                              final double? liveLat = locationState is LocationUpdated
                                   ? locationState.lat
                                   : null;
-                              final double? liveLng =
-                                  locationState is LocationUpdated
+                              final double? liveLng = locationState is LocationUpdated
                                   ? locationState.lng
                                   : null;
                               return Material(
                                 color: Colors.transparent,
                                 child: BackdropFilter(
-                                  filter: .blur(sigmaX: 5, sigmaY: 5),
+                                  filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                                   child: Directionality(
                                     textDirection: ui.TextDirection.ltr,
                                     child: Column(
-                                      mainAxisAlignment: .center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Row(
-                                          mainAxisAlignment: .end,
+                                          mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
                                             TransparentButton(
-                                              onTap: () =>
-                                                  Navigator.pop(context),
+                                              onTap: () => Navigator.pop(context),
                                               icon: Icons.close,
                                               color: Colors.redAccent,
                                               size: 20,
@@ -275,37 +311,20 @@ class BakeryListTile extends StatelessWidget {
                                           ],
                                         ),
                                         Dialog(
-                                          insetPadding: const EdgeInsets.all(
-                                            20,
-                                          ),
+                                          insetPadding: const EdgeInsets.all(20),
                                           backgroundColor: Colors.transparent,
                                           child: SizedBox(
-                                            height:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.height *
-                                                0.6,
+                                            height: MediaQuery.of(context).size.height * 0.6,
                                             child: LocationPickerMap.viewer(
-                                              initialLat:
-                                                  liveLat ??
-                                                  bakery.bakeryModel.bakeryLat,
-                                              initialLng:
-                                                  liveLng ??
-                                                  bakery.bakeryModel.bakeryLng,
+                                              initialLat: isMulti
+                                                  ? bakery.bakeryModel.bakeryLat
+                                                  : liveLat ?? bakery.bakeryModel.bakeryLat,
+                                              initialLng: isMulti
+                                                  ? bakery.bakeryModel.bakeryLng
+                                                  : liveLng ?? bakery.bakeryModel.bakeryLng,
                                               deviceLat: liveLat,
                                               deviceLng: liveLng,
-                                              markers: [
-                                                MapMarkerData(
-                                                  lat: bakery
-                                                      .bakeryModel
-                                                      .bakeryLat,
-                                                  lng: bakery
-                                                      .bakeryModel
-                                                      .bakeryLng,
-                                                  icon: Icons.location_pin,
-                                                  color: ThemingColors.black,
-                                                ),
-                                              ],
+                                              markers: mapMarkers,
                                             ),
                                           ),
                                         ),
@@ -321,9 +340,9 @@ class BakeryListTile extends StatelessWidget {
                     );
                   },
                   child: Icon(
-                    Icons.location_pin,
+                    numberOfBranches==null?Icons.location_pin:Icons.map_outlined,
                     color: ThemingColors.primaryColor,
-                    size: 33,
+                    size:numberOfBranches==null? 33:25,
                   ),
                 ),
               ),

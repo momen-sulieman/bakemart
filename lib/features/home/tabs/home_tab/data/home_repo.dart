@@ -99,7 +99,29 @@ class HomeRepo {
     }
   }
 
-  Future<ResponseResult<List<HomeDataBakeriesModel>>> getBakeries() async {
+  Future<ResponseResult<List<ProductModel>>> getBranchProducts({
+    required String bakeryId,
+    required String branchId,
+  }) async {
+    try {
+      final List<dynamic> response = await _supabase
+          .from(Tables.products)
+          .select()
+          .eq(ProductsTableColumns.bakeryId, bakeryId)
+          .eq(ProductsTableColumns.branchId, branchId);
+      return SuccessResponse<List<ProductModel>>(
+        response.map((product) => ProductModel.fromJson(product)).toList(),
+      );
+    } catch (error) {
+      return FailureResponse(error.toString());
+    }
+  }
+  Future<
+    ResponseResult<
+      ({List<HomeDataBakeriesModel> homeData, List<BakeryModel> allBakeries})
+    >
+  >
+  getBakeries() async {
     try {
       final location = await _locationServices.getCurrentLocation();
       final List<dynamic> bakeriesResponse = await _supabase
@@ -132,7 +154,9 @@ class HomeRepo {
           .map((entry) => entry.key)
           .toList();
 
-      if (nearbyBakeries.isEmpty) return SuccessResponse([]);
+      if (nearbyBakeries.isEmpty) {
+        return SuccessResponse((homeData: [], allBakeries: allBakeries));
+      }
 
       final List<String> nearbyBakeryIds = nearbyBakeries
           .map((bakery) => bakery.bakeryId)
@@ -160,7 +184,7 @@ class HomeRepo {
         );
       }).toList();
 
-      return SuccessResponse(homeData);
+      return SuccessResponse((homeData: homeData, allBakeries: allBakeries));
     } catch (error) {
       return FailureResponse(error.toString());
     }

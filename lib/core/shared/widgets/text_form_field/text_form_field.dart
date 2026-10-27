@@ -18,7 +18,8 @@ class CustomTextFormField extends StatelessWidget {
       passwordValidation,
       passwordMatch,
       auth,
-      isPhone;
+      isPhone,
+      autofocus;
   final String selectedCountryCode;
   final List<String> availableCountryCodes;
   final ValueChanged<String?>? onCountryChanged;
@@ -33,7 +34,7 @@ class CustomTextFormField extends StatelessWidget {
     this.title, {
     required this.controller,
     this.hint,
-    this.labelSize = 12,
+    this.labelSize = 13,
     this.prefixIcon,
     this.suffixIcon,
     this.validate = false,
@@ -54,6 +55,7 @@ class CustomTextFormField extends StatelessWidget {
     this.errorText,
     this.isDense = false,
     this.contentPadding,
+    this.autofocus = false,
     super.key,
   });
 
@@ -94,7 +96,8 @@ class CustomTextFormField extends StatelessWidget {
     return TextFormField(
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       controller: controller,
-      cursorHeight: 10,
+      cursorHeight: 12,
+      autofocus: autofocus,
       validator: validate
           ? (value) {
               if (value == null || value.trim().isEmpty) {
@@ -137,14 +140,14 @@ class CustomTextFormField extends StatelessWidget {
         hintText: hint,
         errorText: errorText,
         hintStyle: TextStyle(
-          fontSize: 12,
+          fontSize: 14,
           color: context.isDark
               ? auth
                     ? ThemingColors.white.withAlpha((0.3 * 255).toInt())
-                    : ThemingColors.white
+                    : ThemingColors.white.withAlpha((0.3 * 255).toInt())
               : auth
               ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-              : ThemingColors.black,
+              : ThemingColors.black.withAlpha((0.3 * 255).toInt()),
         ),
         filled: true,
         fillColor: context.isDark
@@ -152,7 +155,7 @@ class CustomTextFormField extends StatelessWidget {
             : ThemingColors.white.withAlpha((0.6 * 255).toInt()),
         labelText: title,
         labelStyle: TextStyle(
-          fontSize: 12,
+          fontSize: 14,
           color: context.isDark
               ? auth
                     ? Colors.blueGrey
@@ -166,8 +169,8 @@ class CustomTextFormField extends StatelessWidget {
           color: auth
               ? Colors.blueGrey
               : context.isDark
-              ? ThemingColors.white
-              : ThemingColors.black,
+              ? ThemingColors.white.withAlpha((0.8 * 255).toInt())
+              : ThemingColors.black.withAlpha((0.8 * 255).toInt()),
         ),
         prefixIcon: leadingPrefix,
         suffixIcon: suffixIcon,
@@ -176,12 +179,12 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: context.isDark
                 ? auth
-                      ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-                      : ThemingColors.white.withAlpha((0.4 * 255).toInt())
+                      ? Colors.blueGrey.withAlpha((0.3 * 255).toInt())
+                      : ThemingColors.white.withAlpha((0.2 * 255).toInt())
                 : auth
-                ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-                : ThemingColors.black.withAlpha((0.4 * 255).toInt()),
-            width: 0.5,
+                ? Colors.blueGrey.withAlpha((0.3 * 255).toInt())
+                : ThemingColors.black.withAlpha((0.2 * 255).toInt()),
+            width: 1,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
@@ -193,12 +196,12 @@ class CustomTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: context.isDark
                 ? auth
-                      ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-                      : ThemingColors.white.withAlpha((0.4 * 255).toInt())
+                      ? Colors.blueGrey.withAlpha((0.3 * 255).toInt())
+                      : ThemingColors.white.withAlpha((0.2 * 255).toInt())
                 : auth
-                ? Colors.blueGrey.withAlpha((0.5 * 255).toInt())
-                : ThemingColors.black.withAlpha((0.4 * 255).toInt()),
-            width: 0.5,
+                ? Colors.blueGrey.withAlpha((0.3 * 255).toInt())
+                : ThemingColors.black.withAlpha((0.2 * 255).toInt()),
+            width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -207,18 +210,18 @@ class CustomTextFormField extends StatelessWidget {
             color: context.isDark
                 ? auth
                       ? Colors.blueGrey
-                      : ThemingColors.white
+                      : ThemingColors.white.withAlpha((0.8 * 255).toInt())
                 : auth
                 ? Colors.blueGrey
-                : ThemingColors.black,
+                : ThemingColors.black.withAlpha((0.8 * 255).toInt()),
             width: 1,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(
-            color: Colors.redAccent.withAlpha((0.4 * 255).toInt()),
-            width: 0.5,
+            color: Colors.redAccent.withAlpha((0.2 * 255).toInt()),
+            width: 1,
           ),
         ),
         errorStyle: const TextStyle(color: Colors.redAccent),

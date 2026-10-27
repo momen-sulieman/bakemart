@@ -18,6 +18,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:popup_menu/popup_menu.dart';
 import '../../../../../core/routing/app_routes.dart';
 import '../../../../../core/shared/cubits/location_cubit/location_cubit.dart';
+import '../../../../../core/shared/models/bakery_model.dart';
 import '../../../../../core/shared/widgets/cart/logic/cart_cubit/cart_cubit.dart';
 import '../../../../../core/shared/widgets/cart/ui/cart_screen.dart';
 import '../../../../../core/shared/widgets/glass_card/glass_card.dart';
@@ -63,11 +64,7 @@ class HomeTabScreen extends StatelessWidget {
           ),
           image: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: Icon(
-              Icons.edit,
-              size: 16,
-              color: ThemingColors.white,
-            ),
+            child: Icon(Icons.edit, size: 16, color: ThemingColors.white),
           ),
           userInfo: 1,
         ),
@@ -304,7 +301,7 @@ class HomeTabScreen extends StatelessWidget {
                                 return BlocProvider.value(
                                   value: cubit,
                                   child: BackdropFilter(
-                                    filter: .blur(sigmaX: 2, sigmaY: 2),
+                                    filter: .blur(sigmaX: 10, sigmaY: 10),
                                     child: AlertDialog(
                                       contentPadding: .symmetric(
                                         horizontal: 30,
@@ -313,18 +310,22 @@ class HomeTabScreen extends StatelessWidget {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: .circular(20),
                                         side: BorderSide(
-                                          width: 0.2,
+                                          width: 1,
                                           color: context.isDark
-                                              ? ThemingColors.white
-                                              : ThemingColors.black,
+                                              ? ThemingColors.white.withAlpha(
+                                                  (0.2 * 255).toInt(),
+                                                )
+                                              : ThemingColors.black.withAlpha(
+                                                  (0.2 * 255).toInt(),
+                                                ),
                                         ),
                                       ),
                                       backgroundColor: context.isDark
                                           ? ThemingColors.black.withAlpha(
-                                              (0.1 * 255).toInt(),
+                                              (0.2 * 255).toInt(),
                                             )
                                           : ThemingColors.white.withAlpha(
-                                              (0.1 * 255).toInt(),
+                                              (0.2 * 255).toInt(),
                                             ),
                                       title: Text(
                                         "changeYourName".tr(),
@@ -592,28 +593,26 @@ class HomeTabScreen extends StatelessWidget {
                                     building: false,
                                     apartment: false,
                                   );
+                                  final TextEditingController streetController =
+                                      TextEditingController(
+                                        text: cubit.user.street,
+                                      );
+                                  final TextEditingController
+                                  buildingController = TextEditingController(
+                                    text: cubit.user.building,
+                                  );
+                                  final TextEditingController
+                                  apartmentController = TextEditingController(
+                                    text: cubit.user.apartment,
+                                  );
                                   showDialog(
                                     barrierColor: Colors.transparent,
                                     context: context,
                                     builder: (dialogContext) {
-                                      final TextEditingController
-                                      streetController = TextEditingController(
-                                        text: cubit.user.street,
-                                      );
-                                      final TextEditingController
-                                      buildingController =
-                                          TextEditingController(
-                                            text: cubit.user.building,
-                                          );
-                                      final TextEditingController
-                                      apartmentController =
-                                          TextEditingController(
-                                            text: cubit.user.apartment,
-                                          );
                                       return BlocProvider.value(
                                         value: cubit,
                                         child: BackdropFilter(
-                                          filter: .blur(sigmaX: 2, sigmaY: 2),
+                                          filter: .blur(sigmaX: 10, sigmaY: 10),
                                           child: AlertDialog(
                                             contentPadding: .symmetric(
                                               horizontal: 30,
@@ -622,21 +621,27 @@ class HomeTabScreen extends StatelessWidget {
                                             shape: RoundedRectangleBorder(
                                               borderRadius: .circular(20),
                                               side: BorderSide(
-                                                width: 0.2,
+                                                width: 1,
                                                 color: context.isDark
                                                     ? ThemingColors.white
-                                                    : ThemingColors.black,
+                                                          .withAlpha(
+                                                            (0.2 * 255).toInt(),
+                                                          )
+                                                    : ThemingColors.black
+                                                          .withAlpha(
+                                                            (0.2 * 255).toInt(),
+                                                          ),
                                               ),
                                             ),
                                             backgroundColor: context.isDark
                                                 ? ThemingColors.black.withAlpha(
-                                                    (0.1 * 255).toInt(),
+                                                    (0.2 * 255).toInt(),
                                                   )
                                                 : ThemingColors.white.withAlpha(
-                                                    (0.1 * 255).toInt(),
+                                                    (0.2 * 255).toInt(),
                                                   ),
                                             title: Text(
-                                              "changeYourName".tr(),
+                                              "changeYourAddress".tr(),
                                               textAlign: .center,
                                               style: TextStyle(
                                                 fontWeight: .bold,
@@ -1095,7 +1100,10 @@ class HomeTabScreen extends StatelessWidget {
                       hoverColor: Colors.transparent,
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      onTap: () => Scaffold.of(innerContext).openDrawer(),
+                      onTap: () {
+                        cubit.setSearchingMode(false);
+                        Scaffold.of(innerContext).openDrawer();
+                      },
                       child: Container(
                         padding: .all(5),
                         margin: .symmetric(horizontal: 20),
@@ -1153,6 +1161,7 @@ class HomeTabScreen extends StatelessWidget {
         centerTitle: true,
         title: TransparentButton(
           onTap: () {
+            cubit.setSearchingMode(false);
             final cartCubit = context.read<CartCubit>();
             final locationCubit = context.read<LocationCubit>();
             showDialog(
@@ -1196,7 +1205,23 @@ class HomeTabScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          TransparentButton(onTap: () {}, icon: Icons.search, size: 25),
+          TransparentButton(
+            onTap: () {
+              cubit.setSearchingMode(!cubit.searchingMode);
+            },
+            buttonWidget: BlocBuilder<HomeDataCubit, HomeDataState>(
+              builder: (context, state) {
+                return Icon(
+                  cubit.searchingMode ? Icons.search_off : Icons.search,
+                  color: cubit.searchingMode
+                      ? null
+                      : ThemingColors.primaryColor,
+                  fontWeight: .bold,
+                );
+              },
+            ),
+            size: 25,
+          ),
         ],
       ),
       body: Container(
@@ -1256,7 +1281,10 @@ class HomeTabScreen extends StatelessWidget {
                 ),
               );
             } else if (homeDataState is HomeDataSuccess) {
-              if (cubit.bakeries.isEmpty) {
+              if (cubit.searchingMode) {
+                return const _SearchView();
+              }
+              if (cubit.nearbyBakeries.isEmpty) {
                 return Center(
                   child: InkWell(
                     hoverColor: Colors.transparent,
@@ -1324,9 +1352,10 @@ class HomeTabScreen extends StatelessWidget {
                             top: cubit.refreshStatus ? 30 : 0,
                             bottom: 120,
                           ),
-                          itemCount: cubit.bakeries.length,
+                          itemCount: cubit.nearbyBakeries.length,
                           itemBuilder: (_, index) {
-                            final HomeDataBakeriesModel bakery = cubit.bakeries[index];
+                            final HomeDataBakeriesModel bakery =
+                                cubit.nearbyBakeries[index];
                             return BakeryListTile(bakery: bakery);
                           },
                         ),
@@ -1347,6 +1376,272 @@ class HomeTabScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class _SearchView extends StatelessWidget {
+  const _SearchView();
+
+  void _showBranchesDialog(
+    BuildContext context,
+    HomeDataCubit cubit,
+    HomeDataBakeriesModel item,
+  ) {
+    final NavigatorState navigator = Navigator.of(context);
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: cubit,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: AlertDialog(
+              titlePadding: const EdgeInsets.only(top: 25, left: 25, right: 25),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 25,
+                vertical: 50,
+              ),
+              actionsPadding: const EdgeInsets.only(
+                bottom: 25,
+                left: 25,
+                right: 25,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  width: 1,
+                  color: context.isDark
+                      ? ThemingColors.white.withAlpha((0.2 * 255).toInt())
+                      : ThemingColors.black.withAlpha((0.2 * 255).toInt()),
+                ),
+              ),
+              backgroundColor: context.isDark
+                  ? ThemingColors.black.withAlpha((0.9 * 255).toInt())
+                  : ThemingColors.white.withAlpha((0.7 * 255).toInt()),
+              title: Text(
+                item.bakeryModel.bakeryName,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: BlocBuilder<HomeDataCubit, HomeDataState>(
+                  builder: (context, state) {
+                    final List<BakeryModel> branches = cubit.branchesOf(
+                      item.bakeryModel.bakeryId,
+                    );
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: branches.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (_, index) {
+                        final BakeryModel branch = branches[index];
+                        final bool isLoading =
+                            cubit.loadingBranchId == branch.branchId;
+                        return InkWell(
+                          hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () async {
+                            final HomeDataBakeriesModel? details = await cubit
+                                .getBranchDetails(branch);
+                            if (details == null || !dialogContext.mounted) {
+                              return;
+                            }
+                            Navigator.pop(dialogContext);
+                            navigator.pushNamed(
+                              AppRoutes.bakeryDetails.route,
+                              arguments: details,
+                            );
+                          },
+                          child: GlassCard(
+                            margin: .symmetric(horizontal: 30),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            otherRadius: 30,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    branch.branchName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                isLoading
+                                    ? LoadingAnimationWidget.staggeredDotsWave(
+                                        color: ThemingColors.primaryColor,
+                                        size: 18,
+                                      )
+                                    : Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 14,
+                                        color: ThemingColors.primaryColor,
+                                      ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                InkWell(
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    if (cubit.loadingBranchId != null) return;
+                    Navigator.pop(dialogContext);
+                  },
+                  child: GlassCard(
+                    margin: EdgeInsets.zero,
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Center(
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 18,
+                        color: ThemingColors.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<HomeDataCubit>();
+    return BlocBuilder<HomeDataCubit, HomeDataState>(
+      builder: (context, state) {
+        final List<HomeDataBakeriesModel> results = cubit.searchResults;
+        final bool hasQuery = cubit.searchQuery.trim().isNotEmpty;
+        return Padding(
+          padding: const EdgeInsets.only(top: 200),
+          child: Column(
+            children: [
+              Expanded(
+                child: results.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: .center,
+                          children: [
+                            Icon(
+                              Icons.search,
+                              size: 85,
+                              color: hasQuery
+                                  ? Colors.redAccent.withAlpha(
+                                      (0.2 * 255).toInt(),
+                                    )
+                                  : context.isDark
+                                  ? ThemingColors.white.withAlpha(
+                                      (0.1 * 255).toInt(),
+                                    )
+                                  : ThemingColors.black.withAlpha(
+                                      (0.1 * 255).toInt(),
+                                    ),
+                              fontWeight: .bold,
+                            ),
+                            SizedBox(height: 10),
+                            hasQuery
+                                ? Text("noBakeryFound".tr(),style: TextStyle(
+                              color: context.isDark
+                                  ? ThemingColors.white.withAlpha(
+                                (0.5 * 255).toInt(),
+                              )
+                                  : ThemingColors.black.withAlpha(
+                                (0.5 * 255).toInt(),
+                              ),
+                            ),):SizedBox(height: 16,)
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: const EdgeInsets.only(bottom: 20),
+                        itemCount: results.length,
+                        itemBuilder: (_, index) {
+                          final HomeDataBakeriesModel item = results[index];
+                          final int count = cubit.branchesCount(
+                            item.bakeryModel.bakeryId,
+                          );
+                          return BakeryListTile(
+                            bakery: item,
+                            numberOfBranches: count > 1 ? count : null,
+                            branches: count > 1
+                                ? cubit.branchesOf(item.bakeryModel.bakeryId)
+                                : const [],
+                            onTap: count > 1
+                                ? () =>
+                                      _showBranchesDialog(context, cubit, item)
+                                : null,
+                          );
+                        },
+                      ),
+              ),
+              Focus(
+                onFocusChange: cubit.setSearchFocus,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    10,
+                    20,
+                    cubit.isSearchFocused ? 10 : 120,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 45,
+                          child: CustomTextFormField(
+                            "searchForBakery".tr(),
+                            hint: "bakeryName".tr(),
+                            autofocus: true,
+                            controller: cubit.searchController,
+                            keyBoardType: TextInputType.text,
+                            onChanged: cubit.setSearchQuery,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      TransparentButton(
+                        onTap: () {
+                          cubit.setSearchingMode(false);
+                        },
+                        isCircle: true,
+                        icon: Icons.close,
+                        buttonHorizontalPading: 0,
+                        size: 22,
+                        color: Colors.redAccent,
+                        buttonSize: 35,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

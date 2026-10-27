@@ -338,11 +338,11 @@ class WorkerTabScreen extends StatelessWidget {
                                     bottomRight: .circular(5),
                                   )
                                 : .only(
-                              topLeft: .circular(15),
-                              topRight: .circular(5),
-                              bottomRight: .circular(15),
-                              bottomLeft: .circular(5),
-                            ),
+                                    topLeft: .circular(15),
+                                    topRight: .circular(5),
+                                    bottomRight: .circular(15),
+                                    bottomLeft: .circular(5),
+                                  ),
                             child: SupabaseImageProvider(
                               filePath: Buckets.bakeriesImages,
                               fileName: cubit.bakery?.bakeryId,
@@ -354,11 +354,33 @@ class WorkerTabScreen extends StatelessWidget {
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            cubit.bakery?.bakeryName ?? "!!",
-                            maxLines: 1,
-                            overflow: .ellipsis,
-                            style: TextStyle(fontSize: 12, fontWeight: .bold),
+                          child: Row(
+                            children: [
+                              Text(
+                                "${cubit.bakery?.bakeryName ?? "!!"} - ",
+                                maxLines: 1,
+                                overflow: .ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: .bold,
+                                ),
+                              ),
+                              Text(
+                                "${cubit.bakery?.branchName}",
+                                maxLines: 1,
+                                overflow: .ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.isDark
+                                      ? ThemingColors.white.withAlpha(
+                                    (0.4 * 255).toInt(),
+                                  )
+                                      : ThemingColors.black.withAlpha(
+                                    (0.4 * 255).toInt(),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(
@@ -610,8 +632,8 @@ class WorkerTabScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => QrScannerScreen(
-                                          scanningLabel: "scanOrderScanningLabel"
-                                              .tr(),
+                                          scanningLabel:
+                                              "scanOrderScanningLabel".tr(),
                                           onDetect: (code) {
                                             showDialog(
                                               context: context,
@@ -625,7 +647,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                               DeliverySalesCubit
                                                             >()
                                                             ..scanOrders(
-                                                              deliveryManId: code,
+                                                              deliveryManId:
+                                                                  code,
                                                               bakeryId: cubit
                                                                   .bakery!
                                                                   .bakeryId,
@@ -722,7 +745,9 @@ class WorkerTabScreen extends StatelessWidget {
                                                   ),
                                                   child: BlocProvider.value(
                                                     value: context
-                                                        .read<ProductionCubit>(),
+                                                        .read<
+                                                          ProductionCubit
+                                                        >(),
                                                     child:
                                                         BlocBuilder<
                                                           ProductionCubit,
@@ -736,11 +761,15 @@ class WorkerTabScreen extends StatelessWidget {
                                                                 return Container(
                                                                   width: double
                                                                       .infinity,
-                                                                  padding: .only(
-                                                                    bottom: 40,
-                                                                    left: 20,
-                                                                    right: 20,
-                                                                  ),
+                                                                  padding:
+                                                                      .only(
+                                                                        bottom:
+                                                                            40,
+                                                                        left:
+                                                                            20,
+                                                                        right:
+                                                                            20,
+                                                                      ),
                                                                   decoration: BoxDecoration(
                                                                     borderRadius:
                                                                         .circular(
@@ -749,8 +778,7 @@ class WorkerTabScreen extends StatelessWidget {
                                                                     border: Border(
                                                                       top: BorderSide(
                                                                         color:
-                                                                            context
-                                                                                .isDark
+                                                                            context.isDark
                                                                             ? Colors.greenAccent.withAlpha(
                                                                                 (0.2 *
                                                                                         255)
@@ -761,7 +789,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                                         255)
                                                                                     .toInt(),
                                                                               ),
-                                                                        width: 4,
+                                                                        width:
+                                                                            4,
                                                                       ),
                                                                     ),
                                                                     color:
@@ -783,21 +812,20 @@ class WorkerTabScreen extends StatelessWidget {
                                                                         .min,
                                                                     children: [
                                                                       Container(
-                                                                        width: 70,
+                                                                        width:
+                                                                            70,
                                                                         margin: .symmetric(
                                                                           vertical:
                                                                               15,
                                                                         ),
-                                                                        padding:
-                                                                            .only(
-                                                                              top:
-                                                                                  5,
-                                                                            ),
+                                                                        padding: .only(
+                                                                          top:
+                                                                              5,
+                                                                        ),
                                                                         decoration: BoxDecoration(
-                                                                          borderRadius:
-                                                                              .circular(
-                                                                                50,
-                                                                              ),
+                                                                          borderRadius: .circular(
+                                                                            50,
+                                                                          ),
                                                                           color:
                                                                               context.isDark
                                                                               ? Colors.greenAccent.withAlpha(
@@ -815,13 +843,11 @@ class WorkerTabScreen extends StatelessWidget {
                                                                       CircleAvatar(
                                                                         radius:
                                                                             20,
-                                                                        backgroundColor: ThemingColors
-                                                                            .primaryColor
-                                                                            .withAlpha(
-                                                                              (0.3 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            ),
+                                                                        backgroundColor: ThemingColors.primaryColor.withAlpha(
+                                                                          (0.3 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        ),
                                                                         child: ClipOval(
                                                                           child: SupabaseImageProvider(
                                                                             filePath:
@@ -838,7 +864,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                         ),
                                                                       ),
                                                                       SizedBox(
-                                                                        height: 5,
+                                                                        height:
+                                                                            5,
                                                                       ),
                                                                       Text(
                                                                         product
@@ -869,8 +896,7 @@ class WorkerTabScreen extends StatelessWidget {
                                                                           green:
                                                                               true,
                                                                           child: Text(
-                                                                            "productionData"
-                                                                                .tr(),
+                                                                            "productionData".tr(),
                                                                           ),
                                                                         ),
                                                                       ),
@@ -888,10 +914,9 @@ class WorkerTabScreen extends StatelessWidget {
                                                                               15,
                                                                         ),
                                                                         decoration: BoxDecoration(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(
-                                                                                15,
-                                                                              ),
+                                                                          borderRadius: BorderRadius.circular(
+                                                                            15,
+                                                                          ),
                                                                           color:
                                                                               context.isDark
                                                                               ? ThemingColors.black.withAlpha(
@@ -924,8 +949,7 @@ class WorkerTabScreen extends StatelessWidget {
                                                                         child: Column(
                                                                           children: [
                                                                             Row(
-                                                                              mainAxisAlignment:
-                                                                                  .spaceBetween,
+                                                                              mainAxisAlignment: .spaceBetween,
                                                                               children: [
                                                                                 Text(
                                                                                   "numberOfBatches".tr(),
@@ -1006,12 +1030,10 @@ class WorkerTabScreen extends StatelessWidget {
                                                                               ],
                                                                             ),
                                                                             SizedBox(
-                                                                              height:
-                                                                                  10,
+                                                                              height: 10,
                                                                             ),
                                                                             Row(
-                                                                              mainAxisAlignment:
-                                                                                  .spaceBetween,
+                                                                              mainAxisAlignment: .spaceBetween,
                                                                               children: [
                                                                                 Text(
                                                                                   "manufacturingWaste".tr(),
@@ -1078,12 +1100,9 @@ class WorkerTabScreen extends StatelessWidget {
                                                                         Column(
                                                                           children: [
                                                                             GlassCard(
-                                                                              margin:
-                                                                                  .zero,
-                                                                              padding:
-                                                                                  .zero,
-                                                                              green:
-                                                                                  true,
+                                                                              margin: .zero,
+                                                                              padding: .zero,
+                                                                              green: true,
                                                                               child: Row(
                                                                                 mainAxisAlignment: .spaceBetween,
                                                                                 children: [
@@ -1284,8 +1303,7 @@ class WorkerTabScreen extends StatelessWidget {
                                                                                 ],
                                                                               ),
                                                                             ),
-                                                                            if (productionCubit
-                                                                                .addingWorker)
+                                                                            if (productionCubit.addingWorker)
                                                                               Container(
                                                                                 width: double.infinity,
                                                                                 height: 100,
@@ -1552,10 +1570,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                                 ),
                                                                               ),
                                                                             Container(
-                                                                              width:
-                                                                                  double.infinity,
-                                                                              height:
-                                                                                  150,
+                                                                              width: double.infinity,
+                                                                              height: 150,
                                                                               margin: .only(
                                                                                 right: 15,
                                                                                 left: 15,
@@ -1598,8 +1614,7 @@ class WorkerTabScreen extends StatelessWidget {
                                                                                         ),
                                                                                 ),
                                                                               ),
-                                                                              child:
-                                                                                  productionCubit.workersSheet.isEmpty
+                                                                              child: productionCubit.workersSheet.isEmpty
                                                                                   ? productionCubit.addingWorker
                                                                                         ? SizedBox()
                                                                                         : Center(
@@ -1948,11 +1963,13 @@ class WorkerTabScreen extends StatelessWidget {
                                                   color: context.isDark
                                                       ? ThemingColors.black
                                                             .withAlpha(
-                                                              (0.2 * 255).toInt(),
+                                                              (0.2 * 255)
+                                                                  .toInt(),
                                                             )
                                                       : ThemingColors.white
                                                             .withAlpha(
-                                                              (0.6 * 255).toInt(),
+                                                              (0.6 * 255)
+                                                                  .toInt(),
                                                             ),
                                                 ),
                                                 child: Column(
@@ -2049,20 +2066,16 @@ class WorkerTabScreen extends StatelessWidget {
                                                                   color:
                                                                       context
                                                                           .isDark
-                                                                      ? ThemingColors
-                                                                            .black
-                                                                            .withAlpha(
-                                                                              (0.6 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            )
-                                                                      : ThemingColors
-                                                                            .white
-                                                                            .withAlpha(
-                                                                              (0.6 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            ),
+                                                                      ? ThemingColors.black.withAlpha(
+                                                                          (0.6 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        )
+                                                                      : ThemingColors.white.withAlpha(
+                                                                          (0.6 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        ),
                                                                   border: .all(
                                                                     width: 0.3,
                                                                     color:
@@ -2083,11 +2096,10 @@ class WorkerTabScreen extends StatelessWidget {
                                                                 child: Row(
                                                                   children: [
                                                                     Padding(
-                                                                      padding:
-                                                                          .only(
-                                                                            right:
-                                                                                30,
-                                                                          ),
+                                                                      padding: .only(
+                                                                        right:
+                                                                            30,
+                                                                      ),
                                                                       child: TransparentButton(
                                                                         onTap: () {
                                                                           if (counter[0] >=
@@ -2120,7 +2132,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                             0,
                                                                         isCircle:
                                                                             true,
-                                                                        size: 20,
+                                                                        size:
+                                                                            20,
                                                                         buttonSize:
                                                                             30,
                                                                       ),
@@ -2150,21 +2163,16 @@ class WorkerTabScreen extends StatelessWidget {
                                                                       child: Column(
                                                                         children: [
                                                                           Text(
-                                                                            counter[0]
-                                                                                .toString(),
+                                                                            counter[0].toString(),
                                                                             style: TextStyle(
-                                                                              fontSize:
-                                                                                  30,
+                                                                              fontSize: 30,
                                                                             ),
                                                                           ),
                                                                           Text(
-                                                                            "sold"
-                                                                                .tr(),
+                                                                            "sold".tr(),
                                                                             style: TextStyle(
-                                                                              fontSize:
-                                                                                  11,
-                                                                              fontWeight:
-                                                                                  .bold,
+                                                                              fontSize: 11,
+                                                                              fontWeight: .bold,
                                                                             ),
                                                                           ),
                                                                         ],
@@ -2220,7 +2228,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                             0,
                                                                         isCircle:
                                                                             true,
-                                                                        size: 20,
+                                                                        size:
+                                                                            20,
                                                                         buttonSize:
                                                                             30,
                                                                       ),
@@ -2249,20 +2258,16 @@ class WorkerTabScreen extends StatelessWidget {
                                                                   color:
                                                                       context
                                                                           .isDark
-                                                                      ? ThemingColors
-                                                                            .black
-                                                                            .withAlpha(
-                                                                              (0.6 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            )
-                                                                      : ThemingColors
-                                                                            .white
-                                                                            .withAlpha(
-                                                                              (0.6 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            ),
+                                                                      ? ThemingColors.black.withAlpha(
+                                                                          (0.6 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        )
+                                                                      : ThemingColors.white.withAlpha(
+                                                                          (0.6 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        ),
                                                                   border: .all(
                                                                     width: 0.3,
                                                                     color:
@@ -2283,11 +2288,10 @@ class WorkerTabScreen extends StatelessWidget {
                                                                 child: Row(
                                                                   children: [
                                                                     Padding(
-                                                                      padding:
-                                                                          .only(
-                                                                            right:
-                                                                                30,
-                                                                          ),
+                                                                      padding: .only(
+                                                                        right:
+                                                                            30,
+                                                                      ),
                                                                       child: TransparentButton(
                                                                         onTap: () {
                                                                           if (counter[1] >=
@@ -2320,7 +2324,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                             0,
                                                                         isCircle:
                                                                             true,
-                                                                        size: 20,
+                                                                        size:
+                                                                            20,
                                                                         buttonSize:
                                                                             30,
                                                                       ),
@@ -2350,21 +2355,16 @@ class WorkerTabScreen extends StatelessWidget {
                                                                       child: Column(
                                                                         children: [
                                                                           Text(
-                                                                            counter[1]
-                                                                                .toString(),
+                                                                            counter[1].toString(),
                                                                             style: TextStyle(
-                                                                              fontSize:
-                                                                                  30,
+                                                                              fontSize: 30,
                                                                             ),
                                                                           ),
                                                                           Text(
-                                                                            "notSold"
-                                                                                .tr(),
+                                                                            "notSold".tr(),
                                                                             style: TextStyle(
-                                                                              fontSize:
-                                                                                  11,
-                                                                              fontWeight:
-                                                                                  .bold,
+                                                                              fontSize: 11,
+                                                                              fontWeight: .bold,
                                                                             ),
                                                                           ),
                                                                         ],
@@ -2420,7 +2420,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                             0,
                                                                         isCircle:
                                                                             true,
-                                                                        size: 20,
+                                                                        size:
+                                                                            20,
                                                                         buttonSize:
                                                                             30,
                                                                       ),
@@ -2449,20 +2450,16 @@ class WorkerTabScreen extends StatelessWidget {
                                                                   color:
                                                                       context
                                                                           .isDark
-                                                                      ? ThemingColors
-                                                                            .black
-                                                                            .withAlpha(
-                                                                              (0.6 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            )
-                                                                      : ThemingColors
-                                                                            .white
-                                                                            .withAlpha(
-                                                                              (0.6 *
-                                                                                      255)
-                                                                                  .toInt(),
-                                                                            ),
+                                                                      ? ThemingColors.black.withAlpha(
+                                                                          (0.6 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        )
+                                                                      : ThemingColors.white.withAlpha(
+                                                                          (0.6 *
+                                                                                  255)
+                                                                              .toInt(),
+                                                                        ),
                                                                   border: .all(
                                                                     width: 0.3,
                                                                     color:
@@ -2483,11 +2480,10 @@ class WorkerTabScreen extends StatelessWidget {
                                                                 child: Row(
                                                                   children: [
                                                                     Padding(
-                                                                      padding:
-                                                                          .only(
-                                                                            right:
-                                                                                30,
-                                                                          ),
+                                                                      padding: .only(
+                                                                        right:
+                                                                            30,
+                                                                      ),
                                                                       child: TransparentButton(
                                                                         onTap: () {
                                                                           if (counter[2] >=
@@ -2520,7 +2516,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                             0,
                                                                         isCircle:
                                                                             true,
-                                                                        size: 20,
+                                                                        size:
+                                                                            20,
                                                                         buttonSize:
                                                                             30,
                                                                       ),
@@ -2550,21 +2547,16 @@ class WorkerTabScreen extends StatelessWidget {
                                                                       child: Column(
                                                                         children: [
                                                                           Text(
-                                                                            counter[2]
-                                                                                .toString(),
+                                                                            counter[2].toString(),
                                                                             style: TextStyle(
-                                                                              fontSize:
-                                                                                  30,
+                                                                              fontSize: 30,
                                                                             ),
                                                                           ),
                                                                           Text(
-                                                                            "mealExhaustion"
-                                                                                .tr(),
+                                                                            "mealExhaustion".tr(),
                                                                             style: TextStyle(
-                                                                              fontSize:
-                                                                                  11,
-                                                                              fontWeight:
-                                                                                  .bold,
+                                                                              fontSize: 11,
+                                                                              fontWeight: .bold,
                                                                             ),
                                                                           ),
                                                                         ],
@@ -2620,7 +2612,8 @@ class WorkerTabScreen extends StatelessWidget {
                                                                             0,
                                                                         isCircle:
                                                                             true,
-                                                                        size: 20,
+                                                                        size:
+                                                                            20,
                                                                         buttonSize:
                                                                             30,
                                                                       ),
@@ -2654,12 +2647,9 @@ class WorkerTabScreen extends StatelessWidget {
                                                                               counter[2] !=
                                                                                   0)
                                                                           ? InkWell(
-                                                                              hoverColor:
-                                                                                  Colors.transparent,
-                                                                              splashColor:
-                                                                                  Colors.transparent,
-                                                                              highlightColor:
-                                                                                  Colors.transparent,
+                                                                              hoverColor: Colors.transparent,
+                                                                              splashColor: Colors.transparent,
+                                                                              highlightColor: Colors.transparent,
                                                                               onTap: () {
                                                                                 Navigator.pop(
                                                                                   modalBottomSheetContext,

@@ -116,6 +116,7 @@ class HomeRepo {
       return FailureResponse(error.toString());
     }
   }
+
   Future<
     ResponseResult<
       ({List<HomeDataBakeriesModel> homeData, List<BakeryModel> allBakeries})
@@ -165,7 +166,8 @@ class HomeRepo {
       final List<dynamic> productsResponse = await _supabase
           .from(Tables.products)
           .select()
-          .inFilter(ProductsTableColumns.bakeryId, nearbyBakeryIds);
+          .inFilter(ProductsTableColumns.bakeryId, nearbyBakeryIds)
+          .gt(ProductsTableColumns.available, 0);
 
       final List<ProductModel> allProducts = productsResponse
           .map((product) => ProductModel.fromJson(product))

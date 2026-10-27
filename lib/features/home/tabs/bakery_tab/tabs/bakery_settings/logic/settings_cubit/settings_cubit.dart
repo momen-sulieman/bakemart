@@ -164,10 +164,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     _emitSuccess();
   }
 
-  void addProduct(ProductModel product, {File? image}) {
-    editableProducts = [...editableProducts, product];
-    if (image != null && product.productId != null) {
-      pendingProductImages[product.productId!] = image;
+  void addProducts(List<ProductModel> newProducts, {File? image}) {
+    editableProducts = [...editableProducts, ...newProducts];
+    final String? productId = newProducts.firstOrNull?.productId;
+    if (image != null && productId != null) {
+      pendingProductImages[productId] = image;
     }
     isProductsChanged = true;
     _emitSuccess();

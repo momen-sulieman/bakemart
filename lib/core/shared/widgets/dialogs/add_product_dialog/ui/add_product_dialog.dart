@@ -20,6 +20,7 @@ import '../logic/add_product_cubit/add_product_cubit.dart';
 class AddProductDialog extends StatelessWidget {
   const AddProductDialog({
     required this.bakeryId,
+    required this.branchIds,
     required this.onSave,
     this.flourTypes = const [
       StorageItems.wholeWheat,
@@ -35,15 +36,17 @@ class AddProductDialog extends StatelessWidget {
   });
 
   final String bakeryId;
+  final List<String> branchIds;
   final List<String> flourTypes;
   final int initialFlourIndex;
-  final void Function(ProductModel product, File? image) onSave;
+  final void Function(List<ProductModel> products, File? image) onSave;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AddProductCubit(
         bakeryId: bakeryId,
+        branchIds: branchIds,
         flourTypes: flourTypes,
         initialFlourIndex: initialFlourIndex,
         onSave: onSave,
@@ -110,7 +113,7 @@ class _AddProductDialogView extends StatelessWidget {
             : ThemingColors.white.withAlpha((0.2 * 255).toInt()),
         title: _panel(
           context,
-          child:Text("newProduct".tr(), textAlign: TextAlign.center),
+          child: Text("newProduct".tr(), textAlign: TextAlign.center),
         ),
         content: _panel(
           context,
@@ -249,9 +252,12 @@ class _AddProductDialogView extends StatelessWidget {
                             vertical: 5,
                           ),
                           dark: true,
-                          child: Text("recipe".tr(),textDirection: context.locale.languageCode == 'ar'
-                              ? ui.TextDirection.rtl
-                              : ui.TextDirection.ltr,),
+                          child: Text(
+                            "recipe".tr(),
+                            textDirection: context.locale.languageCode == 'ar'
+                                ? ui.TextDirection.rtl
+                                : ui.TextDirection.ltr,
+                          ),
                         ),
                       ),
                     ],
@@ -277,7 +283,10 @@ class _AddProductDialogView extends StatelessWidget {
                     child: Row(
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(left: 10),
+                          padding: EdgeInsets.only(
+                            right: context.locale.languageCode == 'ar' ? 0 : 10,
+                            left: context.locale.languageCode == 'ar' ? 10 : 0,
+                          ),
                           child: Text(
                             "flourType".tr(),
                             style: TextStyle(fontSize: 12),

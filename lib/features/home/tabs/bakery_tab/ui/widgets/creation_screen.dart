@@ -288,18 +288,15 @@ class CreationScreen extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: "${"note".tr()}: ",
-                      style:TextStyle(
-                        fontWeight:
-                        FontWeight.bold,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                         fontSize: 13,
-                        color:context.isDark? Colors.amber:Colors.orange,
+                        color: context.isDark ? Colors.amber : Colors.orange,
                       ),
                     ),
                     TextSpan(
-                        text: "mainBranchNote".tr(),
-                        style: TextStyle(
-                            fontSize: 13
-                        )
+                      text: "mainBranchNote".tr(),
+                      style: TextStyle(fontSize: 13),
                     ),
                   ],
                 ),
@@ -841,10 +838,11 @@ class CreationScreen extends StatelessWidget {
                                     builder: (dialogContext) =>
                                         AddProductDialog(
                                           bakeryId: "",
+                                          branchIds: const [""],
                                           initialFlourIndex: 1,
-                                          onSave: (product, image) =>
+                                          onSave: (products, image) =>
                                               cubit.addProduct(
-                                                product,
+                                                products.first,
                                                 image: image,
                                               ),
                                         ),

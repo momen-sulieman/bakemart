@@ -55,130 +55,140 @@ class ProductsSettingsTile extends StatelessWidget {
                   Spacer(),
                   cubit.isProductsEditing
                       ? Container(
-                    margin: .only(right: 10),
-                    padding: .symmetric(
-                      horizontal: cubit.isProductsChanged ? 15 : 5,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: .circular(50),
-                      border: Border.all(
-                        color: context.isDark
-                            ? Colors.white.withAlpha((0.2 * 255).toInt())
-                            : ThemingColors.black.withAlpha(
-                          (0.2 * 255).toInt(),
-                        ),
-                        width: 0.7,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: context.isDark
-                              ? Colors.white.withAlpha((0.1 * 255).toInt())
-                              : Colors.black.withAlpha((0.1 * 255).toInt()),
-                          blurRadius: 10,
-                          spreadRadius: -2,
-                          offset: Offset(5, -5),
-                        ),
-                        BoxShadow(
-                          color: context.isDark
-                              ? Colors.black.withAlpha((0.4 * 255).toInt())
-                              : Colors.white.withAlpha((0.4 * 255).toInt()),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                          offset: Offset(15, 8),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          hoverColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () {
-                            cubit.productsCancelEditing();
-                          },
-                          child: Icon(
-                            cubit.changedProductPictures.isNotEmpty
-                                ? Icons.done
-                                : Icons.close,
-                            size: 18,
-                            color: cubit.changedProductPictures.isNotEmpty
-                                ? Colors.green
-                                : Colors.redAccent,
+                          margin: .only(right: 10),
+                          padding: .symmetric(
+                            horizontal: cubit.isProductsChanged ? 15 : 5,
+                            vertical: 5,
                           ),
-                        ),
-                        if (cubit.isProductsChanged)
-                          SizedBox(
-                            height: 17,
-                            width: 35,
-                            child: Center(
-                              child: Container(
-                                width: 1,
+                          decoration: BoxDecoration(
+                            borderRadius: .circular(50),
+                            border: Border.all(
+                              color: context.isDark
+                                  ? Colors.white.withAlpha((0.2 * 255).toInt())
+                                  : ThemingColors.black.withAlpha(
+                                      (0.2 * 255).toInt(),
+                                    ),
+                              width: 0.7,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
                                 color: context.isDark
-                                    ? ThemingColors.white.withAlpha(
-                                  (0.4 * 255).toInt(),
-                                )
-                                    : ThemingColors.black.withAlpha(
-                                  (0.2 * 255).toInt(),
+                                    ? Colors.white.withAlpha(
+                                        (0.1 * 255).toInt(),
+                                      )
+                                    : Colors.black.withAlpha(
+                                        (0.1 * 255).toInt(),
+                                      ),
+                                blurRadius: 10,
+                                spreadRadius: -2,
+                                offset: Offset(5, -5),
+                              ),
+                              BoxShadow(
+                                color: context.isDark
+                                    ? Colors.black.withAlpha(
+                                        (0.4 * 255).toInt(),
+                                      )
+                                    : Colors.white.withAlpha(
+                                        (0.4 * 255).toInt(),
+                                      ),
+                                blurRadius: 20,
+                                spreadRadius: 2,
+                                offset: Offset(15, 8),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              InkWell(
+                                hoverColor: Colors.transparent,
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () {
+                                  cubit.productsCancelEditing();
+                                },
+                                child: Icon(
+                                  cubit.changedProductPictures.isNotEmpty
+                                      ? Icons.done
+                                      : Icons.close,
+                                  size: 18,
+                                  color: cubit.changedProductPictures.isNotEmpty
+                                      ? Colors.green
+                                      : Colors.redAccent,
                                 ),
                               ),
-                            ),
-                          ),
-                        if (cubit.isProductsChanged)
-                          InkWell(
-                            hoverColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () {},
-                            child:
-                            BlocBuilder<
-                                SettingsUpdateCubit,
-                                SettingsUpdateState
-                            >(
-                              builder: (context, updateState) {
-                                final updateCubit = context
-                                    .read<SettingsUpdateCubit>();
-                                return SizedBox(
-                                  width: 18,
-                                  child:
-                                  (updateState
-                                  is SettingsUpdateInitial)
-                                      ? InkWell(
-                                    onTap: () async {
-                                      await updateCubit
-                                          .updateProducts(
-                                        cubit
-                                            .editableProducts,
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.done,
-                                      size: 18,
-                                      color: Colors.green,
+                              if (cubit.isProductsChanged)
+                                SizedBox(
+                                  height: 17,
+                                  width: 35,
+                                  child: Center(
+                                    child: Container(
+                                      width: 1,
+                                      color: context.isDark
+                                          ? ThemingColors.white.withAlpha(
+                                              (0.4 * 255).toInt(),
+                                            )
+                                          : ThemingColors.black.withAlpha(
+                                              (0.2 * 255).toInt(),
+                                            ),
                                     ),
-                                  )
-                                      : LoadingAnimationWidget.staggeredDotsWave(
-                                    color: Colors.green,
-                                    size: 13,
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              if (cubit.isProductsChanged)
+                                InkWell(
+                                  hoverColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () {},
+                                  child:
+                                      BlocBuilder<
+                                        SettingsUpdateCubit,
+                                        SettingsUpdateState
+                                      >(
+                                        builder: (context, updateState) {
+                                          final updateCubit = context
+                                              .read<SettingsUpdateCubit>();
+                                          return SizedBox(
+                                            width: 18,
+                                            child:
+                                                (updateState
+                                                    is SettingsUpdateInitial)
+                                                ? InkWell(
+                                                    onTap: () async {
+                                                      await updateCubit
+                                                          .updateProducts(
+                                                            cubit
+                                                                .editableProducts,
+                                                          );
+                                                    },
+                                                    child: Icon(
+                                                      Icons.done,
+                                                      size: 18,
+                                                      color: Colors.green,
+                                                    ),
+                                                  )
+                                                : LoadingAnimationWidget.staggeredDotsWave(
+                                                    color: Colors.green,
+                                                    size: 13,
+                                                  ),
+                                          );
+                                        },
+                                      ),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
-                  )
+                        )
                       : cubit.isProductsExpanded
                       ? Padding(
-                    padding: .only(right: 10),
-                    child: InkWell(
-                      onTap: () {
-                        cubit.productsEditingMode(!cubit.isProductsEditing);
-                      },
-                      child: Icon(Icons.edit),
-                    ),
-                  )
+                          padding: .only(right: 10),
+                          child: InkWell(
+                            onTap: () {
+                              cubit.productsEditingMode(
+                                !cubit.isProductsEditing,
+                              );
+                            },
+                            child: Icon(Icons.edit),
+                          ),
+                        )
                       : SizedBox(),
                 ],
               ),
@@ -231,7 +241,10 @@ class ProductsSettingsTile extends StatelessWidget {
                               ),
                               children: [
                                 Padding(
-                                  padding: .symmetric(vertical: 7, horizontal: 10),
+                                  padding: .symmetric(
+                                    vertical: 7,
+                                    horizontal: 10,
+                                  ),
                                   child: TextCell(
                                     string: Text(
                                       "product".tr(),
@@ -240,11 +253,11 @@ class ProductsSettingsTile extends StatelessWidget {
                                         fontWeight: .bold,
                                         color: context.isDark
                                             ? ThemingColors.white.withAlpha(
-                                          (0.3 * 255).toInt(),
-                                        )
+                                                (0.3 * 255).toInt(),
+                                              )
                                             : ThemingColors.black.withAlpha(
-                                          (0.3 * 255).toInt(),
-                                        ),
+                                                (0.3 * 255).toInt(),
+                                              ),
                                       ),
                                     ),
                                   ),
@@ -261,11 +274,11 @@ class ProductsSettingsTile extends StatelessWidget {
                                             fontWeight: .bold,
                                             color: context.isDark
                                                 ? ThemingColors.white.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            )
+                                                    (0.3 * 255).toInt(),
+                                                  )
                                                 : ThemingColors.black.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            ),
+                                                    (0.3 * 255).toInt(),
+                                                  ),
                                           ),
                                         ),
                                       ),
@@ -284,11 +297,11 @@ class ProductsSettingsTile extends StatelessWidget {
                                             fontWeight: .bold,
                                             color: context.isDark
                                                 ? ThemingColors.white.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            )
+                                                    (0.3 * 255).toInt(),
+                                                  )
                                                 : ThemingColors.black.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            ),
+                                                    (0.3 * 255).toInt(),
+                                                  ),
                                           ),
                                         ),
                                       ),
@@ -302,38 +315,43 @@ class ProductsSettingsTile extends StatelessWidget {
                                 children: [
                                   TableCell(
                                     verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
+                                        TableCellVerticalAlignment.middle,
                                     child: Align(
-                                      alignment: context.locale.languageCode == 'ar'
+                                      alignment:
+                                          context.locale.languageCode == 'ar'
                                           ? .centerRight
                                           : .centerLeft,
                                       child: Padding(
                                         padding: .all(10),
                                         child: Column(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                              MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               Icons.assignment_late_outlined,
                                               size: 16,
                                               color: context.isDark
-                                                  ? ThemingColors.white.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              )
-                                                  : ThemingColors.black.withAlpha(
-                                                (0.2 * 255).toInt(),
-                                              ),
+                                                  ? ThemingColors.white
+                                                        .withAlpha(
+                                                          (0.3 * 255).toInt(),
+                                                        )
+                                                  : ThemingColors.black
+                                                        .withAlpha(
+                                                          (0.2 * 255).toInt(),
+                                                        ),
                                             ),
                                             Text(
                                               "noData".tr(),
                                               style: TextStyle(
                                                 color: context.isDark
-                                                    ? ThemingColors.white.withAlpha(
-                                                  (0.3 * 255).toInt(),
-                                                )
-                                                    : ThemingColors.black.withAlpha(
-                                                  (0.5 * 255).toInt(),
-                                                ),
+                                                    ? ThemingColors.white
+                                                          .withAlpha(
+                                                            (0.3 * 255).toInt(),
+                                                          )
+                                                    : ThemingColors.black
+                                                          .withAlpha(
+                                                            (0.5 * 255).toInt(),
+                                                          ),
                                                 fontSize: 11,
                                               ),
                                             ),
@@ -344,33 +362,38 @@ class ProductsSettingsTile extends StatelessWidget {
                                   ),
                                   TableCell(
                                     verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 10),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             Icons.assignment_late_outlined,
                                             size: 16,
                                             color: context.isDark
                                                 ? ThemingColors.white.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            )
+                                                    (0.3 * 255).toInt(),
+                                                  )
                                                 : ThemingColors.black.withAlpha(
-                                              (0.2 * 255).toInt(),
-                                            ),
+                                                    (0.2 * 255).toInt(),
+                                                  ),
                                           ),
                                           Text(
                                             "noData".tr(),
                                             style: TextStyle(
                                               color: context.isDark
-                                                  ? ThemingColors.white.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              )
-                                                  : ThemingColors.black.withAlpha(
-                                                (0.5 * 255).toInt(),
-                                              ),
+                                                  ? ThemingColors.white
+                                                        .withAlpha(
+                                                          (0.3 * 255).toInt(),
+                                                        )
+                                                  : ThemingColors.black
+                                                        .withAlpha(
+                                                          (0.5 * 255).toInt(),
+                                                        ),
                                               fontSize: 11,
                                             ),
                                           ),
@@ -380,33 +403,38 @@ class ProductsSettingsTile extends StatelessWidget {
                                   ),
                                   TableCell(
                                     verticalAlignment:
-                                    TableCellVerticalAlignment.middle,
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 10),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             Icons.assignment_late_outlined,
                                             size: 16,
                                             color: context.isDark
                                                 ? ThemingColors.white.withAlpha(
-                                              (0.3 * 255).toInt(),
-                                            )
+                                                    (0.3 * 255).toInt(),
+                                                  )
                                                 : ThemingColors.black.withAlpha(
-                                              (0.2 * 255).toInt(),
-                                            ),
+                                                    (0.2 * 255).toInt(),
+                                                  ),
                                           ),
                                           Text(
                                             "noData".tr(),
                                             style: TextStyle(
                                               color: context.isDark
-                                                  ? ThemingColors.white.withAlpha(
-                                                (0.3 * 255).toInt(),
-                                              )
-                                                  : ThemingColors.black.withAlpha(
-                                                (0.5 * 255).toInt(),
-                                              ),
+                                                  ? ThemingColors.white
+                                                        .withAlpha(
+                                                          (0.3 * 255).toInt(),
+                                                        )
+                                                  : ThemingColors.black
+                                                        .withAlpha(
+                                                          (0.5 * 255).toInt(),
+                                                        ),
                                               fontSize: 11,
                                             ),
                                           ),
@@ -422,16 +450,18 @@ class ProductsSettingsTile extends StatelessWidget {
                                 final ProductModel product = entry.value;
                                 final List<ProductModel> oldProducts =
                                     cubit.products;
-                                final ProductModel? oldProduct = oldProducts.firstWhereOrNull(
+                                final ProductModel? oldProduct = oldProducts
+                                    .firstWhereOrNull(
                                       (p) =>
-                                  p.productId == product.productId && p.branchId == product.branchId,
-                                );
+                                          p.productId == product.productId &&
+                                          p.branchId == product.branchId,
+                                    );
                                 final bool changed =
                                     oldProduct == null ||
-                                        product != oldProduct ||
-                                        cubit.changedProductPictures.contains(
-                                          product.productId,
-                                        );
+                                    product != oldProduct ||
+                                    cubit.changedProductPictures.contains(
+                                      product.productId,
+                                    );
                                 return TableRow(
                                   children: [
                                     InkWell(
@@ -444,11 +474,11 @@ class ProductsSettingsTile extends StatelessWidget {
                                             context: context,
                                             barrierColor: context.isDark
                                                 ? ThemingColors.black.withAlpha(
-                                              (0.4 * 255).toInt(),
-                                            )
+                                                    (0.4 * 255).toInt(),
+                                                  )
                                                 : ThemingColors.white.withAlpha(
-                                              (0.4 * 255).toInt(),
-                                            ),
+                                                    (0.4 * 255).toInt(),
+                                                  ),
                                             builder: (dialogContext) {
                                               return BlocProvider.value(
                                                 value: cubit,
@@ -468,62 +498,74 @@ class ProductsSettingsTile extends StatelessWidget {
                                           children: [
                                             cubit.isProductsEditing
                                                 ? Padding(
-                                              padding:
-                                              context
-                                                  .locale
-                                                  .languageCode ==
-                                                  'ar'
-                                                  ? .only(left: 15, right: 3)
-                                                  : .only(right: 15, left: 3),
-                                              child: Icon(
-                                                Icons.edit,
-                                                size: 16,
-                                                color: ThemingColors
-                                                    .primaryColor,
-                                              ),
-                                            )
+                                                    padding:
+                                                        context
+                                                                .locale
+                                                                .languageCode ==
+                                                            'ar'
+                                                        ? .only(
+                                                            left: 15,
+                                                            right: 3,
+                                                          )
+                                                        : .only(
+                                                            right: 15,
+                                                            left: 3,
+                                                          ),
+                                                    child: Icon(
+                                                      Icons.edit,
+                                                      size: 16,
+                                                      color: ThemingColors
+                                                          .primaryColor,
+                                                    ),
+                                                  )
                                                 : SizedBox(
-                                              width: 34,
-                                              child: Padding(
-                                                padding:
-                                                context
-                                                    .locale
-                                                    .languageCode ==
-                                                    'ar'
-                                                    ? .only(right: 7)
-                                                    : .only(left: 7),
-                                                child: Text(
-                                                  "${index + 1}",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: .bold,
+                                                    width: 34,
+                                                    child: Padding(
+                                                      padding:
+                                                          context
+                                                                  .locale
+                                                                  .languageCode ==
+                                                              'ar'
+                                                          ? .only(right: 7)
+                                                          : .only(left: 7),
+                                                      child: Text(
+                                                        "${index + 1}",
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight: .bold,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            ),
                                             Expanded(
                                               child: ProductCell(
                                                 key: ValueKey(
                                                   'product_avatar_${product.productId}_${cubit.productImageVersion[product.productId] ?? 0}',
                                                 ),
-                                                productName: product.productName,
+                                                productName:
+                                                    product.productName,
                                                 productId: product.productId!,
                                                 pendingImage:
-                                                cubit
-                                                    .pendingProductImages[product
-                                                    .productId],
+                                                    cubit
+                                                        .pendingProductImages[product
+                                                        .productId],
                                                 opacity: cubit.isProductsEditing
                                                     ? (changed ? 1 : 0.3)
                                                     : 1,
-                                                textColor: cubit.isProductsEditing
+                                                textColor:
+                                                    cubit.isProductsEditing
                                                     ? (context.isDark
-                                                    ? ThemingColors.white
-                                                    : ThemingColors.black)
-                                                    .withAlpha(
-                                                  ((changed ? 1 : 0.5) *
-                                                      255)
-                                                      .toInt(),
-                                                )
+                                                              ? ThemingColors
+                                                                    .white
+                                                              : ThemingColors
+                                                                    .black)
+                                                          .withAlpha(
+                                                            ((changed
+                                                                        ? 1
+                                                                        : 0.5) *
+                                                                    255)
+                                                                .toInt(),
+                                                          )
                                                     : null,
                                               ),
                                             ),
@@ -548,22 +590,22 @@ class ProductsSettingsTile extends StatelessWidget {
                                                 fontSize: 12,
                                                 color: cubit.isProductsEditing
                                                     ? context.isDark
-                                                    ? ThemingColors.white
-                                                    .withAlpha(
-                                                  ((changed
-                                                      ? 1
-                                                      : 0.5) *
-                                                      255)
-                                                      .toInt(),
-                                                )
-                                                    : ThemingColors.black
-                                                    .withAlpha(
-                                                  ((changed
-                                                      ? 1
-                                                      : 0.5) *
-                                                      255)
-                                                      .toInt(),
-                                                )
+                                                          ? ThemingColors.white
+                                                                .withAlpha(
+                                                                  ((changed
+                                                                              ? 1
+                                                                              : 0.5) *
+                                                                          255)
+                                                                      .toInt(),
+                                                                )
+                                                          : ThemingColors.black
+                                                                .withAlpha(
+                                                                  ((changed
+                                                                              ? 1
+                                                                              : 0.5) *
+                                                                          255)
+                                                                      .toInt(),
+                                                                )
                                                     : null,
                                               ),
                                             ),
@@ -576,17 +618,20 @@ class ProductsSettingsTile extends StatelessWidget {
                                                 fontSize: 13,
                                                 color: context.isDark
                                                     ? cubit.isProductsEditing
-                                                    ? Colors.amber.withAlpha(
-                                                  ((changed ? 1 : 0.5) *
-                                                      255)
-                                                      .toInt(),
-                                                )
-                                                    : Colors.amber
+                                                          ? Colors.amber.withAlpha(
+                                                              ((changed
+                                                                          ? 1
+                                                                          : 0.5) *
+                                                                      255)
+                                                                  .toInt(),
+                                                            )
+                                                          : Colors.amber
                                                     : cubit.isProductsEditing
                                                     ? Colors.orange.withAlpha(
-                                                  ((changed ? 1 : 0.5) * 255)
-                                                      .toInt(),
-                                                )
+                                                        ((changed ? 1 : 0.5) *
+                                                                255)
+                                                            .toInt(),
+                                                      )
                                                     : Colors.orange,
                                               ),
                                             ),
@@ -604,31 +649,30 @@ class ProductsSettingsTile extends StatelessWidget {
                                         children: [
                                           Flexible(
                                             child: Text(
-                                              product.productPrice.toStringAsFixed(
-                                                2,
-                                              ),
+                                              product.productPrice
+                                                  .toStringAsFixed(2),
                                               maxLines: 1,
                                               overflow: .ellipsis,
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 color: cubit.isProductsEditing
                                                     ? context.isDark
-                                                    ? ThemingColors.white
-                                                    .withAlpha(
-                                                  ((changed
-                                                      ? 1
-                                                      : 0.5) *
-                                                      255)
-                                                      .toInt(),
-                                                )
-                                                    : ThemingColors.black
-                                                    .withAlpha(
-                                                  ((changed
-                                                      ? 1
-                                                      : 0.5) *
-                                                      255)
-                                                      .toInt(),
-                                                )
+                                                          ? ThemingColors.white
+                                                                .withAlpha(
+                                                                  ((changed
+                                                                              ? 1
+                                                                              : 0.5) *
+                                                                          255)
+                                                                      .toInt(),
+                                                                )
+                                                          : ThemingColors.black
+                                                                .withAlpha(
+                                                                  ((changed
+                                                                              ? 1
+                                                                              : 0.5) *
+                                                                          255)
+                                                                      .toInt(),
+                                                                )
                                                     : null,
                                               ),
                                             ),
@@ -638,9 +682,10 @@ class ProductsSettingsTile extends StatelessWidget {
                                             style: TextStyle(
                                               color: cubit.isProductsEditing
                                                   ? Colors.green.withAlpha(
-                                                ((changed ? 1 : 0.5) * 255)
-                                                    .toInt(),
-                                              )
+                                                      ((changed ? 1 : 0.5) *
+                                                              255)
+                                                          .toInt(),
+                                                    )
                                                   : Colors.green,
                                             ),
                                           ),
@@ -662,13 +707,12 @@ class ProductsSettingsTile extends StatelessWidget {
                                   barrierColor: Colors.transparent,
                                   builder: (dialogContext) => AddProductDialog(
                                     bakeryId: cubit.bakeries.first.bakeryId,
+                                    branchIds: cubit.bakeries
+                                        .map((b) => b.branchId)
+                                        .toList(),
                                     initialFlourIndex: 1,
-                                    onSave: (product, image) => cubit.addProduct(
-                                      product.copyWith(
-                                        branchId: cubit.productsViewedBranch,
-                                      ),
-                                      image: image,
-                                    ),
+                                    onSave: (products, image) => cubit
+                                        .addProducts(products, image: image),
                                   ),
                                 );
                               },

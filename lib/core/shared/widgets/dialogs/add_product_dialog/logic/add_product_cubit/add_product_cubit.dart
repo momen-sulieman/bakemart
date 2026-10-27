@@ -26,6 +26,7 @@ RecipeModel Function(RecipeModel recipe, int? value) apply,
 class AddProductCubit extends Cubit<AddProductState> {
   AddProductCubit({
     required this.bakeryId,
+    required this.branchIds,
     required this.flourTypes,
     required this.onSave,
     this.initialFlourIndex = 1,
@@ -77,9 +78,10 @@ class AddProductCubit extends Cubit<AddProductState> {
   }
 
   final String bakeryId;
+  final List<String> branchIds;
   final List<String> flourTypes;
   final int initialFlourIndex;
-  final void Function(ProductModel product, File? image) onSave;
+  final void Function(List<ProductModel> products, File? image) onSave;
 
   final String generatedId = const Uuid().v4();
   final SupabaseImageCubit imageCubit;
@@ -118,7 +120,7 @@ class AddProductCubit extends Cubit<AddProductState> {
       recipe = field.$4(recipe, int.tryParse(field.$2.text.toEnglishDigits()));
     }
 
-    final product = ProductModel(
+    final base = ProductModel(
       bakeryId: bakeryId,
       branchId: "",
       productName: "",
@@ -144,8 +146,12 @@ class AddProductCubit extends Cubit<AddProductState> {
       productRecipe: recipe,
     );
 
+    final products = branchIds
+        .map((branchId) => base.copyWith(branchId: branchId))
+        .toList();
+
     final imageState = imageCubit.state;
-    onSave(product, imageState is ImagePicked ? imageState.imageFile : null);
+    onSave(products, imageState is ImagePicked ? imageState.imageFile : null);
   }
 
   @override

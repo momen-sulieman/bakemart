@@ -142,6 +142,7 @@
   "newProductNote": "Enter the follwoing item's used-quantity per batch (50 kg of flour) for production",
   "next": "Next",
   "noAcceptedOrder": "You Haven't Accepted Any Order yet",
+  "noAvailableProducts": "No currently available prooducts",
   "noBakeryFound": "No bakery found with this name",
   "noData": "No data",
   "noInternet": "No Internet Connection",

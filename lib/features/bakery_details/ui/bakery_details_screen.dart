@@ -5,6 +5,7 @@ import 'package:bakemart/core/shared/widgets/cart/ui/cart_screen.dart';
 import 'package:bakemart/core/theming/theming_colors.dart';
 import 'package:bakemart/core/utils/extensions/context_extensions.dart';
 import 'package:bakemart/features/bakery_details/ui/widgets/product_list_tile.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/shared/cubits/location_cubit/location_cubit.dart';
 import '../../../core/shared/cubits/location_cubit/location_state.dart';
 import '../../../core/shared/widgets/cart/logic/cart_cubit/cart_cubit.dart';
+import '../../../core/shared/widgets/faded_screen/faded_screen.dart';
 import '../../../core/shared/widgets/location_picker_map/location_picker_map.dart';
 import '../../../core/shared/widgets/supabase_image/ui/supabase_image.dart';
 import '../../../core/shared/widgets/transparent_button/transparent_button.dart';
@@ -81,10 +83,12 @@ class BakeryDetailsScreen extends StatelessWidget {
                       value: locationCubit,
                       child: BlocBuilder<LocationCubit, LocationState>(
                         builder: (context, locationState) {
-                          final double? liveLat = locationState is LocationUpdated
+                          final double? liveLat =
+                              locationState is LocationUpdated
                               ? locationState.lat
                               : null;
-                          final double? liveLng = locationState is LocationUpdated
+                          final double? liveLng =
+                              locationState is LocationUpdated
                               ? locationState.lng
                               : null;
                           return Material(
@@ -180,36 +184,53 @@ class BakeryDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.03),
-                  Container(
-                    margin: .all(15),
-                    padding: .only(left: 20, top: 20, bottom: 20),
-                    decoration: BoxDecoration(
-                      color: context.isDark
-                          ? ThemingColors.darkGrey
-                          : ThemingColors.white,
-                      borderRadius: .circular(25),
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (_, index) {
-                        return ProductListTile(bakery: bakery, index: index);
-                      },
-                      separatorBuilder: (_, index) {
-                        return Container(
-                          height: 2,
-                          margin: .symmetric(
-                            vertical: 14,
-                            horizontal: screenWidth * 0.15,
+                  bakery.productModelList.isEmpty
+                      ? Padding(
+                          padding: .symmetric(vertical: 70),
+                          child: FadedScreen(
+                            size: 80,
+                            icon: Icons.bakery_dining_outlined,
+                            iconDarkFade: 0.15,
+                            iconLightFade: 0.2,
+                            text: "noAvailableProducts".tr(),
+                            textColor: Colors.redAccent,
+                            textDarkFade: 0.3,
+                            textLightFade: 0.4,
                           ),
-                          color: context.isDark
-                              ? ThemingColors.black
-                              : ThemingColors.lightGrey,
-                        );
-                      },
-                      itemCount: bakery.productModelList.length,
-                    ),
-                  ),
+                        )
+                      : Container(
+                          margin: .all(15),
+                          padding: .only(left: 20, top: 20, bottom: 20),
+                          decoration: BoxDecoration(
+                            color: context.isDark
+                                ? ThemingColors.darkGrey
+                                : ThemingColors.white,
+                            borderRadius: .circular(25),
+                          ),
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (_, index) {
+                              return ProductListTile(
+                                bakery: bakery,
+                                index: index,
+                              );
+                            },
+                            separatorBuilder: (_, index) {
+                              return Container(
+                                height: 2,
+                                margin: .symmetric(
+                                  vertical: 14,
+                                  horizontal: screenWidth * 0.15,
+                                ),
+                                color: context.isDark
+                                    ? ThemingColors.black
+                                    : ThemingColors.lightGrey,
+                              );
+                            },
+                            itemCount: bakery.productModelList.length,
+                          ),
+                        ),
                   SizedBox(height: screenHeight * 0.03),
                 ],
               ),
